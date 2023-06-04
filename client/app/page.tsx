@@ -1,14 +1,13 @@
 //* Server side component *//
 import Image from 'next/image'
-import { Button, ButtonGroup } from '@chakra-ui/react'
-import Sidebar from './components/Sidebar';
 import Page from './project-overview/page'
+import Contractors from './contractors/page'
+import Sidebar from './components/Sidebar'
 
 export default function Home() {
   return (
     <main>
-      {/* <Sidebar children={undefined} /> */}
-      <Page />
+      <p>main page</p>
     </main>
   )
 }
