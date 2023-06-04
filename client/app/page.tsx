@@ -4,10 +4,16 @@ import Page from './project-overview/page'
 import Contractors from './contractors/page'
 import Sidebar from './components/Sidebar'
 
+import { Metadata } from 'next';
+ 
+export const metadata: Metadata = {
+  title: 'Main',
+};
+
 export default function Home() {
   return (
     <main>
-      <p>main page</p>
+      <p>Main page</p>
     </main>
   )
 }

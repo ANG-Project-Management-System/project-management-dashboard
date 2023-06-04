@@ -1,7 +1,13 @@
+import { Metadata } from 'next';
+ 
+export const metadata: Metadata = {
+  title: 'Project Overview',
+};
+
 const ProjectOverview = () => {
   return (
     <div>
-      ProjectOverview
+      Project Overview page
     </div>
   )
 }
