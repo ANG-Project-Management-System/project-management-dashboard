@@ -7,7 +7,8 @@ import Sidebar from './components/Sidebar'
 import { Metadata } from 'next';
  
 export const metadata: Metadata = {
-  title: 'Main',
+  title: 'Project Managment App',
+  description: 'ANG Consultants PM App'
 };
 
 export default function Home() {
