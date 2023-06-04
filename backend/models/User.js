@@ -5,14 +5,21 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  name: {
+  displayName: {
     type: String,
     required: true
   },
-  email: {
+  firstName: {
     type: String,
     required: true
-  }
+  },
+  lastName: {
+    type: String,
+    required: true
+  },
+  image: {
+    type: String,
+  },
 });
 
-module.exports = mongoose.model
+module.exports = mongoose.model('User', UserSchema);
