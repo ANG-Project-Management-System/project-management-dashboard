@@ -27,18 +27,18 @@ import Image from 'next/image';
 const Links = ['Dashboard', 'Projects', 'Team'];
 
 const NavLink = ({ children }: { children: ReactNode }) => (
-  <Link
-    px={2}
-    py={1}
-    rounded={'md'}
-    _hover={{
-      textDecoration: 'none',
-      bg: useColorModeValue('gray.200', 'gray.700'),
-    }}
-    href={'#'}>
-    {children}
-  </Link>
-);
+    <Link
+      px={2}
+      py={1}
+      rounded={'md'}
+      _hover={{
+        textDecoration: 'none',
+        bg: useColorModeValue('gray.200', 'gray.700'),
+      }}
+      href={children === 'Dashboard' ? './' : children === 'Projects' ? './projects' : './team'}>
+      {children}
+    </Link>
+  );  
 
 export default function Navbar() {
   const { isOpen, onOpen, onClose } = useDisclosure();
