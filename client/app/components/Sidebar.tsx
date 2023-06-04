@@ -59,32 +59,32 @@ const LinkItems: Array<LinkItemProps> = [
   {
     name: "Project Overview",
     icon: IconHome,
-    path: "https://www.youtube.com/",
+    path: "/project-overview",
   },
   {
     name: "Contractors",
     icon: IconNotebook,
-    path: "https://chakra-ui.com/getting-started/nextjs-guide",
+    path: "/contractors",
   },
   {
     name: "Estimates",
     icon: IconFileAnalytics,
-    path: "https://nextjs.org/docs/pages/api-reference/create-next-app",
+    path: "/estimates",
   },
   {
     name: "Timesheets",
     icon: IconFileSpreadsheet,
-    path: "https://chakra-ui.com/getting-started/nextjs-guide",
+    path: "timesheets",
   },
   {
     name: "Expenses",
     icon: IconFileDollar,
-    path: "https://chakra-ui.com/getting-started/nextjs-guide",
+    path: "expenses",
   },
   {
     name: "Invoices",
     icon: IconFileInvoice,
-    path: "https://chakra-ui.com/getting-started/nextjs-guide",
+    path: "invoices",
   },
 ];
 
