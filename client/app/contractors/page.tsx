@@ -1,7 +1,13 @@
+import { Metadata } from 'next';
+ 
+export const metadata: Metadata = {
+  title: 'Contractors',
+};
+
 const Contractors = () => {
   return (
     <div className="py-100 px-100">
-       contractor page
+       Contractors page
     </div>
   )
 }

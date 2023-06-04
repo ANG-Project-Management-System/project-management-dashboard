@@ -38,7 +38,6 @@ const NavLink = ({ children }: { children: ReactNode }) => (
       href={children === 'Dashboard' ? './' : children === 'Projects' ? './projects' : './team'}>
       {children}
     </Link>
-  );
 
 export default function Navbar() {
   const { isOpen, onOpen, onClose } = useDisclosure();

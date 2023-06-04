@@ -1,6 +1,15 @@
+import { Metadata } from 'next';
+ 
+export const metadata: Metadata = {
+  title: 'Timesheets',
+};
+
+
 const Timesheets = () => {
   return (
-    <div>Timesheets</div>
+    <div>
+        Timesheets page
+    </div>
   )
 }
 export default Timesheets
