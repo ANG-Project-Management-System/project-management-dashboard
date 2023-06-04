@@ -27,6 +27,7 @@ import Image from 'next/image';
 const Links = ['Dashboard', 'Projects', 'Team'];
 
 const NavLink = ({ children }: { children: ReactNode }) => (
+<<<<<<< HEAD
     <Link
       px={2}
       py={1}
@@ -40,6 +41,20 @@ const NavLink = ({ children }: { children: ReactNode }) => (
     </Link>
   );
   
+=======
+  <Link
+    px={2}
+    py={1}
+    rounded={'md'}
+    _hover={{
+      textDecoration: 'none',
+      bg: useColorModeValue('gray.200', 'gray.700'),
+    }}
+    href={'#'}>
+    {children}
+  </Link>
+);
+>>>>>>> deedc9b9eafd84014f78d627939d7f650bac6f84
 
 export default function Navbar() {
   const { isOpen, onOpen, onClose } = useDisclosure();

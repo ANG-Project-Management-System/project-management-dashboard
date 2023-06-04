@@ -2,7 +2,7 @@ import './globals.css'
 import { Inter } from 'next/font/google'
 import Chakra from './components/Chakra'
 import Sidebar from './components/Sidebar'
-import Contractors from './contractors/page'
+import Navbar from './components/Navbar'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -17,11 +17,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <body className={inter.className}>
         <Chakra>
+          <Navbar />
           <div style={{ display: 'flex' }}>
-            <nav>
-              <Sidebar children={undefined} />
-            </nav>
-            <main>
+            <Sidebar children={undefined}/>
+            <main className='border-radius: 2px'>
               {children}
             </main>
           </div>
