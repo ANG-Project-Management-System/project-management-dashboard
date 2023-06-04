@@ -112,7 +112,7 @@ const Header = ({ children }: { children: React.ReactNode }) => {
       </Drawer>
       {/* mobilenav */}
       {/* <MobileNav onOpen={onOpen} /> */}
-      <Box ml={{ base: 0, md: 60 }}>
+      <Box ml={{ base: 60, md: 60 }}>
           {children}
       </Box>
     </Box>
