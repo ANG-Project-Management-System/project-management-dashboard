@@ -49,6 +49,7 @@ import {
 import { IconType } from "react-icons";
 import { ReactText } from "react";
 import Image from "next/image";
+import { HamburgerIcon } from "@chakra-ui/icons";
 
 interface LinkItemProps {
   name: string;
@@ -56,76 +57,21 @@ interface LinkItemProps {
   path: string;
 }
 const LinkItems: Array<LinkItemProps> = [
-  {
-    name: "Project Overview",
-    icon: IconHome,
-    path: "/project-overview",
-  },
-  {
-    name: "Contractors",
-    icon: IconNotebook,
-    path: "/contractors",
-  },
-  {
-    name: "Estimates",
-    icon: IconFileAnalytics,
-    path: "/estimates",
-  },
-  {
-    name: "Timesheets",
-    icon: IconFileSpreadsheet,
-    path: "timesheets",
-  },
-  {
-    name: "Expenses",
-    icon: IconFileDollar,
-    path: "expenses",
-  },
-  {
-    name: "Invoices",
-    icon: IconFileInvoice,
-    path: "invoices",
-  },
+  { name: "Project Overview", icon: IconHome, path: "/project-overview" },
+  { name: "Contractors", icon: IconNotebook, path: "/contractors" },
+  { name: "Estimates", icon: IconFileAnalytics, path: "/estimates" },
+  { name: "Timesheets", icon: IconFileSpreadsheet, path: "timesheets" },
+  { name: "Expenses", icon: IconFileDollar, path: "expenses" },
+  { name: "Invoices", icon: IconFileInvoice, path: "invoices" },
 ];
-
-const Sidebar = ({ children }: { children: React.ReactNode }) => {
-  const { isOpen, onOpen, onClose } = useDisclosure();
-
-  return (
-    <Box minH="0px" bg={useColorModeValue("gray.100", "gray.900")}>
-      <SidebarContent
-        onClose={() => onClose}
-        display={{ base: "none", md: "block" }}
-      />
-      <Drawer
-        autoFocus={false}
-        isOpen={isOpen}
-        placement="left"
-        onClose={onClose}
-        returnFocusOnClose={false}
-        onOverlayClick={onClose}
-        size="full"
-      >
-        <DrawerContent>
-          <SidebarContent onClose={onClose} />
-        </DrawerContent>
-      </Drawer>
-      {/* mobilenav */}
-      {/* <MobileNav onOpen={onOpen} /> */}
-      <Box ml={{ base: 60, md: 60 }}>
-          {children}
-      </Box>
-    </Box>
-  );
-};
 
 interface SidebarProps extends BoxProps {
   onClose: () => void;
+  isExpanded: boolean;
+  setIsExpanded: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
-  const [isExpanded, setIsExpanded] = useState(true);
-
+const SidebarContent = ({ onClose, isExpanded, setIsExpanded, ...rest }: SidebarProps) => {
   return (
     <Box
       bg={useColorModeValue("white", "gray.900")}
@@ -136,24 +82,23 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
       h="full"
       {...rest}
     >
-      <Flex h="24" alignItems="center" mx="5" justifyContent="space-between">
-        {/* {isExpanded && (
-          // <Image
-          //   alt="ANG Consultants"
-          //   width={140}
-          //   height={90}
-          //   className="flex w-30 ml-4 mb-1"
-          //   src="https://cdn.discordapp.com/attachments/337766477094715405/1114416979286179932/ANG_logo.png"
-          // />
-        )}
-         */}
-        <Button 
-          bg="white" 
+      <Flex
+        justify="flex-start"
+        direction="column"
+        position="fixed"
+        top={5}
+        left={40}
+      >
+        <IconButton
+          aria-label="Toggle-sidebar"
           onClick={() => setIsExpanded(!isExpanded)}
-          ml={isExpanded ? "2" : "-3"}
+          ml={isExpanded ? "2" : "2"}
         >
-          {isExpanded ? "<<" : ">>"}
-        </Button>
+          <FiMenu />
+        </IconButton>
+      </Flex>
+
+      <Flex h="3" alignItems="center" mx="5" justifyContent="space-between">
         <CloseButton display={{ base: "flex", md: "none" }} onClick={onClose} />
       </Flex>
       {LinkItems.map((link) => (
@@ -210,45 +155,33 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
   );
 };
 
-interface NavItemProps extends FlexProps {
-  icon: IconType;
-  children: ReactText;
-  href: string;
-}
-const NavItem = ({ icon, children, href, ...rest }: NavItemProps) => {
+const Sidebar = ({ children }: { children: React.ReactNode }) => {
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [isExpanded, setIsExpanded] = useState(true);
+
   return (
-    <Link
-      href={href}
-      style={{ textDecoration: "none" }}
-      _focus={{ boxShadow: "none" }}
-    >
-      <Flex
-        align="center"
-        p="3.5"
-        mx="3"
-        borderRadius="lg"
-        role="group"
-        cursor="pointer"
-        _hover={{
-          bg: "cyan.300",
-          color: "white",
-        }}
-        fontFamily="Inter"
-        {...rest}
+    <Box minH="0px" bg={useColorModeValue("gray.100", "gray.900")}>
+      <SidebarContent
+        onClose={onClose}
+        display={{ base: "none", md: "block" }}
+        isExpanded={isExpanded}
+        setIsExpanded={setIsExpanded}
+      />
+      <Drawer
+        autoFocus={false}
+        isOpen={isOpen}
+        placement="left"
+        onClose={onClose}
+        returnFocusOnClose={false}
+        onOverlayClick={onClose}
+        size="full"
       >
-        {icon && (
-          <Icon
-            mr="4"
-            fontSize="20"
-            _groupHover={{
-              color: "white",
-            }}
-            as={icon}
-          />
-        )}
-        {children}
-      </Flex>
-    </Link>
+        <DrawerContent>
+          <SidebarContent onClose={onClose} isExpanded={isExpanded} setIsExpanded={setIsExpanded} />
+        </DrawerContent>
+      </Drawer>
+      <Box ml={{ base: isExpanded ? 60 : 20, md: isExpanded ? 60 : 20 }}>{children}</Box>
+    </Box>
   );
 };
 
