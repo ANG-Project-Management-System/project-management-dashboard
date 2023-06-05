@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import { ReactNode, useState } from 'react';
+import { ReactNode, useState } from "react";
 import {
   Box,
   Flex,
@@ -18,27 +18,33 @@ import {
   useColorModeValue,
   Stack,
   VStack,
-  Text
-} from '@chakra-ui/react';
-import { HamburgerIcon, CloseIcon } from '@chakra-ui/icons';
+  Text,
+} from "@chakra-ui/react";
+import { HamburgerIcon, CloseIcon } from "@chakra-ui/icons";
 import { FiChevronDown, FiMenu } from "react-icons/fi";
-import Image from 'next/image';
+import Image from "next/image";
 
-const Links = ['Dashboard', 'Projects', 'Team'];
+const Links = ["Dashboard", "Projects", "Team"];
 
 const NavLink = ({ children }: { children: ReactNode }) => (
-    <Link
-      px={2}
-      py={1}
-      rounded={'md'}
-      _hover={{
-        textDecoration: 'none',
-        bg: useColorModeValue('gray.200', 'gray.700'),
-      }}
-      href={children === 'Dashboard' ? './' : children === 'Projects' ? './projects' : './team'}
-    >
-      {children}
-    </Link>
+  <Link
+    px={2}
+    py={1}
+    rounded={"md"}
+    _hover={{
+      textDecoration: "none",
+      bg: useColorModeValue("gray.200", "gray.700"),
+    }}
+    href={
+      children === "Dashboard"
+        ? "./"
+        : children === "Projects"
+        ? "./projects"
+        : "./team"
+    }
+  >
+    {children}
+  </Link>
 );
 
 export default function Navbar() {
@@ -51,16 +57,16 @@ export default function Navbar() {
 
   return (
     <>
-      <Box bg={'white'} px={4} border="1px" borderColor="gray.200">
-        <Flex h={20} alignItems={'center'} justifyContent={'space-between'}>
+      <Box bg={"white"} px={4} border="1px" borderColor="gray.200">
+        <Flex h={20} alignItems={"center"} justifyContent={"space-between"}>
           <IconButton
-            size={'md'}
+            size={"md"}
             icon={isOpen ? <CloseIcon /> : <HamburgerIcon />}
-            aria-label={'Open Menu'}
-            display={{ md: 'none' }}
+            aria-label={"Open Menu"}
+            display={{ md: "none" }}
             onClick={isOpen ? onClose : onOpen}
           />
-          <HStack spacing={8} alignItems={'center'}>
+          <HStack spacing={4} alignItems={"center"}>
             <Box>
               <Image
                 alt="ANG Consultants"
@@ -71,29 +77,28 @@ export default function Navbar() {
                 priority={true}
               />
             </Box>
-            <HStack
-              as={'nav'}
-              spacing={4}
-              display={{ base: 'none', md: 'flex' }}>
-              <IconButton
-                aria-label="Toggle Sidebar"
-                onClick={toggleSidebar}
+            <Box ml={20}>
+              <HStack
+                as={"nav"}
+                spacing={4}
+                display={{ base: "flex", md: "flex" }}
               >
-                <FiMenu />
-              </IconButton>
-              {Links.map((link) => (
-                <NavLink key={link}>{link}</NavLink>
-              ))}
-            </HStack>
+                {Links.map((link) => (
+                  <NavLink key={link}>{link}</NavLink>
+                ))}
+              </HStack>
+            </Box>
           </HStack>
-          <Flex alignItems={'center'}>
+
+          <Flex alignItems={"center"}>
             <Menu>
               <MenuButton
                 as={Button}
-                rounded={'full'}
-                variant={'link'}
-                cursor={'pointer'}
-                minW={0}>
+                rounded={"full"}
+                variant={"link"}
+                cursor={"pointer"}
+                minW={0}
+              >
                 <HStack>
                   <Avatar
                     size={"sm"}
@@ -128,8 +133,8 @@ export default function Navbar() {
         </Flex>
 
         {isOpen ? (
-          <Box pb={4} display={{ md: 'none' }}>
-            <Stack as={'nav'} spacing={4}>
+          <Box pb={4} display={{ md: "none" }}>
+            <Stack as={"nav"} spacing={4}>
               {Links.map((link) => (
                 <NavLink key={link}>{link}</NavLink>
               ))}
