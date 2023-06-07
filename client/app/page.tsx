@@ -1,9 +1,6 @@
 //* Server side component *//
-import Image from 'next/image'
-import Page from './project-overview/page'
-import Sidebar from './components/Sidebar'
-
 import { Metadata } from 'next';
+import Login from './login/page';
  
 export const metadata: Metadata = {
   title: 'Project Managment App',
@@ -14,6 +11,7 @@ export default function Home() {
   
   return (
     <main>
+      <Login />
       <p>Main page</p>
     </main>
   )

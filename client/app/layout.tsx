@@ -1,9 +1,6 @@
 import "./globals.css";
 import { Inter } from "next/font/google";
-import Chakra from "./components/Chakra";
-import Sidebar from "./components/Sidebar";
-import Navbar from "./components/Navbar";
-import Providers from "./components/Providers";
+import Login from "./login/page";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -21,15 +18,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <Providers>
-          <Chakra>
-            <Navbar />
-            <div style={{ display: "flex" }}>
-              <Sidebar children={undefined} />
-              <main className="border-radius: 2px">{children}</main>
-            </div>
-          </Chakra>
-        </Providers>
+          <main className="border-radius: 2px">{children}</main>
       </body>
     </html>
   );
