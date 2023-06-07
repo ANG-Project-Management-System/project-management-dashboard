@@ -11,8 +11,9 @@ export default function Home() {
   
   return (
     <main>
-      <Login />
-      <p>Main page</p>
+      <div>
+        <Login />
+      </div>
     </main>
   )
 }
