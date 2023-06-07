@@ -57,12 +57,12 @@ interface LinkItemProps {
   path: string;
 }
 const LinkItems: Array<LinkItemProps> = [
-  { name: "Project Overview", icon: IconHome, path: "/project-overview" },
-  { name: "Contractors", icon: IconNotebook, path: "/contractors" },
-  { name: "Estimates", icon: IconFileAnalytics, path: "/estimates" },
-  { name: "Timesheets", icon: IconFileSpreadsheet, path: "timesheets" },
-  { name: "Expenses", icon: IconFileDollar, path: "expenses" },
-  { name: "Invoices", icon: IconFileInvoice, path: "invoices" },
+  { name: "Project Overview", icon: IconHome, path: "/admin/project-overview" },
+  { name: "Contractors", icon: IconNotebook, path: "/admin/contractors" },
+  { name: "Estimates", icon: IconFileAnalytics, path: "/admin/estimates" },
+  { name: "Timesheets", icon: IconFileSpreadsheet, path: "/admin/timesheets" },
+  { name: "Expenses", icon: IconFileDollar, path: "/admin/expenses" },
+  { name: "Invoices", icon: IconFileInvoice, path: "/admin/invoices" },
 ];
 
 interface SidebarProps extends BoxProps {

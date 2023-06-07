@@ -9,7 +9,7 @@ export default function Login() {
     <div>
       <Button 
         colorScheme="blue" 
-        onClick={() => signIn("google", { callbackUrl: `${window.location.origin}/` })}
+        onClick={() => signIn("google", { callbackUrl: `${window.location.origin}/admin` })}
       >
         Sign into google
       </Button>
