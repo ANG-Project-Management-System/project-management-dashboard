@@ -3,16 +3,16 @@
 import { Button } from "@chakra-ui/react";
 import { signIn } from "next-auth/react";
 
-const Login = () => {
+
+export default function Login() {
   return (
     <div>
       <Button 
         colorScheme="blue" 
-        onClick={() => signIn("google")}
+        onClick={() => signIn("google", { callbackUrl: `${window.location.origin}/` })}
       >
         Sign into google
       </Button>
     </div>
   );
 };
-export default Login;

@@ -136,10 +136,10 @@ export default function Navbar() {
                 </HStack>
               </MenuButton>
               <MenuList>
-                <MenuItem>Profile</MenuItem>
+                <MenuItem as={Link} href="https://myaccount.google.com/">Profile</MenuItem>
                 <MenuItem>Settings</MenuItem>
                 <MenuDivider />
-                <MenuItem onClick={() => signOut()}>Log out</MenuItem>
+                <MenuItem onClick={() => signOut({ callbackUrl: `${window.location.origin}/login` })}>Log out</MenuItem>
               </MenuList>
             </Menu>
           </Flex>
