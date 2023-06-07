@@ -8,7 +8,7 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Frontend 
 
-The frontend is built using ReactJS, go to the frontend 'client' folder, in Terminal: 
+The frontend is built using NextJS, go to the frontend 'client' folder, in Terminal: 
 
 `cd client`
 
@@ -18,7 +18,7 @@ Install the dependencies:
 
 Run the app in development mode:
 
-`npm start`
+`npm run dev`
 
 Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
@@ -41,7 +41,7 @@ Open [http://localhost:5000](http://localhost:5000) to view it in the browser.
 
 ## Built With
 
-* [ReactJS](https://reactjs.org/) - The frontend framework used
+* [NextJS](https://nextjs.org/) - The frontend framework used
 
 * [NodeJS](https://nodejs.org/en/) - The backend framework used
 
@@ -50,6 +50,8 @@ Open [http://localhost:5000](http://localhost:5000) to view it in the browser.
 * [ExpressJS](https://expressjs.com/) - The web framework used
 
 * [Mongoose](https://mongoosejs.com/) - The ODM library used
+
+* [Typescript](https://www.typescriptlang.org/) The Language used
 
 
 
