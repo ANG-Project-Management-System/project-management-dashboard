@@ -118,7 +118,7 @@ const SidebarContent = ({ onClose, isExpanded, setIsExpanded, ...rest }: Sidebar
               bg: "cyan.300",
               color: "white",
             }}
-            fontFamily="Inter"
+            // fontFamily=""
           >
             {!isExpanded ? (
               <Tooltip
