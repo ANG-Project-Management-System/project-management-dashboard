@@ -1,3 +1,6 @@
+"use client"
+
+import { Flex } from "@chakra-ui/react"
 import Chakra from "../components/Chakra"
 import Navbar from "../components/Navbar"
 import Providers from "../components/Providers"
@@ -6,18 +9,19 @@ import Sidebar from "../components/Sidebar"
 
 const Admin = () => {
   return (
-    <div>
+    <Flex>
         <Providers>
           <Chakra>
             <Navbar />
-            <div style={{ display: "flex" }}>
+            <Flex style={{ display: "flex" }}>
               <Sidebar children={undefined} />
-              <div>Admin Home Page
-              </div>
-            </div>
+              <Flex mt={20}>
+                Admin Home Page
+              </Flex>
+            </Flex>
           </Chakra>
         </Providers>
-    </div>
+    </Flex>
   )
 }
 export default Admin
