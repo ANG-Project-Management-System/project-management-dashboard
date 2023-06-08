@@ -2,7 +2,7 @@
 
 // Google OAuth imports
 import { useSession } from "next-auth/react";
-import { signOut } from 'next-auth/react';
+import { signOut } from "next-auth/react";
 
 // React imports
 import { ReactNode, useState } from "react";
@@ -29,7 +29,7 @@ import { HamburgerIcon, CloseIcon } from "@chakra-ui/icons";
 import { FiChevronDown, FiMenu } from "react-icons/fi";
 import Image from "next/image";
 
-const Links = ["Dashboard", "Projects", "Team"];
+const Links = ["Dashboard", "Projects", "RFQ", "Team"];
 
 const NavLink = ({ children }: { children: ReactNode }) => (
   <Link
@@ -45,13 +45,14 @@ const NavLink = ({ children }: { children: ReactNode }) => (
         ? "/admin"
         : children === "Projects"
         ? "/projects"
-        : "/team"
+        : children === "Team"
+        ? "/team"
+        : "/admin/request-for-quotation"
     }
   >
     {children}
   </Link>
 );
-
 
 export default function Navbar() {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -77,15 +78,20 @@ export default function Navbar() {
           />
           <HStack spacing={4} alignItems={"center"}>
             <Box>
-              <Image
-                alt="ANG Consultants"
-                width={110}
-                height={80}
-                className="flex ml-4"
-                src="/ANG_logo.png"
-                priority={true}
-              />
+              <div>
+                <Link href="/admin">
+                    <Image
+                      alt="ANG Consultants"
+                      width={110}
+                      height={80}
+                      className="flex ml-4"
+                      src="/ANG_logo.png"
+                      priority={true}
+                    />
+                </Link>
+              </div>
             </Box>
+
             <Box ml={20}>
               <HStack
                 as={"nav"}
@@ -137,10 +143,18 @@ export default function Navbar() {
                 </HStack>
               </MenuButton>
               <MenuList>
-                <MenuItem as={Link} href="https://myaccount.google.com/">Profile</MenuItem>
+                <MenuItem as={Link} href="https://myaccount.google.com/">
+                  Profile
+                </MenuItem>
                 <MenuItem>Settings</MenuItem>
                 <MenuDivider />
-                <MenuItem onClick={() => signOut({ callbackUrl: `${window.location.origin}/login` })}>Log out</MenuItem>
+                <MenuItem
+                  onClick={() =>
+                    signOut({ callbackUrl: `${window.location.origin}/login` })
+                  }
+                >
+                  Log out
+                </MenuItem>
               </MenuList>
             </Menu>
           </Flex>
