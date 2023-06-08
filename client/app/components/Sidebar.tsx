@@ -75,12 +75,15 @@ const SidebarContent = ({ onClose, isExpanded, setIsExpanded, ...rest }: Sidebar
   return (
     <Box
       bg={useColorModeValue("white", "gray.900")}
+      borderTop="1px"
+      borderTopColor={useColorModeValue("gray.200", "gray.700")}
       borderRight="1px"
       borderRightColor={useColorModeValue("gray.200", "gray.700")}
       w={isExpanded ? { base: "full", md: 60 } : { base: "full", md: 20 }}
       pos="fixed"
       h="full"
       {...rest}
+      position="fixed" top="81px" left={0} zIndex={1000}
     >
       <Flex
         justify="flex-start"

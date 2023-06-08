@@ -69,7 +69,9 @@ export default function Navbar() {
 
   return (
     <>
-      <Box bg={"white"} px={4} border="1px" borderColor="gray.200">
+      <Box bg={"white"} px={4} border="1px" borderColor="gray.200"
+        position="fixed" top={0} w="100%" zIndex={1000}
+      >
         <Flex h={20} alignItems={"center"} justifyContent={"space-between"}>
           <IconButton
             size={"md"}
