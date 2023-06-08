@@ -146,9 +146,10 @@ export default function Contractors() {
         <Flex style={{ display: "flex" }}>
           <Sidebar children={undefined} />
           <Flex direction="column" p={5} w="full">
-            <Flex justify="space-between" align="center" mb={5}>
-              <Heading size="lg">Contractors</Heading>
+            <Flex justify="space-between" align="center" mb={8}>
+              <Heading mt={20} size="lg">Contractors</Heading>
               <Button
+                mt={20}
                 leftIcon={<AddIcon />}
                 colorScheme="blue"
                 onClick={() => setShowNewContractorForm(true)}
