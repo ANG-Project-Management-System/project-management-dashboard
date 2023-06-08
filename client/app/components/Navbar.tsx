@@ -29,7 +29,7 @@ import { HamburgerIcon, CloseIcon } from "@chakra-ui/icons";
 import { FiChevronDown, FiMenu } from "react-icons/fi";
 import Image from "next/image";
 
-const Links = ["Dashboard", "Projects", "RFQ"];
+const Links = ["Home", "Projects", "RFQ Form"];
 
 const NavLink = ({ children }: { children: ReactNode }) => (
   <Link
@@ -41,13 +41,13 @@ const NavLink = ({ children }: { children: ReactNode }) => (
       bg: useColorModeValue("gray.200", "gray.700"),
     }}
     href={
-          children === "Dashboard"
+          children === "Home"
         ? "/admin"
         : children === "Projects"
         ? "/admin/all-projects"
         // : children === "Team"
         // ? "/team"
-        : children === "RFQ"
+        : children === "RFQ Form"
         ? "/admin/request-for-quotation"
         : "/admin"
     }
