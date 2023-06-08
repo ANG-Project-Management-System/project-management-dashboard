@@ -8,7 +8,7 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Frontend 
 
-The frontend is built using NextJS, go to the frontend 'client' folder, in Terminal: 
+The frontend is built using NextJS, Chakra UI and Tailwind CSS. Go to the frontend 'client' folder, in Terminal: 
 
 `cd client`
 
@@ -52,6 +52,10 @@ Open [http://localhost:5000](http://localhost:5000) to view it in the browser.
 * [Mongoose](https://mongoosejs.com/) - The ODM library used
 
 * [TypeScript](https://www.typescriptlang.org/) - The Programming Language used
+
+* [Chakra UI](https://chakra-ui.com/) - The React Component Library used
+
+* [Tailwind CSS](https://tailwindcss.com/) - The CSS framework used
 
 
 
