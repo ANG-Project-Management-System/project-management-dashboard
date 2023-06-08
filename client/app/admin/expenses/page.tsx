@@ -1,27 +1,26 @@
+"use client"
+
 import Chakra from "@/app/components/Chakra"
 import Navbar from "@/app/components/Navbar"
 import Providers from "@/app/components/Providers"
 import Sidebar from "@/app/components/Sidebar"
-
-import { Metadata } from 'next';
- 
-export const metadata: Metadata = {
-  title: 'Expenses',
-};
+import { Flex } from "@chakra-ui/react"
 
 const Expenses = () => {
   return (
-    <div>
+    <Flex>
         <Providers>
           <Chakra>
             <Navbar />
-            <div style={{ display: "flex" }}>
+            <Flex style={{ display: "flex" }}>
               <Sidebar children={undefined} />
-              <div>Expenses Page</div>
-            </div>
+              <Flex mt={20}>
+                Expenses Page
+              </Flex>
+            </Flex>
           </Chakra>
         </Providers>
-    </div>
+    </Flex>
   )
 }
 export default Expenses

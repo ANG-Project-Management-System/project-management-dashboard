@@ -79,10 +79,15 @@ const RequestForQuotation = () => {
           direction="column"
           align="center"
           justify="center"
-          minH="90vh"
+          minH="100vh"
           p={5}
         >
-          <Heading mb={8}>Engineering Project RFQ</Heading>
+          <Heading 
+            mt={40}
+            mb={8}
+          >
+            Engineering Project RFQ
+          </Heading>
 
           <Flex
             direction={{ base: "column", md: "row" }}
