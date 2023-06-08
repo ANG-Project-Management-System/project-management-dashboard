@@ -8,7 +8,7 @@ export default function Login() {
     <div className="flex flex-col justify-center items-center min-h-screen">
       <div>
         <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
-                  Sign in to your account
+            Sign in to your account
         </h1>
       </div>
       <div className="py-3">
