@@ -21,6 +21,10 @@ import {
   AlertDialogBody,
   AlertDialogFooter,
   AlertDialogCloseButton,
+  FormControl,
+  FormLabel,
+  Input,
+  Select,
 } from "@chakra-ui/react";
 import { AddIcon, DeleteIcon } from "@chakra-ui/icons";
 import Chakra from "@/app/components/Chakra";
@@ -100,6 +104,36 @@ export default function Contractors() {
     setDeleteContractor(null);
   };
 
+  const [showNewContractorForm, setShowNewContractorForm] = useState(false);
+  const [newContractor, setNewContractor] = useState({
+    name: "",
+    phone: "",
+    email: "",
+    discipline: "",
+    status: "",
+    date: "",
+    rate: 0,
+    estimate: 0,
+    coRate: 0,
+  });
+
+  const handleNewContractorSubmit = () => {
+    const updatedContractors = [...contractors, newContractor];
+    setContractors(updatedContractors);
+    setNewContractor({
+      name: "",
+      phone: "",
+      email: "",
+      discipline: "",
+      status: "",
+      date: "",
+      rate: 0,
+      estimate: 0,
+      coRate: 0,
+    });
+    setShowNewContractorForm(false);
+  };
+
   return (
     <Providers>
       <Chakra>
@@ -114,7 +148,11 @@ export default function Contractors() {
           <Flex direction="column" p={5} w="full">
             <Flex justify="space-between" align="center" mb={5}>
               <Heading size="lg">Contractors</Heading>
-              <Button leftIcon={<AddIcon />} colorScheme="blue">
+              <Button
+                leftIcon={<AddIcon />}
+                colorScheme="blue"
+                onClick={() => setShowNewContractorForm(true)}
+              >
                 New Contractor Request
               </Button>
             </Flex>
@@ -184,7 +222,10 @@ export default function Contractors() {
                 </AlertDialogBody>
 
                 <AlertDialogFooter>
-                  <Button ref={cancelRef} onClick={() => setDeleteContractor(null)}>
+                  <Button
+                    ref={cancelRef}
+                    onClick={() => setDeleteContractor(null)}
+                  >
                     No
                   </Button>
                   <Button colorScheme="red" onClick={handleDelete} ml={3}>
@@ -193,10 +234,168 @@ export default function Contractors() {
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
+            {showNewContractorForm && (
+              <AlertDialog
+                isOpen={showNewContractorForm}
+                leastDestructiveRef={cancelRef}
+                onClose={() => setShowNewContractorForm(false)}
+              >
+                <AlertDialogOverlay />
+                <AlertDialogContent>
+                  <AlertDialogHeader fontSize="lg" fontWeight="bold">
+                    New Contractor Request
+                  </AlertDialogHeader>
+                  <AlertDialogCloseButton />
+
+                  <form onSubmit={handleNewContractorSubmit}>
+                    <AlertDialogBody>
+                      <FormControl>
+                        <FormLabel>Name</FormLabel>
+                        <Input
+                          placeholder="Enter name"
+                          value={newContractor.name}
+                          onChange={(e) =>
+                            setNewContractor((prevContractor) => ({
+                              ...prevContractor,
+                              name: e.target.value,
+                            }))
+                          }
+                        />
+                      </FormControl>
+                      <FormControl mt={2}>
+                        <FormLabel>Phone</FormLabel>
+                        <Input
+                          placeholder="Enter phone"
+                          value={newContractor.phone}
+                          onChange={(e) =>
+                            setNewContractor((prevContractor) => ({
+                              ...prevContractor,
+                              phone: e.target.value,
+                            }))
+                          }
+                        />
+                      </FormControl>
+                      <FormControl mt={2}>
+                        <FormLabel>Email</FormLabel>
+                        <Input
+                          placeholder="Enter email"
+                          value={newContractor.email}
+                          onChange={(e) =>
+                            setNewContractor((prevContractor) => ({
+                              ...prevContractor,
+                              email: e.target.value,
+                            }))
+                          }
+                        />
+                      </FormControl>
+                      <FormControl mt={2}>
+                        <FormLabel>Discipline</FormLabel>
+                        <Select
+                          placeholder="Select discipline"
+                          value={newContractor.discipline}
+                          onChange={(e) =>
+                            setNewContractor((prevContractor) => ({
+                              ...prevContractor,
+                              discipline: e.target.value,
+                            }))
+                          }
+                        >
+                          <option value="Civil">Civil</option>
+                          <option value="Mechanical">Mechanical</option>
+                          <option value="Electrical">Electrical</option>
+                        </Select>
+                      </FormControl>
+                      <FormControl mt={2}>
+                        <FormLabel>Status</FormLabel>
+                        <Select
+                          placeholder="Select status"
+                          value={newContractor.status}
+                          onChange={(e) =>
+                            setNewContractor((prevContractor) => ({
+                              ...prevContractor,
+                              status: e.target.value,
+                            }))
+                          }
+                        >
+                          <option value="ACCEPTED">Accepted</option>
+                          <option value="PENDING">Pending</option>
+                          <option value="REJECTED">Rejected</option>
+                        </Select>
+                      </FormControl>
+                      <FormControl mt={2}>
+                        <FormLabel>Date</FormLabel>
+                        <Input
+                          placeholder="Enter date (YYYY-MM-DD)"
+                          value={newContractor.date}
+                          onChange={(e) =>
+                            setNewContractor((prevContractor) => ({
+                              ...prevContractor,
+                              date: e.target.value,
+                            }))
+                          }
+                        />
+                      </FormControl>
+                      <FormControl mt={2}>
+                        <FormLabel>Rate ($/hr)</FormLabel>
+                        <Input
+                          type="number"
+                          placeholder="Enter rate"
+                          value={newContractor.rate}
+                          onChange={(e) =>
+                            setNewContractor((prevContractor) => ({
+                              ...prevContractor,
+                              rate: parseFloat(e.target.value),
+                            }))
+                          }
+                        />
+                      </FormControl>
+                      <FormControl mt={2}>
+                        <FormLabel>Hours Estimate</FormLabel>
+                        <Input
+                          type="number"
+                          placeholder="Enter estimate"
+                          value={newContractor.estimate}
+                          onChange={(e) =>
+                            setNewContractor((prevContractor) => ({
+                              ...prevContractor,
+                              estimate: parseFloat(e.target.value),
+                            }))
+                          }
+                        />
+                      </FormControl>
+                      <FormControl mt={2}>
+                        <FormLabel>CO Rate ($/hr)</FormLabel>
+                        <Input
+                          type="number"
+                          placeholder="Enter CO rate"
+                          value={newContractor.coRate}
+                          onChange={(e) =>
+                            setNewContractor((prevContractor) => ({
+                              ...prevContractor,
+                              coRate: parseFloat(e.target.value),
+                            }))
+                          }
+                        />
+                      </FormControl>
+                    </AlertDialogBody>
+                    <AlertDialogFooter>
+                      <Button
+                        ref={cancelRef}
+                        onClick={() => setShowNewContractorForm(false)}
+                      >
+                        Cancel
+                      </Button>
+                      <Button type="submit" colorScheme="blue" ml={3}>
+                        Submit
+                      </Button>
+                    </AlertDialogFooter>
+                  </form>
+                </AlertDialogContent>
+              </AlertDialog>
+            )}
           </Flex>
         </Flex>
       </Chakra>
     </Providers>
   );
 }
-
