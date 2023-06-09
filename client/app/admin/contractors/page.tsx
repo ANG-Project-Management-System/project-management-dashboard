@@ -422,7 +422,6 @@ export default function Contractors() {
                   <Th>Request Date</Th>
                   <Th>Rate ($/hr)</Th>
                   <Th>Hours Estimate</Th>
-                  <Th>CO Rate ($/hr)</Th>
                   <Th>Edit</Th>
                   <Th>Actions</Th>
                 </Tr>
@@ -449,7 +448,7 @@ export default function Contractors() {
                     <Td>{contractor.date}</Td>
                     <Td>{contractor.rate}</Td>
                     <Td>{contractor.estimate}</Td>
-                    <Td>{contractor.coRate}</Td>
+                    {/* <Td>{contractor.coRate}</Td> */}
                     <Td>
                       <IconButton
                         icon={<EditIcon />}
@@ -504,116 +503,98 @@ export default function Contractors() {
               </AlertDialogOverlay>
             </AlertDialog>
             {showEditContractorForm && editingContractor && (
-  <AlertDialog
-    isOpen={showEditContractorForm}
-    onClose={() => setShowEditContractorForm(false)}
-    leastDestructiveRef={leastDestructiveRef}
-  >
-    <AlertDialogOverlay>
-      <AlertDialogContent>
-        <AlertDialogHeader>Edit Contractor</AlertDialogHeader>
-        <AlertDialogCloseButton />
-        <AlertDialogBody>
-          <FormControl>
-            <FormLabel>Status</FormLabel>
-            <Select
-              placeholder="Select status"
-              value={editingContractor.status}
-              onChange={(e) =>
-                setEditingContractor((prevContractor) => {
-                  if (prevContractor === null) {
-                    return null;
-                  } else {
-                    return {
-                      ...prevContractor,
-                      status: e.target.value,
-                    };
-                  }
-                })
-              }
-            >
-              <option value="ACCEPTED">Accepted</option>
-              <option value="REJECTED">Rejected</option>
-            </Select>
-          </FormControl>
-          {/* Add the additional fields here */}
-          <FormControl mt={2}>
-            <FormLabel>Rate ($/hr)</FormLabel>
-            <Input
-              type="number"
-              placeholder="Enter rate"
-              value={editingContractor.rate}
-              onChange={(e) =>
-                setEditingContractor((prevContractor) => {
-                  if (prevContractor === null) {
-                    return null;
-                  } else {
-                    return {
-                      ...prevContractor,
-                      rate: parseFloat(e.target.value),
-                    };
-                  }
-                })
-              }
-            />
-          </FormControl>
-          <FormControl mt={2}>
-            <FormLabel>Estimated Hours</FormLabel>
-            <Input
-              type="number"
-              placeholder="Enter estimated hours"
-              value={editingContractor.estimate}
-              onChange={(e) =>
-                setEditingContractor((prevContractor) => {
-                  if (prevContractor === null) {
-                    return null;
-                  } else {
-                    return {
-                      ...prevContractor,
-                      estimate: parseInt(e.target.value),
-                    };
-                  }
-                })
-              }
-            />
-          </FormControl>
-          <FormControl mt={2}>
-            <FormLabel>CO Rate ($/hr)</FormLabel>
-            <Input
-              type="number"
-              placeholder="Enter CO rate"
-              value={editingContractor.coRate}
-              onChange={(e) =>
-                setEditingContractor((prevContractor) => {
-                  if (prevContractor === null) {
-                    return null;
-                  } else {
-                    return {
-                      ...prevContractor,
-                      coRate: parseFloat(e.target.value),
-                    };
-                  }
-                })
-              }
-            />
-          </FormControl>
-        </AlertDialogBody>
-        <AlertDialogFooter>
-          <Button onClick={() => setShowEditContractorForm(false)}>
-            Cancel
-          </Button>
-          <Button
-            colorScheme="blue"
-            onClick={() => handleEditContractorSubmit(editingContractor)}
-            ml={3}
-          >
-            Submit
-          </Button>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialogOverlay>
-  </AlertDialog>
-)}
+              <AlertDialog
+                isOpen={showEditContractorForm}
+                onClose={() => setShowEditContractorForm(false)}
+                leastDestructiveRef={leastDestructiveRef}
+              >
+                <AlertDialogOverlay>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>Edit Contractor</AlertDialogHeader>
+                    <AlertDialogCloseButton />
+                    <AlertDialogBody>
+                      <FormControl>
+                        <FormLabel>Status</FormLabel>
+                        <Select
+                          placeholder="Select status"
+                          value={editingContractor.status}
+                          onChange={(e) =>
+                            setEditingContractor((prevContractor) => {
+                              if (prevContractor === null) {
+                                return null;
+                              } else {
+                                return {
+                                  ...prevContractor,
+                                  status: e.target.value,
+                                };
+                              }
+                            })
+                          }
+                        >
+                          <option value="ACCEPTED">Accepted</option>
+                          <option value="REJECTED">Rejected</option>
+                        </Select>
+                      </FormControl>
+                      {/* Add the additional fields here */}
+                      <FormControl mt={2}>
+                        <FormLabel>Rate ($/hr)</FormLabel>
+                        <Input
+                          type="number"
+                          placeholder="Enter rate"
+                          value={editingContractor.rate}
+                          onChange={(e) =>
+                            setEditingContractor((prevContractor) => {
+                              if (prevContractor === null) {
+                                return null;
+                              } else {
+                                return {
+                                  ...prevContractor,
+                                  rate: parseFloat(e.target.value),
+                                };
+                              }
+                            })
+                          }
+                        />
+                      </FormControl>
+                      <FormControl mt={2}>
+                        <FormLabel>Estimated Hours</FormLabel>
+                        <Input
+                          type="number"
+                          placeholder="Enter estimated hours"
+                          value={editingContractor.estimate}
+                          onChange={(e) =>
+                            setEditingContractor((prevContractor) => {
+                              if (prevContractor === null) {
+                                return null;
+                              } else {
+                                return {
+                                  ...prevContractor,
+                                  estimate: parseInt(e.target.value),
+                                };
+                              }
+                            })
+                          }
+                        />
+                      </FormControl>
+                    </AlertDialogBody>
+                    <AlertDialogFooter>
+                      <Button onClick={() => setShowEditContractorForm(false)}>
+                        Cancel
+                      </Button>
+                      <Button
+                        colorScheme="blue"
+                        onClick={() =>
+                          handleEditContractorSubmit(editingContractor)
+                        }
+                        ml={3}
+                      >
+                        Submit
+                      </Button>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialogOverlay>
+              </AlertDialog>
+            )}
             {showNewContractorForm && (
               <AlertDialog
                 isOpen={showNewContractorForm}
@@ -722,20 +703,6 @@ export default function Contractors() {
                             setNewContractor((prevContractor) => ({
                               ...prevContractor,
                               estimate: parseFloat(e.target.value),
-                            }))
-                          }
-                        />
-                      </FormControl>
-                      <FormControl mt={2}>
-                        <FormLabel>CO Rate ($/hr)</FormLabel>
-                        <Input
-                          type="number"
-                          placeholder="Enter CO rate"
-                          value={newContractor.coRate}
-                          onChange={(e) =>
-                            setNewContractor((prevContractor) => ({
-                              ...prevContractor,
-                              coRate: parseFloat(e.target.value),
                             }))
                           }
                         />
