@@ -79,8 +79,7 @@ const RequestForQuotation = () => {
           direction="column"
           align="center"
           justify="center"
-          minH="100vh"
-          p={5}
+          minH="80vh"
         >
           <Heading 
             mt={40}

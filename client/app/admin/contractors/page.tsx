@@ -32,6 +32,7 @@ import Navbar from "@/app/components/Navbar";
 import Providers from "@/app/components/Providers";
 import Sidebar from "@/app/components/Sidebar";
 import Head from "next/head";
+import Pagination from "@/app/components/Pagination";
 
 export default function Contractors() {
   const [contractors, setContractors] = useState([
@@ -68,7 +69,198 @@ export default function Contractors() {
       estimate: 30,
       coRate: 20,
     },
+    {
+      name: "Contractor 4",
+      phone: "123-234-4567",
+      email: "contractor4@example.com",
+      discipline: "Mechanical",
+      status: "PENDING",
+      date: "2023-06-03",
+      rate: 35,
+      estimate: 50,
+      coRate: 40,
+    },
+    {
+      name: "Contractor 5",
+      phone: "543-654-1234",
+      email: "contractor5@example.com",
+      discipline: "Civil",
+      status: "ACCEPTED",
+      date: "2023-06-07",
+      rate: 45,
+      estimate: 60,
+      coRate: 50,
+    },
+    {
+      name: "Contractor 6",
+      phone: "654-321-0987",
+      email: "contractor6@example.com",
+      discipline: "Structural",
+      status: "REJECTED",
+      date: "2023-06-02",
+      rate: 55,
+      estimate: 70,
+      coRate: 60,
+    },
+    {
+      name: "Contractor 7",
+      phone: "321-098-7654",
+      email: "contractor7@example.com",
+      discipline: "Instrumentation",
+      status: "ACCEPTED",
+      date: "2023-06-09",
+      rate: 65,
+      estimate: 80,
+      coRate: 70,
+    },
+    {
+      name: "Contractor 8",
+      phone: "876-543-2109",
+      email: "contractor8@example.com",
+      discipline: "Electrical",
+      status: "PENDING",
+      date: "2023-06-10",
+      rate: 75,
+      estimate: 90,
+      coRate: 80,
+    },
+    {
+      name: "Contractor 9",
+      phone: "098-765-4321",
+      email: "contractor9@example.com",
+      discipline: "Pipeline",
+      status: "REJECTED",
+      date: "2023-06-11",
+      rate: 85,
+      estimate: 100,
+      coRate: 90,
+    },
+    {
+      name: "Contractor 10",
+      phone: "765-432-1098",
+      email: "contractor10@example.com",
+      discipline: "Process",
+      status: "ACCEPTED",
+      date: "2023-06-12",
+      rate: 95,
+      estimate: 110,
+      coRate: 100,
+    },
+    {
+      name: "Contractor 11",
+      phone: "098-111-2222",
+      email: "contractor11@example.com",
+      discipline: "Facilities",
+      status: "ACCEPTED",
+      date: "2023-06-13",
+      rate: 105,
+      estimate: 120,
+      coRate: 110,
+    },
+    {
+      name: "Contractor 12",
+      phone: "098-222-3333",
+      email: "contractor12@example.com",
+      discipline: "Mechanical",
+      status: "PENDING",
+      date: "2023-06-14",
+      rate: 115,
+      estimate: 130,
+      coRate: 120,
+    },
+    {
+      name: "Contractor 13",
+      phone: "098-333-4444",
+      email: "contractor13@example.com",
+      discipline: "Civil",
+      status: "REJECTED",
+      date: "2023-06-15",
+      rate: 125,
+      estimate: 140,
+      coRate: 130,
+    },
+    {
+      name: "Contractor 14",
+      phone: "098-444-5555",
+      email: "contractor14@example.com",
+      discipline: "Structural",
+      status: "ACCEPTED",
+      date: "2023-06-16",
+      rate: 135,
+      estimate: 150,
+      coRate: 140,
+    },
+    {
+      name: "Contractor 15",
+      phone: "098-555-6666",
+      email: "contractor15@example.com",
+      discipline: "Instrumentation",
+      status: "PENDING",
+      date: "2023-06-17",
+      rate: 145,
+      estimate: 160,
+      coRate: 150,
+    },
+    {
+      name: "Contractor 16",
+      phone: "098-666-7777",
+      email: "contractor16@example.com",
+      discipline: "Electrical",
+      status: "REJECTED",
+      date: "2023-06-18",
+      rate: 155,
+      estimate: 170,
+      coRate: 160,
+    },
+    {
+      name: "Contractor 17",
+      phone: "098-777-8888",
+      email: "contractor17@example.com",
+      discipline: "Pipeline",
+      status: "ACCEPTED",
+      date: "2023-06-19",
+      rate: 165,
+      estimate: 180,
+      coRate: 170,
+    },
+    {
+      name: "Contractor 18",
+      phone: "098-888-9999",
+      email: "contractor18@example.com",
+      discipline: "Process",
+      status: "PENDING",
+      date: "2023-06-20",
+      rate: 175,
+      estimate: 190,
+      coRate: 180,
+    },
+    {
+      name: "Contractor 19",
+      phone: "111-999-0000",
+      email: "contractor19@example.com",
+      discipline: "Facilities",
+      status: "REJECTED",
+      date: "2023-06-21",
+      rate: 185,
+      estimate: 200,
+      coRate: 190,
+    },
+    {
+      name: "Contractor 20",
+      phone: "222-000-1111",
+      email: "contractor20@example.com",
+      discipline: "Mechanical",
+      status: "ACCEPTED",
+      date: "2023-06-22",
+      rate: 195,
+      estimate: 210,
+      coRate: 200,
+    },
   ]);
+
+  const [page, setPage] = useState(1);
+  const itemsPerPage = 10;
+  const totalPages = Math.ceil(contractors.length / itemsPerPage);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -143,10 +335,10 @@ export default function Contractors() {
           {/* Add more metadata as needed */}
         </Head>
         <Navbar />
-        <Flex style={{ display: "flex" }}>
+        <Flex>
           <Sidebar children={undefined} />
-          <Flex direction="column" p={5} w="full">
-            <Flex justify="space-between" align="center" mb={8}>
+          <Flex mt={2} direction="column" p={5} w="full">
+            <Flex justify="space-between" align="center" mb={10}>
               <Heading mt={20} size="lg">Contractors</Heading>
               <Button
                 mt={20}
@@ -157,30 +349,30 @@ export default function Contractors() {
                 New Contractor Request
               </Button>
             </Flex>
-            <Table variant="simple" colorScheme="gray">
+            <Table>
               <Thead>
                 <Tr>
-                  <Th>Contractor Name</Th>
-                  <Th>Contractor Phone</Th>
-                  <Th>Contractor Email</Th>
+                  <Th>Name</Th>
+                  <Th>Phone</Th>
+                  <Th>Email</Th>
                   <Th>Discipline</Th>
-                  <Th>Request Status</Th>
-                  <Th>Request Date</Th>
-                  <Th>Rate ($/hr)</Th>
-                  <Th>Hours Estimate</Th>
-                  <Th>CO Rate ($/hr)</Th>
+                  <Th>Status</Th>
+                  <Th>Date</Th>
+                  <Th>Rate</Th>
+                  <Th>Estimate</Th>
+                  <Th>CO Rate</Th>
                   <Th>Actions</Th>
                 </Tr>
               </Thead>
               <Tbody>
-                {contractors.map((contractor, index) => (
+                {contractors.slice((page - 1) * itemsPerPage, page * itemsPerPage).map((contractor, index) => (
                   <Tr key={index}>
                     <Td>{contractor.name}</Td>
                     <Td>{contractor.phone}</Td>
                     <Td>{contractor.email}</Td>
                     <Td>{contractor.discipline}</Td>
                     <Td>
-                      <Badge
+                    <Badge
                         colorScheme="white"
                         borderRadius="lg"
                         px={2}
@@ -197,8 +389,9 @@ export default function Contractors() {
                     <Td>{contractor.coRate}</Td>
                     <Td>
                       <IconButton
-                        aria-label="Delete"
                         icon={<DeleteIcon />}
+                        aria-label="Delete contractor"
+                        colorScheme="red"
                         onClick={() => setDeleteContractor(contractor)}
                       />
                     </Td>
@@ -206,34 +399,35 @@ export default function Contractors() {
                 ))}
               </Tbody>
             </Table>
+            <Pagination
+              currentPage={page}
+              totalPages={totalPages}
+              onPageChange={setPage}
+            />
             <AlertDialog
-              isOpen={!!deleteContractor}
+              isOpen={Boolean(deleteContractor)}
               leastDestructiveRef={cancelRef}
               onClose={() => setDeleteContractor(null)}
             >
-              <AlertDialogOverlay />
-              <AlertDialogContent>
-                <AlertDialogHeader fontSize="lg" fontWeight="bold">
-                  Delete Contractor
-                </AlertDialogHeader>
-
-                <AlertDialogCloseButton />
-                <AlertDialogBody>
-                  Are you sure you want to delete the contractor?
-                </AlertDialogBody>
-
-                <AlertDialogFooter>
-                  <Button
-                    ref={cancelRef}
-                    onClick={() => setDeleteContractor(null)}
-                  >
-                    No
-                  </Button>
-                  <Button colorScheme="red" onClick={handleDelete} ml={3}>
-                    Yes
-                  </Button>
-                </AlertDialogFooter>
-              </AlertDialogContent>
+              <AlertDialogOverlay>
+                <AlertDialogContent>
+                  <AlertDialogHeader fontSize="lg" fontWeight="bold">
+                    Delete Contractor
+                  </AlertDialogHeader>
+                  <AlertDialogCloseButton />
+                  <AlertDialogBody>
+                    Are you sure? This action cannot be undone.
+                  </AlertDialogBody>
+                  <AlertDialogFooter>
+                    <Button ref={cancelRef} onClick={() => setDeleteContractor(null)}>
+                      Cancel
+                    </Button>
+                    <Button colorScheme="red" onClick={handleDelete} ml={3}>
+                      Delete
+                    </Button>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialogOverlay>
             </AlertDialog>
             {showNewContractorForm && (
               <AlertDialog
