@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useColorMode, IconButton, Tooltip } from "@chakra-ui/react";
 import { FaSun, FaMoon } from "react-icons/fa";
 import { useSession } from "next-auth/react";
@@ -10,7 +11,6 @@ import {
   Flex,
   Avatar,
   HStack,
-  Link,
   Button,
   Menu,
   MenuButton,
@@ -30,28 +30,39 @@ import Chakra from "./Chakra";
 
 const Links = ["Home", "Projects", "RFQ Form"];
 
-const NavLink = ({ children }: { children: ReactNode }) => (
-  <Link
-    px={2}
-    py={1}
-    rounded={"md"}
-    _hover={{
-      textDecoration: "none",
-      bg: useColorModeValue("gray.200", "gray.700"),
-    }}
-    href={
-      children === "Home"
-        ? "/admin"
-        : children === "Projects"
-        ? "/admin/all-projects"
-        : children === "RFQ Form"
-        ? "/admin/request-for-quotation"
-        : "/admin"
-    }
-  >
-    {children}
-  </Link>
-);
+interface NavLinkProps {
+  children: ReactNode;
+}
+
+const NavLink = ({ children }: NavLinkProps) => {
+  const linkColor = useColorModeValue("gray.200", "gray.700");
+  return (
+    <Link
+      href={
+        children === "Home"
+          ? "/admin"
+          : children === "Projects"
+          ? "/admin/all-projects"
+          : children === "RFQ Form"
+          ? "/admin/request-for-quotation"
+          : "/admin"
+      }
+      passHref
+    >
+      <Box
+        px={2}
+        py={1}
+        rounded={"md"}
+        _hover={{
+          textDecoration: "none",
+          bg: linkColor,
+        }}
+      >
+        {children}
+      </Box>
+    </Link>
+  );
+};
 
 export default function Navbar() {
   const { isOpen, onOpen, onClose } = useDisclosure();
