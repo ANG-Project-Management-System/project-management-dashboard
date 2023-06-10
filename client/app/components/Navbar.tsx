@@ -1,10 +1,9 @@
 "use client";
 
-// Google OAuth imports
+import { useColorMode, IconButton, Tooltip } from "@chakra-ui/react";
+import { FaSun, FaMoon } from "react-icons/fa";
 import { useSession } from "next-auth/react";
 import { signOut } from "next-auth/react";
-
-// React imports
 import { ReactNode, useState } from "react";
 import {
   Box,
@@ -12,7 +11,6 @@ import {
   Avatar,
   HStack,
   Link,
-  IconButton,
   Button,
   Menu,
   MenuButton,
@@ -28,6 +26,7 @@ import {
 import { HamburgerIcon, CloseIcon } from "@chakra-ui/icons";
 import { FiChevronDown, FiMenu } from "react-icons/fi";
 import Image from "next/image";
+import Chakra from "./Chakra";
 
 const Links = ["Home", "Projects", "RFQ Form"];
 
@@ -41,12 +40,10 @@ const NavLink = ({ children }: { children: ReactNode }) => (
       bg: useColorModeValue("gray.200", "gray.700"),
     }}
     href={
-          children === "Home"
+      children === "Home"
         ? "/admin"
         : children === "Projects"
         ? "/admin/all-projects"
-        // : children === "Team"
-        // ? "/team"
         : children === "RFQ Form"
         ? "/admin/request-for-quotation"
         : "/admin"
@@ -62,15 +59,24 @@ export default function Navbar() {
   const { data: session } = useSession();
   const defaultName = "User";
   const defaultImageURL = "";
+  const { colorMode, toggleColorMode } = useColorMode();
 
   const toggleSidebar = () => {
     setIsExpanded(!isExpanded);
   };
 
   return (
-    <>
-      <Box bg={"white"} px={4} border="1px" borderColor="gray.200"
-        position="fixed" w="100%" zIndex={1000}
+      <Box
+        bg={useColorModeValue(colorMode, "gray.800")}
+        px={4}
+        border="1px"
+        borderColor={useColorModeValue("gray.200", "gray.900")}
+        borderRightColor={useColorModeValue("gray.200", "gray.900")}
+        borderBottomColor={useColorModeValue("gray.200", "gray.600")}
+        borderLeftColor={useColorModeValue("gray.200", "gray.900")}
+        position="fixed"
+        w="100%"
+        zIndex={1000}
       >
         <Flex h={20} alignItems={"center"} justifyContent={"space-between"}>
           <IconButton
@@ -84,14 +90,25 @@ export default function Navbar() {
             <Box>
               <div>
                 <Link href="/admin">
+                  {colorMode === "dark" ? (
                     <Image
                       alt="ANG Consultants"
-                      width={110}
-                      height={80}
+                      width={90} // Set width for dark mode logo
+                      height={70} // Set height for dark mode logo
+                      className="flex ml-4"
+                      src="/ANG_logo_white.png"
+                      priority={true}
+                    />
+                  ) : (
+                    <Image
+                      alt="ANG Consultants"
+                      width={110} // Set width for light mode logo
+                      height={80} // Set height for light mode logo
                       className="flex ml-4"
                       src="/ANG_logo.png"
                       priority={true}
                     />
+                  )}
                 </Link>
               </div>
             </Box>
@@ -110,6 +127,16 @@ export default function Navbar() {
           </HStack>
 
           <Flex alignItems={"center"}>
+            <Tooltip label="Toggle Dark Mode" aria-label="A tooltip">
+              <IconButton
+                mt={1}
+                mr={6}
+                icon={colorMode === "light" ? <FaMoon /> : <FaSun />}
+                onClick={toggleColorMode}
+                aria-label="Toggle dark mode"
+                variant="outline"
+              />
+            </Tooltip>
             <Menu>
               <MenuButton
                 as={Button}
@@ -165,7 +192,11 @@ export default function Navbar() {
         </Flex>
 
         {isOpen ? (
-          <Box pb={4} display={{ md: "none" }}>
+          <Box
+            pb={4}
+            bg={useColorModeValue("white", "gray.800")}
+            display={{ md: "none" }}
+          >
             <Stack as={"nav"} spacing={4}>
               {Links.map((link) => (
                 <NavLink key={link}>{link}</NavLink>
@@ -174,6 +205,5 @@ export default function Navbar() {
           </Box>
         ) : null}
       </Box>
-    </>
   );
 }

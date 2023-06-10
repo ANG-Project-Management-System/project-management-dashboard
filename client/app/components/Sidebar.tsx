@@ -1,6 +1,6 @@
 "use client";
 import NextLink from "next/link";
-import { Button } from "@chakra-ui/react";
+import { Button, useColorMode } from "@chakra-ui/react";
 import React, { ReactNode, useState } from "react";
 
 import {
@@ -72,13 +72,15 @@ interface SidebarProps extends BoxProps {
 }
 
 const SidebarContent = ({ onClose, isExpanded, setIsExpanded, ...rest }: SidebarProps) => {
+  const { colorMode } = useColorMode();
+
   return (
     <Box
-      bg={useColorModeValue("white", "gray.900")}
+      bg={useColorModeValue(colorMode, "gray.900")}
       borderTop="1px"
-      borderTopColor={useColorModeValue("gray.200", "gray.700")}
+      borderTopColor={useColorModeValue("gray.200", "gray.600")}
       borderRight="1px"
-      borderRightColor={useColorModeValue("gray.200", "gray.700")}
+      borderRightColor={useColorModeValue("gray.200", "gray.600")}
       w={isExpanded ? { base: "full", md: 60 } : { base: "full", md: 20 }}
       pos="fixed"
       h="full"
@@ -161,9 +163,10 @@ const SidebarContent = ({ onClose, isExpanded, setIsExpanded, ...rest }: Sidebar
 const Sidebar = ({ children }: { children: React.ReactNode }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [isExpanded, setIsExpanded] = useState(true);
+  const { colorMode } = useColorMode();
 
   return (
-    <Box minH="0px" bg={useColorModeValue("gray.100", "gray.900")}>
+    <Box minH="0px" bg={useColorModeValue(colorMode, "gray.900")}>
       <SidebarContent
         onClose={onClose}
         display={{ base: "none", md: "block" }}
