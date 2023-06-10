@@ -51,9 +51,9 @@ const Sidebar = ({ children }: SidebarProps) => {
   };
 
   return (
-    <Box minH="0px" bg={useColorModeValue(colorMode, "gray.900")}>
+    <Box minH="0px" bg={useColorModeValue("white", "gray.900")}>
       <Box
-        bg={useColorModeValue(colorMode, "gray.900")}
+        bg={useColorModeValue("white", "gray.900")}
         borderTop="1px"
         borderTopColor={useColorModeValue("gray.200", "gray.600")}
         borderRight="1px"
