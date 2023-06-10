@@ -180,9 +180,15 @@ export default function Navbar() {
                   <Text fontSize="sm">
                     {session?.user?.name ? session.user.name : defaultName}
                   </Text>
-                  <Text fontSize="xs" color="gray.600">
-                    Contractor
-                  </Text>
+                  {colorMode === "dark" ? (
+                    <Text fontSize="xs" color="gray.200">
+                      Contractor
+                    </Text>
+                  ) : (
+                    <Text fontSize="xs" color="gray.600">
+                      Contractor
+                    </Text>
+                  )}
                 </VStack>
 
                 <Box display={{ base: "none", md: "flex" }}>
