@@ -382,7 +382,26 @@ export default function Contractors() {
 
   const startIndex = (page - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const visibleContractors = contractors.slice(startIndex, endIndex);
+
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [filteredContractors, setFilteredContractors] = useState<Contractor[]>([]);
+
+  const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const query = event.target.value;
+    setSearchQuery(query);
+
+    const filtered = contractors.filter((contractor) => {
+      const isNameMatch = contractor.name.toLowerCase().includes(query.toLowerCase());
+      const isDisciplineMatch = contractor.discipline.toLowerCase() === query.toLowerCase();
+      const isStatusMatch = contractor.status.toLowerCase() === query.toLowerCase();
+
+      return isNameMatch || isDisciplineMatch || isStatusMatch;
+    });
+
+    setFilteredContractors(filtered);
+  };
+
+  const visibleContractors = searchQuery !== "" ? filteredContractors : contractors.slice(startIndex, endIndex);
 
   const leastDestructiveRef = useRef<HTMLButtonElement | null>(null);
 
@@ -402,6 +421,16 @@ export default function Contractors() {
               <Heading mt={20} size="lg">
                 Contractors
               </Heading>
+              <Flex>
+                <Input
+                  mt={20}
+                  mr={2}
+                  w="320px"
+                  placeholder="Search by name, discipline, or status"
+                  value={searchQuery}
+                  onChange={handleSearch}
+                />
+              </Flex>
               <Button
                 mt={20}
                 leftIcon={<AddIcon />}
@@ -568,7 +597,7 @@ export default function Contractors() {
                               } else {
                                 return {
                                   ...prevContractor,
-                                  estimate: parseInt(e.target.value),
+                                  estimate: parseFloat(e.target.value),
                                 };
                               }
                             })

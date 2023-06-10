@@ -21,7 +21,7 @@ const Projects = () => {
             <Flex style={{ display: "flex" }}>
               <Sidebar children={undefined} />
               <Flex mt={20}>
-                Projects Page
+                Project Selection Page
               </Flex>
             </Flex>
           </Chakra>

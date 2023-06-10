@@ -33,7 +33,7 @@ import { HamburgerIcon, CloseIcon } from "@chakra-ui/icons";
 import { FiChevronDown, FiMenu } from "react-icons/fi";
 import Image from "next/image";
 
-const Links = ["Home", "Projects", "RFQ Form"];
+const Links = ["Home", "Project Select", "RFQ Form"];
 
 interface NavLinkProps {
   children: ReactNode;
@@ -46,7 +46,7 @@ const NavLink = ({ children }: NavLinkProps) => {
       href={
         children === "Home"
           ? "/admin"
-          : children === "Projects"
+          : children === "Project Select"
           ? "/admin/all-projects"
           : children === "RFQ Form"
           ? "/admin/request-for-quotation"
