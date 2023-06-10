@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useColorMode, IconButton, Tooltip } from "@chakra-ui/react";
+import { useColorMode, IconButton, Tooltip, ColorModeScript, theme } from "@chakra-ui/react";
 import { FaSun, FaMoon } from "react-icons/fa";
 import { useSession } from "next-auth/react";
 import { signOut } from "next-auth/react";
@@ -26,7 +26,6 @@ import {
 import { HamburgerIcon, CloseIcon } from "@chakra-ui/icons";
 import { FiChevronDown, FiMenu } from "react-icons/fi";
 import Image from "next/image";
-import Chakra from "./Chakra";
 
 const Links = ["Home", "Projects", "RFQ Form"];
 
@@ -78,7 +77,7 @@ export default function Navbar() {
 
   return (
       <Box
-        bg={useColorModeValue(colorMode, "gray.800")}
+        bg={useColorModeValue("white", "gray.800")}
         px={4}
         border="1px"
         borderColor={useColorModeValue("gray.200", "gray.900")}
