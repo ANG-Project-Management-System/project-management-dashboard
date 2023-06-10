@@ -182,9 +182,15 @@ export default function Navbar() {
                   <Text fontSize="sm">
                     {session?.user?.name ? session.user.name : defaultName}
                   </Text>
-                  <Text fontSize="xs" color="gray.600">
-                    Admin
-                  </Text>
+                  {colorMode === "dark" ? (
+                    <Text fontSize="xs" color="gray.200">
+                      Admin
+                    </Text>
+                  ) : (
+                    <Text fontSize="xs" color="gray.600">
+                      Admin
+                    </Text>
+                  )}
                 </VStack>
 
                 <Box display={{ base: "none", md: "flex" }}>
