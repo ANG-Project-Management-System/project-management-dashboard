@@ -28,9 +28,7 @@ import {
 } from "@chakra-ui/react";
 import { AddIcon, DeleteIcon, EditIcon } from "@chakra-ui/icons";
 import Chakra from "@/app/components/Chakra";
-import Navbar from "@/app/components/Navbar";
 import Providers from "@/app/components/Providers";
-import Sidebar from "@/app/components/Sidebar";
 import Head from "next/head";
 import Pagination from "@/app/components/Pagination";
 
@@ -413,9 +411,7 @@ export default function Contractors() {
           <meta name="description" content="Contractors page" />
           {/* Add more metadata as needed */}
         </Head>
-        <Navbar />
         <Flex>
-          <Sidebar children={undefined} />
           <Flex mt={2} direction="column" p={5} w="full">
             <Flex justify="space-between" align="center" mb={10}>
               <Heading mt={20} size="lg">
