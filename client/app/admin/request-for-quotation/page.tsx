@@ -74,12 +74,12 @@ const RequestForQuotation = () => {
   return (
     <Chakra>
       <Providers>
-        <Navbar />
         <Flex
           direction="column"
           align="center"
           justify="center"
           minH="80vh"
+          ml={60}
         >
           <Heading 
             mt={40}
