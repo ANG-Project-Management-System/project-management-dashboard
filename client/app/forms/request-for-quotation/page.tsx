@@ -40,6 +40,11 @@ const RequestForQuotation = () => {
     }
   };
 
+  const handleRemoveFile = (index: any) => {
+    const updatedFiles = files.filter((_, i) => i !== index);
+    setFiles(updatedFiles);
+  };
+
   const renderUploadedFiles = () => {
     if (files.length === 0) {
       return null;
@@ -49,7 +54,18 @@ const RequestForQuotation = () => {
       <VStack align="start" mt={2}>
         <Text>Uploaded Files:</Text>
         {files.map((file, index) => (
-          <Text key={index}>{file.name}</Text>
+          <Flex key={index} align="flex">
+            <Text>{file.name}</Text>
+            <Button
+              size="sm"
+              colorScheme="white"
+              onClick={() => handleRemoveFile(index)}
+              textColor="black"
+              _hover={{ backgroundColor: "gray.200" }}
+            >
+              X
+            </Button>
+          </Flex>
         ))}
       </VStack>
     );
@@ -74,17 +90,9 @@ const RequestForQuotation = () => {
   return (
     <Chakra>
       <Providers>
-        <Flex
-          direction="column"
-          align="center"
-          justify="center"
-          minH="80vh"
-          ml={60}
-        >
-          <Heading 
-            mt={40}
-            mb={8}
-          >
+        <Navbar />
+        <Flex direction="column" align="center" justify="center" minH="80vh">
+          <Heading mt={40} mb={8}>
             Engineering Project RFQ
           </Heading>
 
@@ -176,7 +184,7 @@ const RequestForQuotation = () => {
                   <Input
                     id="fileUpload"
                     type="file"
-                    accept=".pdf,.jpg,.jpeg,.png"
+                    accept="*"
                     multiple
                     onChange={handleFileChange}
                     opacity={0}
