@@ -49,7 +49,7 @@ const NavLink = ({ children }: NavLinkProps) => {
           : children === "Project Select"
           ? "/admin/all-projects"
           : children === "RFQ Form"
-          ? "/admin/request-for-quotation"
+          ? "/forms/request-for-quotation"
           : "/admin"
       }
       passHref
