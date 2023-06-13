@@ -2,7 +2,7 @@
 export const metadata = {
     title: "Expenses",
     description:
-      "Project Management App created using Chakra UI, Typescript and NextJS for ANG consultants.",
+      "Expenses page for the Admin/PM.",
   };
   
   export default function AdminLayout({

@@ -2,7 +2,7 @@
 export const metadata = {
     title: "Forms | RFQ",
     description:
-      "Project Management App created using Chakra UI, Typescript and NextJS for ANG consultants.",
+      "Request for Quotation form for the Admin/PM",
   };
   
   export default function AdminLayout({

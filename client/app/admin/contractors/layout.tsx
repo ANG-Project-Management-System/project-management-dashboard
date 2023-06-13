@@ -2,7 +2,7 @@
 export const metadata = {
   title: "Contractors",
   description:
-    "Project Management App created using Chakra UI, Typescript and NextJS for ANG consultants.",
+    "Contractors page for the Admin/PM.",
 };
 
 export default function AdminLayout({
