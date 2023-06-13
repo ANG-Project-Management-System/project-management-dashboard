@@ -7,7 +7,7 @@ import Chakra from "../components/Chakra";
 import Head from "next/head"
 
 export const metadata = {
-  title: "ANG PM App",
+  title: "ANG | Home",
   description:
     "Project Management App created using Chakra UI, Typescript and NextJS for ANG consultants.",
 };
