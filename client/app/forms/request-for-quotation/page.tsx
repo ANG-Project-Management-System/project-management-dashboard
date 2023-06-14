@@ -18,6 +18,7 @@ import {
   VStack,
   HStack,
   Text,
+  Grid,
 } from "@chakra-ui/react";
 import { SettingsIcon } from "@chakra-ui/icons";
 import DatePicker from "react-datepicker";
@@ -31,6 +32,7 @@ const RequestForQuotation = () => {
   const [endDate, setEndDate] = useState<Date | null>(null);
   const [files, setFiles] = useState<File[]>([]);
   const formRef = useRef<HTMLFormElement>(null);
+  const [selectedDisciplines, setSelectedDisciplines] = useState<string[]>([]);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const fileList = event.target.files;
@@ -75,13 +77,49 @@ const RequestForQuotation = () => {
     event.preventDefault();
 
     const formData = new FormData(formRef.current!);
+
+    // Log input field values
     const clientName = formData.get("clientName");
+    console.log("Client Name:", clientName);
+
+    const clientEmail = formData.get("clientEmail");
+    console.log("Client Email:", clientEmail);
+
+    const clientPhone = formData.get("clientPhone");
+    console.log("Client Phone Number:", clientPhone);
+
+    const clientCompany = formData.get("clientCompany");
+    console.log("Client Company:", clientCompany);
+
+    const clientAddress = formData.get("clientAddress");
+    console.log("Client Address:", clientAddress);
+
+    const projectName = formData.get("projectName");
+    console.log("Project Name:", projectName);
+
+    const projectDescription = formData.get("projectDescription");
+    console.log("Project Description:", projectDescription);
+
+    const startDate = formData.get("startDate");
+    console.log("Start Date:", startDate);
+
+    const endDate = formData.get("endDate");
+    console.log("End Date:", endDate);
+
+    const projectType = formData.get("projectType");
+    console.log("Project Type:", projectType);
+
+    // Rest of the form fields
 
     if (files.length > 0) {
       files.forEach((file) => {
         formData.append("files", file);
       });
     }
+
+    console.log("Project Disciplines: ", selectedDisciplines);
+
+    console.log("Project Files:", files);
 
     // Perform form submission or other actions
     // ...
@@ -96,149 +134,165 @@ const RequestForQuotation = () => {
             Engineering Project RFQ
           </Heading>
 
-          <Flex
-            direction={{ base: "column", md: "row" }}
+          <Box
             shadow="md"
             borderWidth="1px"
             p={8}
             w="full"
             maxW="1000px"
-            align="stretch"
+            mb={10}
           >
-            <Box flex="1" mr={{ md: 8 }}>
-              <form ref={formRef} onSubmit={handleSubmit}>
-                <FormControl id="clientName" isRequired>
-                  <FormLabel>Client Name</FormLabel>
-                  <Input placeholder="Client Name" />
-                </FormControl>
+            <form ref={formRef} onSubmit={handleSubmit}>
+              <Grid
+                templateColumns={{ base: "1fr", md: "repeat(2, 1fr)" }}
+                gap={8}
+              >
+                <Box>
+                  <FormControl id="clientName" isRequired>
+                    <FormLabel>Client Name</FormLabel>
+                    <Input name="clientName" placeholder="Client Name" />
+                  </FormControl>
 
-                <FormControl id="clientEmail" mt={4} isRequired>
-                  <FormLabel>Client Email</FormLabel>
-                  <Input placeholder="example@gmail.com" type="email" />
-                </FormControl>
+                  <FormControl id="clientEmail" mt={4} isRequired>
+                    <FormLabel>Client Email</FormLabel>
+                    <Input
+                      name="clientEmail"
+                      placeholder="example@gmail.com"
+                      type="email"
+                    />
+                  </FormControl>
 
-                <FormControl id="clientPhone" mt={4} isRequired>
-                  <FormLabel>Client Phone Number</FormLabel>
-                  <NumberInput>
-                    <NumberInputField placeholder="+1 403 999 9999" />
-                  </NumberInput>
-                </FormControl>
+                  <FormControl id="clientPhone" mt={4} isRequired>
+                    <FormLabel>Client Phone Number</FormLabel>
+                    <NumberInput>
+                      <NumberInputField
+                        name="clientPhone"
+                        placeholder="+1 403 999 9999"
+                      />
+                    </NumberInput>
+                  </FormControl>
 
-                <FormControl id="clientCompany" mt={4} isRequired>
-                  <FormLabel>Client Company</FormLabel>
-                  <Input placeholder="Example Inc." />
-                </FormControl>
+                  <FormControl id="clientCompany" mt={4} isRequired>
+                    <FormLabel>Client Company</FormLabel>
+                    <Input name="clientCompany" placeholder="Example Inc." />
+                  </FormControl>
 
-                <FormControl id="clientAddress" mt={4} isRequired>
-                  <FormLabel>Client Address</FormLabel>
-                  <Input placeholder="20 Example Way NW, Calgary, AB, Canada" />
-                </FormControl>
-              </form>
-            </Box>
+                  <FormControl id="clientAddress" mt={4} isRequired>
+                    <FormLabel>Client Address</FormLabel>
+                    <Input
+                      name="clientAddress"
+                      placeholder="20 Example Way NW, Calgary, AB, Canada"
+                    />
+                  </FormControl>
+                </Box>
 
-            <Box flex="1" ml={{ md: 8 }}>
-              <form ref={formRef} onSubmit={handleSubmit}>
-                <FormControl id="projectName" isRequired>
-                  <FormLabel>Project Name</FormLabel>
-                  <Input placeholder="Project Name" />
-                </FormControl>
+                <Box>
+                  <FormControl id="projectName" isRequired>
+                    <FormLabel>Project Name</FormLabel>
+                    <Input name="projectName" placeholder="Project Name" />
+                  </FormControl>
 
-                <FormControl id="projectDescription" mt={4} isRequired>
-                  <FormLabel>Project Description</FormLabel>
-                  <Textarea
-                    placeholder="Max 1000 characters"
-                    maxLength={1000}
-                  />
-                </FormControl>
+                  <FormControl id="projectDescription" mt={4} isRequired>
+                    <FormLabel>Project Description</FormLabel>
+                    <Textarea
+                      name="projectDescription"
+                      placeholder="Max 1000 characters"
+                      maxLength={1000}
+                    />
+                  </FormControl>
 
-                <FormControl id="startDate" mt={4}>
-                  <FormLabel>Proposed Start Date</FormLabel>
-                  <DatePicker
-                    selected={startDate}
-                    onChange={(date: Date) => setStartDate(date)}
-                    customInput={<Input />}
-                    placeholderText="Select Date"
-                  />
-                </FormControl>
+                  <FormControl id="startDate" mt={4}>
+                    <FormLabel>Proposed Start Date</FormLabel>
+                    <DatePicker
+                      name="startDate"
+                      selected={startDate}
+                      onChange={(date: Date) => setStartDate(date)}
+                      customInput={<Input />}
+                      placeholderText="Select Date"
+                    />
+                  </FormControl>
 
-                <FormControl id="endDate" mt={4}>
-                  <FormLabel>Proposed End Date</FormLabel>
-                  <DatePicker
-                    selected={endDate}
-                    onChange={(date: Date) => setEndDate(date)}
-                    customInput={<Input />}
-                    placeholderText="Select Date"
-                  />
-                </FormControl>
+                  <FormControl id="endDate" mt={4}>
+                    <FormLabel>Proposed End Date</FormLabel>
+                    <DatePicker
+                      name="endDate"
+                      selected={endDate}
+                      onChange={(date: Date) => setEndDate(date)}
+                      customInput={<Input />}
+                      placeholderText="Select Date"
+                    />
+                  </FormControl>
 
-                <FormControl id="projectAttachments" mt={4}>
-                  <FormLabel>Project Attachments</FormLabel>
-                  <Button
-                    as="label"
-                    htmlFor="fileUpload"
-                    leftIcon={<SettingsIcon />}
-                    cursor="pointer"
-                  >
-                    Click to Upload
-                  </Button>
-                  <Input
-                    id="fileUpload"
-                    type="file"
-                    accept="*"
-                    multiple
-                    onChange={handleFileChange}
-                    opacity={0}
-                    position="absolute"
-                    zIndex="-1"
-                  />
-                  {renderUploadedFiles()}
-                </FormControl>
+                  <FormControl id="projectAttachments" mt={4}>
+                    <FormLabel>Project Attachments</FormLabel>
+                    <Button
+                      as="label"
+                      htmlFor="fileUpload"
+                      leftIcon={<SettingsIcon />}
+                      cursor="pointer"
+                    >
+                      Click to Upload
+                    </Button>
+                    <Input
+                      id="fileUpload"
+                      type="file"
+                      accept="*"
+                      multiple
+                      onChange={handleFileChange}
+                      opacity={0}
+                      position="absolute"
+                      zIndex="-1"
+                    />
+                    {renderUploadedFiles()}
+                  </FormControl>
 
-                <FormControl id="projectDisciplines" mt={4}>
-                  <FormLabel>Project Disciplines</FormLabel>
-                  <CheckboxGroup colorScheme="green" defaultValue={[]}>
-                    <HStack spacing={5}>
-                      <VStack align="start" spacing={1}>
-                        <Checkbox value="Mechanical">Mechanical</Checkbox>
-                        <Checkbox value="Structural">Structural</Checkbox>
-                        <Checkbox value="Instrumentation">
-                          Instrumentation
-                        </Checkbox>
-                      </VStack>
-                      <VStack align="start" spacing={1}>
-                        <Checkbox value="Civil">Civil</Checkbox>
-                        <Checkbox value="Electrical">Electrical</Checkbox>
-                        <Checkbox value="Pipeline">Pipeline</Checkbox>
-                      </VStack>
-                      <VStack align="start" spacing={1}>
-                        <Checkbox value="Process">Process</Checkbox>
-                        <Checkbox value="Stress">Stress</Checkbox>
-                        <Checkbox value="Facilities">Facilities</Checkbox>
-                      </VStack>
-                    </HStack>
-                  </CheckboxGroup>
-                </FormControl>
+                  <FormControl id="projectDisciplines" mt={4}>
+                    <FormLabel>Project Disciplines</FormLabel>
+                    <CheckboxGroup
+                      colorScheme="green"
+                      defaultValue={[]}
+                      onChange={(values: string[]) =>
+                        setSelectedDisciplines(values)
+                      }
+                    >
+                      <HStack spacing={5}>
+                        <VStack align="start" spacing={1}>
+                          <Checkbox value="Mechanical">Mechanical</Checkbox>
+                          <Checkbox value="Structural">Structural</Checkbox>
+                          <Checkbox value="Instrumentation">
+                            Instrumentation
+                          </Checkbox>
+                        </VStack>
+                        <VStack align="start" spacing={1}>
+                          <Checkbox value="Civil">Civil</Checkbox>
+                          <Checkbox value="Electrical">Electrical</Checkbox>
+                          <Checkbox value="Pipeline">Pipeline</Checkbox>
+                        </VStack>
+                        <VStack align="start" spacing={1}>
+                          <Checkbox value="Process">Process</Checkbox>
+                          <Checkbox value="Stress">Stress</Checkbox>
+                          <Checkbox value="Facilities">Facilities</Checkbox>
+                        </VStack>
+                      </HStack>
+                    </CheckboxGroup>
+                  </FormControl>
 
-                <FormControl id="projectType" mt={4}>
-                  <FormLabel>Project Type (Optional)</FormLabel>
-                  <Select placeholder="Select Type">
-                    <option value="type1">Type 1</option>
-                    <option value="type2">Type 2</option>
-                    <option value="type3">Type 3</option>
-                  </Select>
-                </FormControl>
+                  <FormControl id="projectType" mt={4}>
+                    <FormLabel>Project Type (Optional)</FormLabel>
+                    <Select name="projectType" placeholder="Select Type">
+                      <option value="type1">Type 1</option>
+                      <option value="type2">Type 2</option>
+                      <option value="type3">Type 3</option>
+                    </Select>
+                  </FormControl>
+                </Box>
+              </Grid>
 
-                <Button
-                  colorScheme="blue"
-                  type="submit"
-                  mt={8}
-                  marginLeft={350} // Adjust this value to move your button more to the right
-                >
-                  Submit
-                </Button>
-              </form>
-            </Box>
-          </Flex>
+              <Button colorScheme="blue" type="submit" mt={8} marginLeft={850}>
+                Submit
+              </Button>
+            </form>
+          </Box>
         </Flex>
       </Providers>
     </Chakra>
