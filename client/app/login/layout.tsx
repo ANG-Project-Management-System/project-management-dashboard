@@ -1,6 +1,6 @@
 export const metadata = {
-  title: "Contractors",
-  description: "Contractors page for the Admin/PM.",
+  title: "ANG | Login",
+  description: "Login page for ANG.",
 };
 
 export default function AdminLayout({
