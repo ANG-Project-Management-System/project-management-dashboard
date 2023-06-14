@@ -1,8 +1,6 @@
-
 export const metadata = {
   title: "ANG | All Projects",
-  description:
-    "Projects page for the Admin/PM.",
+  description: "Projects page for the Admin/PM.",
 };
 
 export default function AdminLayout({

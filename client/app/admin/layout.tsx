@@ -4,7 +4,7 @@ import Navbar from "../components/Navbar";
 import Sidebar from "../components/Sidebar";
 import Providers from "../components/Providers";
 import Chakra from "../components/Chakra";
-import Head from "next/head"
+import Head from "next/head";
 
 export const metadata = {
   title: "ANG | Home",
@@ -19,18 +19,21 @@ export default function AdminLayout({
 }) {
   return (
     <>
-        <Providers>
-            <Chakra>
-                <Navbar />
-                <div className="flex"> 
-                  <Sidebar children={undefined} />
-                  <Head> 
-                    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" /> 
-                  </Head>
-                  <div className="border-radius: 2px">{children}</div>
-                </div>
-          </Chakra>
-        </Providers>
+      <Providers>
+        <Chakra>
+          <Navbar />
+          <div className="flex">
+            <Sidebar children={undefined} />
+            <Head>
+              <link
+                href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
+                rel="stylesheet"
+              />
+            </Head>
+            <div className="border-radius: 2px">{children}</div>
+          </div>
+        </Chakra>
+      </Providers>
     </>
   );
 }
