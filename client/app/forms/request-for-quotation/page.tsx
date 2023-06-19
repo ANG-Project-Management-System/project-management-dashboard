@@ -32,7 +32,13 @@ const RequestForQuotation = () => {
   const [endDate, setEndDate] = useState<Date | null>(null);
   const [files, setFiles] = useState<File[]>([]);
   const formRef = useRef<HTMLFormElement>(null);
-  const [selectedDisciplines, setSelectedDisciplines] = useState<string[]>([]);
+  const [selectedDisciplinesEng, setSelectedDisciplinesEng] = useState<
+    string[]
+  >([]);
+  const [
+    selectedDisciplinesDesDraft,
+    setSelectedDisciplinesDesDraft,
+  ] = useState<string[]>([]);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const fileList = event.target.files;
@@ -117,7 +123,11 @@ const RequestForQuotation = () => {
       });
     }
 
-    console.log("Project Disciplines: ", selectedDisciplines);
+    console.log("Project Disciplines Engineering: ", selectedDisciplinesEng);
+    console.log(
+      "Project Disciplines Design & Drafting: ",
+      selectedDisciplinesDesDraft
+    );
 
     console.log("Project Files:", files);
 
@@ -236,23 +246,57 @@ const RequestForQuotation = () => {
                     <Input
                       id="fileUpload"
                       type="file"
-                      accept="*"
+                      accept=".xls,.xlsx,.xlsm,.csv,.docx,.pdf"
                       multiple
                       onChange={handleFileChange}
                       opacity={0}
                       position="absolute"
                       zIndex="-1"
                     />
+
                     {renderUploadedFiles()}
                   </FormControl>
 
-                  <FormControl id="projectDisciplines" mt={4}>
-                    <FormLabel>Project Disciplines</FormLabel>
+                  <FormControl id="projectDisciplinesEng" mt={4}>
+                    <FormLabel>Project Disciplines (Engineering)</FormLabel>
                     <CheckboxGroup
                       colorScheme="green"
                       defaultValue={[]}
                       onChange={(values: string[]) =>
-                        setSelectedDisciplines(values)
+                        setSelectedDisciplinesEng(values)
+                      }
+                    >
+                      <HStack spacing={5}>
+                        <VStack align="start" spacing={1}>
+                          <Checkbox value="Mechanical">Mechanical</Checkbox>
+                          <Checkbox value="Structural">Structural</Checkbox>
+                          <Checkbox value="Instrumentation">
+                            Instrumentation
+                          </Checkbox>
+                        </VStack>
+                        <VStack align="start" spacing={1}>
+                          <Checkbox value="Civil">Civil</Checkbox>
+                          <Checkbox value="Electrical">Electrical</Checkbox>
+                          <Checkbox value="Pipeline">Pipeline</Checkbox>
+                        </VStack>
+                        <VStack align="start" spacing={1}>
+                          <Checkbox value="Process">Process</Checkbox>
+                          <Checkbox value="Stress">Stress</Checkbox>
+                          <Checkbox value="Facilities">Facilities</Checkbox>
+                        </VStack>
+                      </HStack>
+                    </CheckboxGroup>
+                  </FormControl>
+
+                  <FormControl id="projectDisciplinesDesDraft" mt={4}>
+                    <FormLabel>
+                      Project Disciplines (Design & Drafting)
+                    </FormLabel>
+                    <CheckboxGroup
+                      colorScheme="green"
+                      defaultValue={[]}
+                      onChange={(values: string[]) =>
+                        setSelectedDisciplinesDesDraft(values)
                       }
                     >
                       <HStack spacing={5}>
@@ -280,9 +324,10 @@ const RequestForQuotation = () => {
                   <FormControl id="projectType" mt={4}>
                     <FormLabel>Project Type (Optional)</FormLabel>
                     <Select name="projectType" placeholder="Select Type">
-                      <option value="type1">Type 1</option>
-                      <option value="type2">Type 2</option>
-                      <option value="type3">Type 3</option>
+                      <option value="preFeed">Pre-Feed</option>
+                      <option value="feed">Feed</option>
+                      <option value="detailedDesign">Detailed Design</option>
+                      <option value="etc">Etc.</option>
                     </Select>
                   </FormControl>
                 </Box>
