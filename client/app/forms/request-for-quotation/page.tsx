@@ -123,9 +123,9 @@ const RequestForQuotation = () => {
       });
     }
 
-    console.log("Project Disciplines Engineering: ", selectedDisciplinesEng);
+    console.log("Project Disciplines (Engineering): ", selectedDisciplinesEng);
     console.log(
-      "Project Disciplines Design & Drafting: ",
+      "Project Disciplines (Design & Drafting): ",
       selectedDisciplinesDesDraft
     );
 
@@ -324,10 +324,10 @@ const RequestForQuotation = () => {
                   <FormControl id="projectType" mt={4}>
                     <FormLabel>Project Type (Optional)</FormLabel>
                     <Select name="projectType" placeholder="Select Type">
-                      <option value="preFeed">Pre-Feed</option>
-                      <option value="feed">Feed</option>
-                      <option value="detailedDesign">Detailed Design</option>
-                      <option value="etc">Etc.</option>
+                      <option value="Pre-Feed">Pre-Feed</option>
+                      <option value="Feed">Feed</option>
+                      <option value="Detailed Design">Detailed Design</option>
+                      <option value="Etc.">Etc.</option>
                     </Select>
                   </FormControl>
                 </Box>
