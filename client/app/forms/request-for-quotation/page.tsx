@@ -246,7 +246,7 @@ const RequestForQuotation = () => {
                     <Input
                       id="fileUpload"
                       type="file"
-                      accept=".xls,.xlsx,.xlsm,.csv,.docx,.pdf"
+                      accept=".xls,.xlsx,.xlsm,.csv,.docx,.pdf,.ppt,"
                       multiple
                       onChange={handleFileChange}
                       opacity={0}
@@ -327,6 +327,7 @@ const RequestForQuotation = () => {
                       <option value="Pre-Feed">Pre-Feed</option>
                       <option value="Feed">Feed</option>
                       <option value="Detailed Design">Detailed Design</option>
+                      <option value="Technical Review">Technical Review</option>
                       <option value="Etc.">Etc.</option>
                     </Select>
                   </FormControl>
