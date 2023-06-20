@@ -187,7 +187,8 @@ export default function Navbar() {
           <Box textAlign="center">
             {selectedProject ? (
               <Text>
-                Project Name: <strong>{selectedProject.projectName}</strong>{"  "}
+                Project Name: <strong>{selectedProject.projectName}</strong>{" "}
+                <Box as="span" mr={4}></Box>
                 Project Number: <strong>{selectedProject.projectNumber}</strong>
               </Text>
             ) : (
