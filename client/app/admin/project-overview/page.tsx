@@ -120,7 +120,6 @@ const ProjectOverview = () => {
                 leftIcon={<EditIcon />}
                 colorScheme="teal"
                 variant="outline"
-                mr={3}
                 onClick={handleEditClick}
               >
                 Edit
