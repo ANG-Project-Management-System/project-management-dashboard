@@ -34,7 +34,7 @@ export default function Login() {
           </div> */}
           <button
             onClick={() =>
-              signIn("google", { callbackUrl: `${window.location.origin}/admin` })
+              signIn("google", { callbackUrl: `${window.location.origin}/all-projects` })
             }
             className="mt-10 px-4 py-2 border flex items-center gap-2 border-slate-200 rounded-lg text-slate-700 hover:border-slate-400 hover:text-slate-900 hover:shadow transition duration-150"
           >

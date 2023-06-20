@@ -62,7 +62,7 @@ export default function Navbar() {
     
         <HStack spacing={4} alignItems={"center"}>
           <Box>
-            <div>
+            {/* <div>
                 {colorMode === "dark" ? (
                   <Image
                     alt="ANG Consultants"
@@ -82,12 +82,12 @@ export default function Navbar() {
                     priority={true}
                   />
                 )}
-            </div>
+            </div> */}
           </Box>
 
         </HStack>
 
-        <Box>
+        <Box ml={60}>
             Project Selection
         </Box>
 

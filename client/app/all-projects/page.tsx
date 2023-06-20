@@ -14,6 +14,7 @@ import Providers from "../components/Providers";
 import Chakra from "../components/Chakra";
 import Navbar from "../components/ProjectNavbar";
 import Link from "next/link";
+import { useState } from "react";
 
 interface Project {
   projectName: string;
@@ -34,33 +35,33 @@ const cardContent: Project[] = [
   },
   {
     projectName: "Project Two",
-    projectNumber: "001",
-    lastUpdated: "2023-06-19 11:00",
+    projectNumber: "002",
+    lastUpdated: "2023-06-19 12:00",
     status: "Active",
     description:
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
   },
   {
     projectName: "Project Three",
-    projectNumber: "001",
-    lastUpdated: "2023-06-19 11:00",
+    projectNumber: "003",
+    lastUpdated: "2023-06-19 13:00",
     status: "Active",
     description:
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
   },
   {
     projectName: "Project Four",
-    projectNumber: "001",
-    lastUpdated: "2023-06-19 11:00",
+    projectNumber: "004",
+    lastUpdated: "2023-06-19 14:00",
     status: "Active",
     description:
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
   },
   {
     projectName: "Project Five",
-    projectNumber: "001",
-    lastUpdated: "2023-06-19 11:00",
-    status: "Active",
+    projectNumber: "005",
+    lastUpdated: "2023-06-19 15:00",
+    status: "Inactive",
     description:
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
   },
@@ -68,9 +69,10 @@ const cardContent: Project[] = [
 
 interface ProjectCardProps {
   project: Project;
+  selectProject: (project: Project) => void;
 }
 
-const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
+const ProjectCard: React.FC<ProjectCardProps> = ({ project, selectProject }) => {
   return (
     <Box
       width="full"
@@ -105,16 +107,19 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
           >
             {project.status}
           </Badge>
-          <Link href="/admin">
+          <Link href={`/admin`}>
               <Button
                 rightIcon={<ChevronRightIcon />}
                 colorScheme="blue"
-                // variant="outline"
                 ml={6}
+                onClick={() => {
+                  selectProject(project);
+                  localStorage.setItem('selectedProject', JSON.stringify(project)); // Store selected project in Local Storage
+                }} 
               >
                 Open
               </Button>
-          </Link>
+            </Link>
         </Flex>
       </Flex>
       <Divider my={3} borderColor={useColorModeValue("gray.200", "gray.700")} />
@@ -126,13 +131,26 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
 };
 
 const Projects: React.FC = () => {
+  const getInitialProject = (): Project | null => {
+    const storedProject = localStorage.getItem('selectedProject');
+    if (storedProject) {
+      try {
+        return JSON.parse(storedProject) as Project;
+      } catch (error) {
+        console.error(error);
+        return null;
+      }
+    }
+    return null;
+  };
+
+  const [selectedProject, setSelectedProject] = useState<Project | null>(getInitialProject); // Initialize selectedProject state from Local Storage
   return (
     <Providers>
       <Chakra>
-        <Navbar />
+        <Navbar /> 
+        state down to Navbar
         <Flex direction="column" w="full" p={5}>
-          {" "}
-          {/* Adding padding here */}
           <Flex
             mt={20}
             direction="column"
@@ -141,7 +159,11 @@ const Projects: React.FC = () => {
             w="full"
           >
             {cardContent.map((project, index) => (
-              <ProjectCard project={project} key={index} />
+              <ProjectCard
+                project={project}
+                key={index}
+                selectProject={setSelectedProject}
+              /> // Pass setSelectedProject function down to each ProjectCard
             ))}
           </Flex>
         </Flex>
