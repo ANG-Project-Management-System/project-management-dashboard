@@ -13,7 +13,7 @@ import {
 import { FaSun, FaMoon } from "react-icons/fa";
 import { useSession } from "next-auth/react";
 import { signOut } from "next-auth/react";
-import { ReactNode, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import {
   Box,
   Flex,
@@ -99,20 +99,21 @@ export default function Navbar() {
     setIsExpanded(!isExpanded);
   };
 
-  const getSelectedProject = (): Project | null => {
-    const storedProject = localStorage.getItem("selectedProject");
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+
+  useEffect(() => {
+    const storedProject =
+      typeof window !== "undefined"
+        ? localStorage.getItem("selectedProject")
+        : null;
     if (storedProject) {
       try {
-        return JSON.parse(storedProject) as Project;
+        setSelectedProject(JSON.parse(storedProject) as Project);
       } catch (error) {
         console.error(error);
-        return null;
       }
     }
-    return null;
-  };
-
-  const selectedProject = getSelectedProject();
+  }, []);
 
   // Get the current route
   const currentRoute = getCurrentRoute();
@@ -226,7 +227,9 @@ export default function Navbar() {
                   <Avatar
                     size={"sm"}
                     src={
-                      session?.user?.image ? session.user.image : defaultImageURL
+                      session?.user?.image
+                        ? session.user.image
+                        : defaultImageURL
                     }
                   />
                   <VStack
@@ -248,7 +251,7 @@ export default function Navbar() {
                       </Text>
                     )}
                   </VStack>
-  
+
                   <Box display={{ base: "none", md: "flex" }}>
                     <FiChevronDown />
                   </Box>
