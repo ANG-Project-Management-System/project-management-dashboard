@@ -33,42 +33,6 @@ import { HamburgerIcon, CloseIcon } from "@chakra-ui/icons";
 import { FiChevronDown, FiMenu } from "react-icons/fi";
 import Image from "next/image";
 
-const Links = ["Home", "Project Select", "RFQ Form"];
-
-interface NavLinkProps {
-  children: ReactNode;
-}
-
-const NavLink = ({ children }: NavLinkProps) => {
-  const linkColor = useColorModeValue("gray.200", "gray.700");
-  return (
-    <Link
-      href={
-        children === "Home"
-          ? "/admin"
-          : children === "Project Select"
-          ? "/all-projects"
-          : children === "RFQ Form"
-          ? "/forms/request-for-quotation"
-          : "/admin"
-      }
-      passHref
-    >
-      <Box
-        px={2}
-        py={1}
-        rounded={"md"}
-        _hover={{
-          textDecoration: "none",
-          bg: linkColor,
-        }}
-      >
-        {children}
-      </Box>
-    </Link>
-  );
-};
-
 export default function Navbar() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [isExpanded, setIsExpanded] = useState(true);
@@ -95,17 +59,10 @@ export default function Navbar() {
       zIndex={1000}
     >
       <Flex h={20} alignItems={"center"} justifyContent={"space-between"}>
-        <IconButton
-          size={"md"}
-          icon={isOpen ? <CloseIcon /> : <HamburgerIcon />}
-          aria-label={"Open Menu"}
-          display={{ md: "none" }}
-          onClick={isOpen ? onClose : onOpen}
-        />
+    
         <HStack spacing={4} alignItems={"center"}>
           <Box>
             <div>
-              <Link href="/admin">
                 {colorMode === "dark" ? (
                   <Image
                     alt="ANG Consultants"
@@ -125,22 +82,14 @@ export default function Navbar() {
                     priority={true}
                   />
                 )}
-              </Link>
             </div>
           </Box>
 
-          <Box ml={20}>
-            <HStack
-              as={"nav"}
-              spacing={4}
-              display={{ base: "flex", md: "flex" }}
-            >
-              {Links.map((link) => (
-                <NavLink key={link}>{link}</NavLink>
-              ))}
-            </HStack>
-          </Box>
         </HStack>
+
+        <Box>
+            Project Selection
+        </Box>
 
         <Flex alignItems={"center"}>
           <Tooltip
@@ -216,19 +165,6 @@ export default function Navbar() {
         </Flex>
       </Flex>
 
-      {isOpen ? (
-        <Box
-          pb={4}
-          bg={useColorModeValue("white", "gray.800")}
-          display={{ md: "none" }}
-        >
-          <Stack as={"nav"} spacing={4}>
-            {Links.map((link) => (
-              <NavLink key={link}>{link}</NavLink>
-            ))}
-          </Stack>
-        </Box>
-      ) : null}
     </Box>
   );
 }
