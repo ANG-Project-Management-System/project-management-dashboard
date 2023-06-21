@@ -31,6 +31,7 @@ import {
   Th,
   Td,
   IconButton,
+  useToast,
 } from "@chakra-ui/react";
 import {
   EditIcon,
@@ -67,6 +68,8 @@ const ProjectOverview = () => {
   const [isEditable, setIsEditable] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const cancelRef = useRef<HTMLButtonElement>(null);
+
+  const toast = useToast();
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -122,9 +125,23 @@ const ProjectOverview = () => {
   };
 
   //---  FOR PROJECT COMMENTS ---//
-  const [tableRows, setTableRows] = useState<{ id: string; deliverable: string; percentComplete: number; date: Date | null; comments: string }[]>([
-    { id: 'row-0', deliverable: "", percentComplete: 0, date: null, comments: "" },
-]);
+  const [tableRows, setTableRows] = useState<
+    {
+      id: string;
+      deliverable: string;
+      percentComplete: number;
+      date: Date | null;
+      comments: string;
+    }[]
+  >([
+    {
+      id: "row-0",
+      deliverable: "",
+      percentComplete: 0,
+      date: null,
+      comments: "",
+    },
+  ]);
 
   // Fetch stored data from localStorage on component mount
   useEffect(() => {
@@ -169,32 +186,43 @@ const ProjectOverview = () => {
 
   const handleAddRow = () => {
     setTableRows([
-        ...tableRows,
-        { id: `row-${Date.now()}`, deliverable: "", percentComplete: 0, date: null, comments: "" },
+      ...tableRows,
+      {
+        id: `row-${Date.now()}`,
+        deliverable: "",
+        percentComplete: 0,
+        date: null,
+        comments: "",
+      },
     ]);
-};
+  };
 
   const handleSaveClick = (row: TableRow) => {
-    const rowId = `row-${Date.now()}`; // Generate a unique identifier for the row
-    const newRow = { id: rowId, ...row }; // Add the unique identifier to the row data
-  
-    // Store the row data in local storage
+    const rowId = `row-${Date.now()}`;
+    const newRow = { id: rowId, ...row };
     localStorage.setItem(rowId, JSON.stringify(newRow));
+
+    // Display the success notification
+    toast({
+      title: "Successfully saved!",
+      status: "success",
+      duration: 3000,
+      isClosable: true,
+    });
   };
-  
 
   const handleDeleteRow = (index: number) => {
     // Get the ID of the row to be deleted
     const rowId = tableRows[index].id;
-  
+
     // Remove the row from local storage
     localStorage.removeItem(rowId);
-  
+
     // Remove the row from the state
     const newTableRows = [...tableRows];
     newTableRows.splice(index, 1);
     setTableRows(newTableRows);
-  
+
     // Update the stored data in local storage
     localStorage.clear();
     newTableRows.forEach((row) => {
