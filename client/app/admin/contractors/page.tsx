@@ -50,11 +50,14 @@ interface Todo {
 }
 
 interface ContractorFromApi {
-  "Team Members": string;
-  Discipline: string;
-  "Hours charged to date": number;
-  "Billout Rate ($/hour)": number;
-  "Total cost": number;
+  'Team Members': string;
+  'Discipline': string;
+  'Hours charged to date': number;
+  'Billout Rate ($/hour)': number;
+  'Total cost': number;
+  'Date': string;
+  'Email': string;
+  'Phone Number': string;
 }
 
 export default function Contractors() {
@@ -160,23 +163,23 @@ export default function Contractors() {
   const leastDestructiveRef = useRef<HTMLButtonElement | null>(null);
   let displayData;
 
-    const apiUrl = 'http://localhost:3000/api/project?number=88-02032023-01';
-    async function pullJson() {
+  const apiUrl = 'http://localhost:3000/api/project?number=88-02032023-01';
+  async function pullJson() {
     try {
       const response = await fetch(apiUrl);
       const respData = await response.json();
 
       if (respData && respData.contractors) {
         // mapping the data to fit your Contractor interface
-        const contractorsFromApi = respData.contractors.slice(1).map((contractor:ContractorFromApi, index:number) => {
+        const contractorsFromApi = respData.contractors.map((contractor: ContractorFromApi, index: number) => {
           return {
             id: index,
             name: contractor["Team Members"],
             discipline: contractor["Discipline"],
-            phone: "", // not available in JSON data
-            email: "", // not available in JSON data
+            phone: contractor["Phone Number"],
+            email: contractor["Email"],
             status: "", // not available in JSON data
-            date: "", // not available in JSON data
+            date: contractor["Date"],
             rate: contractor["Billout Rate ($/hour)"],
             estimate: contractor["Hours charged to date"],
             coRate: contractor["Total cost"],
