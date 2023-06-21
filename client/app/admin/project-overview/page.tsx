@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   Flex,
   Box,
@@ -23,6 +23,14 @@ import {
   AlertDialogHeader,
   AlertDialogBody,
   AlertDialogFooter,
+  Heading,
+  Table,
+  Thead,
+  Tbody,
+  Tr,
+  Th,
+  Td,
+  IconButton,
 } from "@chakra-ui/react";
 import {
   EditIcon,
@@ -30,6 +38,8 @@ import {
   AttachmentIcon,
   CheckIcon,
   CloseIcon,
+  AddIcon,
+  DeleteIcon,
 } from "@chakra-ui/icons";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -60,6 +70,13 @@ const ProjectOverview = () => {
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+
+    // Validate start date and end date
+    if (!startDate || !endDate) {
+      console.error("Invalid date values");
+      return;
+    }
+
     setIsOpen(true);
   };
 
@@ -104,14 +121,93 @@ const ProjectOverview = () => {
     setIsEditable(true);
   };
 
+  //---  FOR PROJECT COMMENTS ---//
+  const [tableRows, setTableRows] = useState<{ id: string; deliverable: string; percentComplete: number; date: Date | null; comments: string }[]>([
+    { id: 'row-0', deliverable: "", percentComplete: 0, date: null, comments: "" },
+]);
+
+  // Fetch stored data from localStorage on component mount
+  useEffect(() => {
+    const storedRows = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && key.startsWith("row-")) {
+        const storedData = localStorage.getItem(key);
+        if (storedData) {
+          const row = JSON.parse(storedData);
+          storedRows.push(row);
+        }
+      }
+    }
+    setTableRows(storedRows);
+  }, []);
+
+  // Define the TableRow type
+  type TableRow = {
+    deliverable: string;
+    percentComplete: number;
+    date: Date | null;
+    comments: string;
+  };
+
+  const handleTableRowChange = (
+    index: number,
+    key: keyof TableRow,
+    value: any
+  ) => {
+    const newTableRows = [...tableRows];
+    if (key === "percentComplete" && value === "") {
+      newTableRows[index][key] = value;
+    } else {
+      newTableRows[index] = {
+        ...newTableRows[index],
+        [key]: key === "percentComplete" ? Number(value) : value,
+      };
+    }
+    setTableRows(newTableRows);
+  };
+
+  const handleAddRow = () => {
+    setTableRows([
+        ...tableRows,
+        { id: `row-${Date.now()}`, deliverable: "", percentComplete: 0, date: null, comments: "" },
+    ]);
+};
+
+  const handleSaveClick = (row: TableRow) => {
+    const rowId = `row-${Date.now()}`; // Generate a unique identifier for the row
+    const newRow = { id: rowId, ...row }; // Add the unique identifier to the row data
+  
+    // Store the row data in local storage
+    localStorage.setItem(rowId, JSON.stringify(newRow));
+  };
+  
+
+  const handleDeleteRow = (index: number) => {
+    // Get the ID of the row to be deleted
+    const rowId = tableRows[index].id;
+  
+    // Remove the row from local storage
+    localStorage.removeItem(rowId);
+  
+    // Remove the row from the state
+    const newTableRows = [...tableRows];
+    newTableRows.splice(index, 1);
+    setTableRows(newTableRows);
+  
+    // Update the stored data in local storage
+    localStorage.clear();
+    newTableRows.forEach((row) => {
+      localStorage.setItem(row.id, JSON.stringify(row));
+    });
+  };
+
   return (
     <Flex>
       <Flex mt={20} direction="column" p={5}>
         <Flex justifyContent="space-between">
           <Box>
-            <Text fontSize="xl" fontWeight="bold">
-              Project Information
-            </Text>
+            <Heading size="lg">Project Information</Heading>
             {/* Display your project information here */}
           </Box>
           <Flex alignItems="center">
@@ -178,7 +274,7 @@ const ProjectOverview = () => {
         </Text>
 
         <form id="projectForm" ref={formRef} onSubmit={handleSubmit}>
-          <SimpleGrid columns={2} spacing={1} my={1}>
+          <SimpleGrid columns={2} spacing={1}>
             <FormControl id="projectDisciplinesEng" mt={4}>
               <FormLabel>Project Disciplines (Engineering)</FormLabel>
               <CheckboxGroup
@@ -265,6 +361,9 @@ const ProjectOverview = () => {
                 customInput={<Input isDisabled={!isEditable} />}
                 placeholderText="Select Date"
                 disabled={!isEditable}
+                // Add minDate and maxDate props if needed
+                // minDate={new Date()} // Example: restrict to current date and future dates
+                // maxDate={someMaxDate} // Example: restrict to a maximum date
               />
             </FormControl>
 
@@ -273,13 +372,143 @@ const ProjectOverview = () => {
               <DatePicker
                 name="endDate"
                 selected={endDate}
-                onChange={(date: Date) => setEndDate(date)}
+                onChange={(date: Date) => setStartDate(date)}
                 customInput={<Input isDisabled={!isEditable} />}
                 placeholderText="Select Date"
                 disabled={!isEditable}
+                // Add minDate and maxDate props if needed
+                // minDate={new Date()} // Example: restrict to current date and future dates
+                // maxDate={someMaxDate} // Example: restrict to a maximum date
               />
             </FormControl>
           </Grid>
+
+          <Divider my={4} />
+
+          <Text fontSize="xl" fontWeight="bold" mb={3}>
+            Project Comments
+          </Text>
+
+          <Flex>
+            <IconButton
+              icon={<AddIcon />}
+              colorScheme="teal"
+              variant="outline"
+              aria-label="Add Row"
+              onClick={handleAddRow}
+              disabled={!isEditable}
+              mt={3}
+              mr={5}
+            />
+            {/* ... */}
+            <Table variant="simple">
+              <Thead>
+                <Tr>
+                  <Th>Deliverable</Th>
+                  <Th>Percent Complete</Th>
+                  <Th>Date</Th>
+                  <Th>Comments</Th>
+                  <Th>Save</Th>
+                  <Th>Actions</Th>
+                </Tr>
+              </Thead>
+              <Tbody>
+                {tableRows.map((row, index) => (
+                  <Tr key={index}>
+                    <Td>
+                      <Input
+                        value={row.deliverable}
+                        onChange={(e) =>
+                          handleTableRowChange(
+                            index,
+                            "deliverable",
+                            e.target.value
+                          )
+                        }
+                      />
+                    </Td>
+                    <Td>
+                      <Select
+                        value={row.percentComplete}
+                        onChange={(e) => {
+                          let inputValue = e.target.value;
+                          let numValue =
+                            inputValue === "null" ? null : Number(inputValue);
+                          handleTableRowChange(
+                            index,
+                            "percentComplete",
+                            numValue
+                          );
+                        }}
+                      >
+                        <option value="null">-</option>{" "}
+                        {/* Added null option */}
+                        <option value="10">10%</option>
+                        <option value="20">20%</option>
+                        <option value="30">30%</option>
+                        <option value="40">40%</option>
+                        <option value="50">50%</option>
+                        <option value="60">60%</option>
+                        <option value="70">70%</option>
+                        <option value="80">80%</option>
+                        <option value="90">90%</option>
+                        <option value="100">100%</option>
+                      </Select>
+                    </Td>
+
+                    <Td>
+                      <DatePicker
+                        selected={row.date ? new Date(row.date) : null}
+                        onChange={(date: Date | null) =>
+                          handleTableRowChange(
+                            index,
+                            "date",
+                            date ? date.toISOString() : null
+                          )
+                        }
+                        customInput={<Input isDisabled={!isEditable} />}
+                        placeholderText="Select Date"
+                        // isClearable
+                      />
+                    </Td>
+
+                    <Td>
+                      <Input
+                        value={row.comments}
+                        onChange={(e) =>
+                          handleTableRowChange(
+                            index,
+                            "comments",
+                            e.target.value
+                          )
+                        }
+                      />
+                    </Td>
+                    <Td>
+                      <IconButton
+                        icon={<CheckIcon />}
+                        colorScheme="teal"
+                        // variant="outline"
+                        aria-label="Save Row"
+                        onClick={() => handleSaveClick(row)}
+                        disabled={!isEditable}
+                      />
+                    </Td>
+                    <Td>
+                      <IconButton
+                        icon={<DeleteIcon />}
+                        colorScheme="red"
+                        variant="outline"
+                        aria-label="Delete Row"
+                        onClick={() => handleDeleteRow(index)}
+                        disabled={!isEditable}
+                      />
+                    </Td>
+                  </Tr>
+                ))}
+              </Tbody>
+            </Table>
+          </Flex>
 
           <Divider my={4} />
 
