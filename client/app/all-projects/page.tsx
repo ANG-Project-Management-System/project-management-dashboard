@@ -26,9 +26,9 @@ interface Project {
 
 const cardContent: Project[] = [
   {
-    projectName: "Project One",
-    projectNumber: "001",
-    lastUpdated: "2023-06-19 11:00",
+    projectName: "academyfabricators-ledcor-pipeline-end-cap-fabrication",
+    projectNumber: "88-02032023-01",
+    lastUpdated: "2023-03-05 11:00",
     status: "Active",
     description:
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",

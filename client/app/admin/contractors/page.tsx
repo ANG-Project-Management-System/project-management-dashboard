@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, use, useEffect } from "react";
 import {
   Box,
   Flex,
@@ -44,6 +44,20 @@ interface Contractor {
   estimate: number;
   coRate: number;
 }
+
+interface Todo {
+  id: number;
+  title: string;
+}
+
+interface ContractorFromApi {
+  'Team Members': string;
+  'Discipline': string;
+  'Hours charged to date': number;
+  'Billout Rate ($/hour)': number;
+  'Total cost': number;
+}
+
 
 const contractorsData = [
   {
@@ -288,6 +302,8 @@ const contractorsData = [
   },
 ];
 
+
+
 export default function Contractors() {
   const [contractors, setContractors] = useState<Contractor[]>(contractorsData);
 
@@ -402,6 +418,44 @@ export default function Contractors() {
   const visibleContractors = searchQuery !== "" ? filteredContractors : contractors.slice(startIndex, endIndex);
 
   const leastDestructiveRef = useRef<HTMLButtonElement | null>(null);
+  let displayData
+
+  const apiUrl = 'http://localhost:3000/api/project?number=88-02032023-01';
+  async function pullJson() {
+  try {
+    const response = await fetch(apiUrl);
+    const respData = await response.json();
+
+    if (respData && respData.contractors) {
+      // mapping the data to fit your Contractor interface
+      const contractorsFromApi = respData.contractors.slice(1).map((contractor:ContractorFromApi, index:number) => {
+        return {
+          id: index,
+          name: contractor["Team Members"],
+          discipline: contractor["Discipline"],
+          phone: "", // not available in JSON data
+          email: "", // not available in JSON data
+          status: "", // not available in JSON data
+          date: "", // not available in JSON data
+          rate: contractor["Billout Rate ($/hour)"],
+          estimate: contractor["Hours charged to date"],
+          coRate: contractor["Total cost"],
+        }
+      });
+
+      // set the state with the new contractors
+      setContractors(contractorsFromApi);
+    } else {
+      console.error('Invalid API response:', respData);
+    }
+  } catch (error) {
+    console.error('Error fetching data:', error);
+  }
+}
+
+useEffect(() => {
+  pullJson();
+}, []);
 
   return (
     <Providers>
@@ -451,7 +505,8 @@ export default function Contractors() {
                   <Th>Actions</Th>
                 </Tr>
               </Thead>
-              <Tbody>
+              
+              {/* <Tbody>
                 {visibleContractors.map((contractor) => (
                   <Tr key={contractor.id}>
                     <Td>{contractor.name}</Td>
@@ -491,7 +546,61 @@ export default function Contractors() {
                     </Td>
                   </Tr>
                 ))}
-              </Tbody>
+              </Tbody> */}
+              <Tbody>
+  {visibleContractors.map((contractor) => {
+    const matchingContractor = contractorsData.find(
+      (c) => c.name === contractor.name
+    );
+
+    return (
+      <Tr key={contractor.id}>
+        <Td>{contractor.name || matchingContractor?.name || "N/A"}</Td>
+        <Td>{contractor.phone || matchingContractor?.phone || "N/A"}</Td>
+        <Td>{contractor.email || matchingContractor?.email || "N/A"}</Td>
+        <Td>
+          {contractor.discipline || matchingContractor?.discipline || "N/A"}
+        </Td>
+        <Td>
+          <Badge
+            colorScheme="white"
+            borderRadius="lg"
+            px={2}
+            py={1}
+            borderWidth={1}
+            borderColor={`${getStatusColor(
+              contractor.status || matchingContractor?.status || ""
+            )}.500`}
+          >
+            {contractor.status || matchingContractor?.status || "N/A"}
+          </Badge>
+        </Td>
+        <Td>{contractor.date || matchingContractor?.date || "N/A"}</Td>
+        <Td>{contractor.rate || matchingContractor?.rate || "N/A"}</Td>
+        <Td>
+          {contractor.estimate || matchingContractor?.estimate || "N/A"}
+        </Td>
+        <Td>
+          <IconButton
+            icon={<EditIcon />}
+            aria-label="Edit contractor"
+            colorScheme="blue"
+            onClick={() => handleEdit(contractor)}
+          />
+        </Td>
+        <Td>
+          <IconButton
+            icon={<DeleteIcon />}
+            aria-label="Delete contractor"
+            colorScheme="red"
+            onClick={() => setDeleteContractor(contractor)}
+          />
+        </Td>
+      </Tr>
+    );
+  })}
+</Tbody>
+
             </Table>
             <Pagination
               currentPage={page}
