@@ -32,6 +32,7 @@ import {
   Td,
   IconButton,
   useToast,
+  Textarea,
 } from "@chakra-ui/react";
 import {
   EditIcon,
@@ -195,13 +196,15 @@ const ProjectOverview = () => {
   };
 
   const handleAddRow = () => {
-    setTableRows([
-      ...tableRows,
+    const currentDate = new Date();
+  
+    setTableRows((prevRows) => [
+      ...prevRows,
       {
         id: `row-${Date.now()}`,
         deliverable: "",
         percentComplete: 0,
-        date: null,
+        date: currentDate,
         comments: "",
       },
     ]);
@@ -501,7 +504,8 @@ const ProjectOverview = () => {
                 {tableRows.map((row, index) => (
                   <Tr key={index}>
                     <Td>
-                      <Input
+                      <Input 
+                        mb={12}
                         value={row.deliverable}
                         onChange={(e) =>
                           handleTableRowChange(
@@ -513,7 +517,7 @@ const ProjectOverview = () => {
                       />
                     </Td>
                     <Td>
-                      <Select
+                      <Select mb={12}
                         value={row.percentComplete}
                         onChange={(e) => {
                           let inputValue = e.target.value;
@@ -542,6 +546,7 @@ const ProjectOverview = () => {
                     </Td>
 
                     <Td>
+                      <Flex mb={12}>
                       <DatePicker
                         selected={row.date ? new Date(row.date) : null}
                         onChange={(date: Date | null) =>
@@ -555,11 +560,14 @@ const ProjectOverview = () => {
                         placeholderText="Select Date"
                         // isClearable
                       />
+                      </Flex>
                     </Td>
 
                     <Td>
-                      <Input
+                      <Textarea mt={2}
                         value={row.comments}
+                        size="md" // Adjust the size to your preference
+                        height="100px" // Set the desired height for the textarea
                         onChange={(e) =>
                           handleTableRowChange(
                             index,
@@ -569,6 +577,7 @@ const ProjectOverview = () => {
                         }
                       />
                     </Td>
+
                     <Td>
                       <IconButton
                         icon={<CheckIcon />}
@@ -638,9 +647,9 @@ const ProjectOverview = () => {
                 <Tr key={index}>
                   <Td>
                     <a
-                      // href="#" // Replace with the actual file URL
-                      // download={attachment.fileName}
-                      // style={{ color: "blue", textDecoration: "underline" }}
+                    // href="#" // Replace with the actual file URL
+                    // download={attachment.fileName}
+                    // style={{ color: "blue", textDecoration: "underline" }}
                     >
                       {attachment.fileName}
                     </a>
