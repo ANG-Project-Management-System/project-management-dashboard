@@ -69,16 +69,26 @@ const ProjectOverview = () => {
   const [isOpen, setIsOpen] = useState(false);
   const cancelRef = useRef<HTMLButtonElement>(null);
 
+  // notification
   const toast = useToast();
+
+  // attachments
+  const [attachments, setAttachments] = useState<
+    {
+      fileName: string;
+      fileSize: number;
+      attachmentDate: Date;
+    }[]
+  >([]);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    // Validate start date and end date
-    if (!startDate || !endDate) {
-      console.error("Invalid date values");
-      return;
-    }
+    // // Validate start date and end date
+    // if (!startDate || !endDate) {
+    //   console.error("Invalid date values");
+    //   return;
+    // }
 
     setIsOpen(true);
   };
@@ -200,28 +210,33 @@ const ProjectOverview = () => {
   const handleSaveClick = (row: TableRow) => {
     const rowId = `row-${Date.now()}`;
     const newRow = { id: rowId, ...row };
-    
+
     // Check if the row already exists in local storage
-    const existingRowIndex = tableRows.findIndex(item => item.deliverable === row.deliverable);
-    
+    const existingRowIndex = tableRows.findIndex(
+      (item) => item.deliverable === row.deliverable
+    );
+
     if (existingRowIndex !== -1) {
       // Update the existing row with the new values
       const updatedRows = [...tableRows];
       updatedRows[existingRowIndex] = newRow;
-      
+
       // Update the state with the updated rows
       setTableRows(updatedRows);
-      
+
       // Update the row in local storage
-      localStorage.setItem(tableRows[existingRowIndex].id, JSON.stringify(newRow));
+      localStorage.setItem(
+        tableRows[existingRowIndex].id,
+        JSON.stringify(newRow)
+      );
     } else {
       // Add the new row to the state
-      setTableRows(prevRows => [...prevRows, newRow]);
-      
+      setTableRows((prevRows) => [...prevRows, newRow]);
+
       // Store the new row in local storage
       localStorage.setItem(rowId, JSON.stringify(newRow));
     }
-    
+
     // Display the success notification
     toast({
       title: "Successfully saved!",
@@ -230,7 +245,7 @@ const ProjectOverview = () => {
       isClosable: true,
     });
   };
-  
+
   const handleDeleteRow = (index: number) => {
     // Get the ID of the row to be deleted
     const rowId = tableRows[index].id;
@@ -247,6 +262,28 @@ const ProjectOverview = () => {
     localStorage.clear();
     newTableRows.forEach((row) => {
       localStorage.setItem(row.id, JSON.stringify(row));
+    });
+  };
+
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (files && files.length > 0) {
+      const file = files[0];
+      const fileSizeMB = Math.round((file.size / (1024 * 1024)) * 100) / 100; // Convert file size to megabytes
+      const newAttachment = {
+        fileName: file.name,
+        fileSize: fileSizeMB,
+        attachmentDate: new Date(),
+      };
+      setAttachments((prevAttachments) => [...prevAttachments, newAttachment]);
+    }
+  };
+
+  const handleDeleteAttachment = (index: number) => {
+    setAttachments((prevAttachments) => {
+      const newAttachments = [...prevAttachments];
+      newAttachments.splice(index, 1);
+      return newAttachments;
     });
   };
 
@@ -385,7 +422,7 @@ const ProjectOverview = () => {
           </SimpleGrid>
 
           <FormControl id="projectType" mt={4}>
-            <FormLabel>Project Type (Optional)</FormLabel>
+            <FormLabel>Project Type</FormLabel>
             <Select
               name="projectType"
               placeholder="Select Type"
@@ -564,10 +601,65 @@ const ProjectOverview = () => {
             <Text fontSize="xl" fontWeight="bold">
               Attachments
             </Text>
-            <Button rightIcon={<AttachmentIcon />} colorScheme="teal">
+
+            <Button
+              as="label"
+              htmlFor="fileUpload"
+              leftIcon={<AttachmentIcon />}
+              cursor="pointer"
+              colorScheme="teal"
+              mt={2}
+            >
               Attach File
             </Button>
+            <Input
+              id="fileUpload"
+              type="file"
+              accept=".xls,.xlsx,.xlsm,.csv,.docx,.pdf,.ppt,"
+              multiple
+              onChange={handleFileUpload}
+              opacity={0}
+              position="absolute"
+              zIndex="-1"
+            />
           </Flex>
+
+          <Table variant="simple" mt={5}>
+            <Thead>
+              <Tr>
+                <Th>File Name</Th>
+                <Th>Attachment Size</Th>
+                <Th>Attachment Date</Th>
+                <Th>Actions</Th>
+              </Tr>
+            </Thead>
+            <Tbody>
+              {attachments.map((attachment, index) => (
+                <Tr key={index}>
+                  <Td>
+                    <a
+                      // href="#" // Replace with the actual file URL
+                      // download={attachment.fileName}
+                      // style={{ color: "blue", textDecoration: "underline" }}
+                    >
+                      {attachment.fileName}
+                    </a>
+                  </Td>
+                  <Td>{attachment.fileSize} MB</Td>
+                  <Td>{attachment.attachmentDate.toDateString()}</Td>
+                  <Td>
+                    <IconButton
+                      icon={<DeleteIcon />}
+                      colorScheme="red"
+                      variant="outline"
+                      aria-label="Delete Attachment"
+                      onClick={() => handleDeleteAttachment(index)}
+                    />
+                  </Td>
+                </Tr>
+              ))}
+            </Tbody>
+          </Table>
         </form>
 
         <Divider my={4} />

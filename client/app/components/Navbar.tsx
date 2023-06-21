@@ -189,7 +189,7 @@ export default function Navbar() {
             {selectedProject ? (
               <Text>
                 Project Name: <strong>{selectedProject.projectName}</strong>{" "}
-                <Box as="span" mr={2}></Box>
+                <br />
                 Project Number: <strong>{selectedProject.projectNumber}</strong>
               </Text>
             ) : (
