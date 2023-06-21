@@ -372,7 +372,7 @@ const ProjectOverview = () => {
               <DatePicker
                 name="endDate"
                 selected={endDate}
-                onChange={(date: Date) => setStartDate(date)}
+                onChange={(date: Date) => setEndDate(date)}
                 customInput={<Input isDisabled={!isEditable} />}
                 placeholderText="Select Date"
                 disabled={!isEditable}
