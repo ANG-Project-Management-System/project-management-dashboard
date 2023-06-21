@@ -200,8 +200,28 @@ const ProjectOverview = () => {
   const handleSaveClick = (row: TableRow) => {
     const rowId = `row-${Date.now()}`;
     const newRow = { id: rowId, ...row };
-    localStorage.setItem(rowId, JSON.stringify(newRow));
-
+    
+    // Check if the row already exists in local storage
+    const existingRowIndex = tableRows.findIndex(item => item.deliverable === row.deliverable);
+    
+    if (existingRowIndex !== -1) {
+      // Update the existing row with the new values
+      const updatedRows = [...tableRows];
+      updatedRows[existingRowIndex] = newRow;
+      
+      // Update the state with the updated rows
+      setTableRows(updatedRows);
+      
+      // Update the row in local storage
+      localStorage.setItem(tableRows[existingRowIndex].id, JSON.stringify(newRow));
+    } else {
+      // Add the new row to the state
+      setTableRows(prevRows => [...prevRows, newRow]);
+      
+      // Store the new row in local storage
+      localStorage.setItem(rowId, JSON.stringify(newRow));
+    }
+    
     // Display the success notification
     toast({
       title: "Successfully saved!",
@@ -210,7 +230,7 @@ const ProjectOverview = () => {
       isClosable: true,
     });
   };
-
+  
   const handleDeleteRow = (index: number) => {
     // Get the ID of the row to be deleted
     const rowId = tableRows[index].id;
