@@ -26,6 +26,7 @@ import {
   Select,
 } from "@chakra-ui/react";
 import { AddIcon, DeleteIcon } from "@chakra-ui/icons";
+import Pagination from "@/app/components/Pagination";
 
 interface Contractor {
   id: number;
@@ -40,23 +41,27 @@ interface Contractor {
 }
 
 interface ContractorFromApi {
-  'Team Members': string;
-  'Discipline': string;
-  'Hours charged to date': number;
-  'Billout Rate ($/hour)': number;
-  'Total cost': number;
-  'Date': string;
-  'Email': string;
-  'Phone Number': string;
+  "Team Members": string;
+  Discipline: string;
+  "Hours charged to date": number;
+  "Billout Rate ($/hour)": number;
+  "Total cost": number;
+  Date: string;
+  Email: string;
+  "Phone Number": string;
 }
 
 export default function Contractors() {
   const [contractors, setContractors] = useState<Contractor[]>([]);
 
+  const [page, setPage] = useState<number>(1);
+  const itemsPerPage = 10;
+  const totalPages = Math.ceil(contractors.length / itemsPerPage);
+
   const [deleteContractor, setDeleteContractor] = useState<Contractor | null>(
     null
   );
-  
+
   const [showNewContractorForm, setShowNewContractorForm] = useState(false);
   const [newContractor, setNewContractor] = useState<Contractor>({
     id: 0,
@@ -70,6 +75,9 @@ export default function Contractors() {
     estimate: 0,
   });
 
+  const startIndex = (page - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [filteredContractors, setFilteredContractors] = useState<Contractor[]>(
     []
@@ -78,24 +86,29 @@ export default function Contractors() {
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     const query = event.target.value;
     setSearchQuery(query);
-  
+
     const filtered = contractors.filter((contractor) => {
-      const isNameMatch = contractor.name.toLowerCase().includes(query.toLowerCase());
-      const isDisciplineMatch = contractor.discipline.toLowerCase().startsWith(query.toLowerCase());
-      const isStatusMatch = contractor.status.toLowerCase() === query.toLowerCase();
-  
+      const isNameMatch = contractor.name
+        .toLowerCase()
+        .includes(query.toLowerCase());
+      const isDisciplineMatch = contractor.discipline
+        .toLowerCase()
+        .startsWith(query.toLowerCase());
+      const isStatusMatch =
+        contractor.status.toLowerCase() === query.toLowerCase();
+
       return isNameMatch || isDisciplineMatch || isStatusMatch;
     });
-  
+
     setFilteredContractors(filtered);
   };
 
   const visibleContractors =
     searchQuery !== ""
       ? filteredContractors
-      : contractors;
+      : contractors.slice(startIndex, endIndex);
 
-  const apiUrl = 'http://localhost:3000/api/project?number=88-02032023-01';
+  const apiUrl = "http://localhost:3000/api/project?number=88-02032023-01";
 
   useEffect(() => {
     const cacheKey = "contractors";
@@ -245,6 +258,11 @@ export default function Contractors() {
             ))}
           </Tbody>
         </Table>
+        <Pagination
+          currentPage={page}
+          totalPages={totalPages}
+          onPageChange={setPage}
+        />
         <AlertDialog
           isOpen={Boolean(deleteContractor)}
           leastDestructiveRef={cancelRef}
@@ -344,7 +362,9 @@ export default function Contractors() {
                       <option value="Mechanical Eng">Mechanical Eng</option>
                       <option value="Electrical Eng">Electrical Eng</option>
                       <option value="Process Eng">Process Eng</option>
-                      <option value="Mechanical DesDraft">Mechanical Design & Drafting</option>
+                      <option value="Mechanical DesDraft">
+                        Mechanical Design & Drafting
+                      </option>
                     </Select>
                   </FormControl>
                   <FormControl mt={2}>

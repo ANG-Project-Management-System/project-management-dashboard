@@ -197,7 +197,7 @@ const ProjectOverview = () => {
 
   const handleAddRow = () => {
     const currentDate = new Date();
-  
+
     setTableRows((prevRows) => [
       ...prevRows,
       {
@@ -362,7 +362,7 @@ const ProjectOverview = () => {
         </Text>
 
         <form id="projectForm" ref={formRef} onSubmit={handleSubmit}>
-          <SimpleGrid columns={2} spacing={1}>
+          <SimpleGrid columns={3} spacing={10}>
             <FormControl id="projectDisciplinesEng" mt={4}>
               <FormLabel>Project Disciplines (Engineering)</FormLabel>
               <CheckboxGroup
@@ -424,52 +424,58 @@ const ProjectOverview = () => {
             </FormControl>
           </SimpleGrid>
 
-          <FormControl id="projectType" mt={4}>
-            <FormLabel>Project Type</FormLabel>
-            <Select
-              name="projectType"
-              placeholder="Select Type"
-              isDisabled={!isEditable}
-            >
-              <option value="Pre-Feed">Pre-Feed</option>
-              <option value="Feed">Feed</option>
-              <option value="Detailed Design">Detailed Design</option>
-              <option value="Technical Review">Technical Review</option>
-              <option value="Etc.">Etc.</option>
-            </Select>
-          </FormControl>
-
-          <Grid templateColumns="repeat(2, 1fr)" gap={6}>
-            <FormControl id="startDate" mt={4}>
-              <FormLabel>Proposed Start Date (Optional)</FormLabel>
-              <DatePicker
-                name="startDate"
-                selected={startDate}
-                onChange={(date: Date) => setStartDate(date)}
-                customInput={<Input isDisabled={!isEditable} />}
-                placeholderText="Select Date"
-                disabled={!isEditable}
-                // Add minDate and maxDate props if needed
-                // minDate={new Date()} // Example: restrict to current date and future dates
-                // maxDate={someMaxDate} // Example: restrict to a maximum date
-              />
+          <Box maxW="300px">
+            <FormControl id="projectType" mt={4}>
+              <FormLabel>Project Type</FormLabel>
+              <Select
+                name="projectType"
+                placeholder="Select Type"
+                isDisabled={!isEditable}
+              >
+                <option value="Pre-Feed">Pre-Feed</option>
+                <option value="Feed">Feed</option>
+                <option value="Detailed Design">Detailed Design</option>
+                <option value="Technical Review">Technical Review</option>
+                <option value="Etc.">Etc.</option>
+              </Select>
             </FormControl>
+          </Box>
 
-            <FormControl id="endDate" mt={4}>
-              <FormLabel>Proposed End Date (Optional)</FormLabel>
-              <DatePicker
-                name="endDate"
-                selected={endDate}
-                onChange={(date: Date) => setEndDate(date)}
-                customInput={<Input isDisabled={!isEditable} />}
-                placeholderText="Select Date"
-                disabled={!isEditable}
-                // Add minDate and maxDate props if needed
-                // minDate={new Date()} // Example: restrict to current date and future dates
-                // maxDate={someMaxDate} // Example: restrict to a maximum date
-              />
-            </FormControl>
-          </Grid>
+          <SimpleGrid columns={3} spacing={10}>
+            <Box maxW="300px">
+              <FormControl id="startDate" mt={4}>
+                <FormLabel>Proposed Start Date (Optional)</FormLabel>
+                <DatePicker
+                  name="startDate"
+                  selected={startDate}
+                  onChange={(date: Date) => setStartDate(date)}
+                  customInput={<Input isDisabled={!isEditable} />}
+                  placeholderText="Select Date"
+                  disabled={!isEditable}
+                  // Add minDate and maxDate props if needed
+                  // minDate={new Date()} // Example: restrict to current date and future dates
+                  // maxDate={someMaxDate} // Example: restrict to a maximum date
+                />
+              </FormControl>
+            </Box>
+
+            <Box maxW="300px">
+              <FormControl id="endDate" mt={4}>
+                <FormLabel>Proposed End Date (Optional)</FormLabel>
+                <DatePicker
+                  name="endDate"
+                  selected={endDate}
+                  onChange={(date: Date) => setEndDate(date)}
+                  customInput={<Input isDisabled={!isEditable} />}
+                  placeholderText="Select Date"
+                  disabled={!isEditable}
+                  // Add minDate and maxDate props if needed
+                  // minDate={new Date()} // Example: restrict to current date and future dates
+                  // maxDate={someMaxDate} // Example: restrict to a maximum date
+                />
+              </FormControl>
+            </Box>
+          </SimpleGrid>
 
           <Divider my={4} />
 
@@ -504,7 +510,7 @@ const ProjectOverview = () => {
                 {tableRows.map((row, index) => (
                   <Tr key={index}>
                     <Td>
-                      <Input 
+                      <Input
                         mb={12}
                         value={row.deliverable}
                         onChange={(e) =>
@@ -517,7 +523,8 @@ const ProjectOverview = () => {
                       />
                     </Td>
                     <Td>
-                      <Select mb={12}
+                      <Select
+                        mb={12}
                         value={row.percentComplete}
                         onChange={(e) => {
                           let inputValue = e.target.value;
@@ -547,24 +554,25 @@ const ProjectOverview = () => {
 
                     <Td>
                       <Flex mb={12}>
-                      <DatePicker
-                        selected={row.date ? new Date(row.date) : null}
-                        onChange={(date: Date | null) =>
-                          handleTableRowChange(
-                            index,
-                            "date",
-                            date ? date.toISOString() : null
-                          )
-                        }
-                        customInput={<Input isDisabled={!isEditable} />}
-                        placeholderText="Select Date"
-                        // isClearable
-                      />
+                        <DatePicker
+                          selected={row.date ? new Date(row.date) : null}
+                          onChange={(date: Date | null) =>
+                            handleTableRowChange(
+                              index,
+                              "date",
+                              date ? date.toISOString() : null
+                            )
+                          }
+                          customInput={<Input isDisabled={!isEditable} />}
+                          placeholderText="Select Date"
+                          // isClearable
+                        />
                       </Flex>
                     </Td>
 
                     <Td>
-                      <Textarea mt={2}
+                      <Textarea
+                        mt={2}
                         value={row.comments}
                         size="md" // Adjust the size to your preference
                         height="100px" // Set the desired height for the textarea
