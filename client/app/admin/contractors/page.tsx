@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Box,
   Flex,
@@ -51,17 +51,13 @@ interface ContractorFromApi {
   "Phone Number": string;
 }
 
-export default function Contractors() {
+const Contractors: React.FC = () => {
   const [contractors, setContractors] = useState<Contractor[]>([]);
-
   const [page, setPage] = useState<number>(1);
   const itemsPerPage = 10;
-  const totalPages = Math.ceil(contractors.length / itemsPerPage);
-
   const [deleteContractor, setDeleteContractor] = useState<Contractor | null>(
     null
   );
-
   const [showNewContractorForm, setShowNewContractorForm] = useState(false);
   const [newContractor, setNewContractor] = useState<Contractor>({
     id: 0,
@@ -70,18 +66,20 @@ export default function Contractors() {
     email: "",
     discipline: "",
     status: "PENDING",
-    date: new Date().toISOString().slice(0, 10), // Set initial value to today's date
+    date: new Date().toISOString().slice(0, 10),
     rate: 0,
     estimate: 0,
   });
-
-  const startIndex = (page - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-
+  const [showCustomDiscipline, setShowCustomDiscipline] = useState(false);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [filteredContractors, setFilteredContractors] = useState<Contractor[]>(
     []
   );
+  const [selectedDiscipline, setSelectedDiscipline] = useState<string>("");
+  const [customHour, setCustomHour] = useState<number>(0);
+
+  const startIndex = (page - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
 
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     const query = event.target.value;
@@ -174,9 +172,24 @@ export default function Contractors() {
   };
 
   const handleNewContractorSubmit = () => {
+    let chargeOutRate = 0;
+    let contractorEstimate = newContractor.estimate;
+
+    if (selectedDiscipline && selectedDiscipline !== "Custom") {
+      chargeOutRate =
+        disciplineChargeOutRates[
+          selectedDiscipline as keyof typeof disciplineChargeOutRates
+        ] || 0;
+    } else if (selectedDiscipline === "Custom") {
+      chargeOutRate = parseFloat(newContractor.rate.toString());
+      contractorEstimate = parseFloat(newContractor.estimate.toString());
+    }
+
     const newContractorWithId: Contractor = {
       ...newContractor,
-      id: Math.floor(Math.random() * 900000) + 100000, // generate a random 6-digit ID
+      id: Math.floor(Math.random() * 900000) + 100000,
+      rate: chargeOutRate,
+      estimate: contractorEstimate,
     };
 
     const updatedContractors = [...contractors, newContractorWithId];
@@ -188,11 +201,26 @@ export default function Contractors() {
       email: "",
       discipline: "",
       status: "PENDING",
-      date: new Date().toISOString().slice(0, 10), // Set initial value to today's date
+      date: new Date().toISOString().slice(0, 10),
       rate: 0,
       estimate: 0,
     });
     setShowNewContractorForm(false);
+    setSelectedDiscipline("");
+    setCustomHour(0);
+  };
+
+  const disciplineChargeOutRates = {
+    "Principal Engineer": 175.0,
+    "Senior Stress Engineer": 135.0,
+    "Senior Process Engineer": 135.0,
+    "Senior *Engineer": 130.0,
+    "Intermediate Engineer": 115.0,
+    "Project Manager": 115.0,
+    "Senior Designer / Checker": 120.0,
+    "Intermediate Designer": 108.0,
+    "Junior Designer": 90.0,
+    Administrative: 68.0,
   };
 
   return (
@@ -229,7 +257,7 @@ export default function Contractors() {
               <Th>Contractor Email</Th>
               <Th>Discipline</Th>
               <Th>Initial Request Date</Th>
-              <Th>Contractor Rate ($/hr)</Th>
+              <Th>Discipline Charge-out Rate ($/hr)</Th>
               <Th>Contractor Hours Estimate</Th>
               <Th>Actions</Th>
             </Tr>
@@ -260,7 +288,7 @@ export default function Contractors() {
         </Table>
         <Pagination
           currentPage={page}
-          totalPages={totalPages}
+          totalPages={Math.ceil(contractors.length / itemsPerPage)}
           onPageChange={setPage}
         />
         <AlertDialog
@@ -346,26 +374,72 @@ export default function Contractors() {
                       }
                     />
                   </FormControl>
-                  <FormControl mt={2} isRequired>
+                  <FormControl mt={2}>
                     <FormLabel>Discipline</FormLabel>
                     <Select
+                      isRequired
                       placeholder="Select discipline"
-                      value={newContractor.discipline}
-                      onChange={(e) =>
+                      value={selectedDiscipline}
+                      onChange={(e) => {
+                        const selectedDiscipline = e.target.value;
+
+                        if (selectedDiscipline === "Custom") {
+                          setShowCustomDiscipline(true);
+                        } else {
+                          setShowCustomDiscipline(false);
+                        }
+
+                        setSelectedDiscipline(selectedDiscipline);
                         setNewContractor((prevContractor) => ({
                           ...prevContractor,
-                          discipline: e.target.value,
-                        }))
-                      }
+                          discipline: selectedDiscipline,
+                          rate:
+                            disciplineChargeOutRates[
+                              selectedDiscipline as keyof typeof disciplineChargeOutRates
+                            ] || 0,
+                        }));
+                      }}
                     >
-                      <option value="Civil Eng">Civil Eng</option>
-                      <option value="Mechanical Eng">Mechanical Eng</option>
-                      <option value="Electrical Eng">Electrical Eng</option>
-                      <option value="Process Eng">Process Eng</option>
-                      <option value="Mechanical DesDraft">
-                        Mechanical Design & Drafting
+                      <option value="Principal Engineer">
+                        Principal Engineer
                       </option>
+                      <option value="Senior Stress Engineer">
+                        Senior Stress Engineer
+                      </option>
+                      <option value="Senior Process Engineer">
+                        Senior Process Engineer
+                      </option>
+                      <option value="Senior *Engineer">Senior *Engineer</option>
+                      <option value="Intermediate Engineer">
+                        Intermediate Engineer
+                      </option>
+                      <option value="Project Manager">Project Manager</option>
+                      <option value="Senior Designer / Checker">
+                        Senior Designer / Checker
+                      </option>
+                      <option value="Intermediate Designer">
+                        Intermediate Designer
+                      </option>
+                      <option value="Junior Designer">Junior Designer</option>
+                      <option value="Administrative">Administrative</option>
+                      <option value="Custom">Custom</option>
                     </Select>
+
+                    {showCustomDiscipline && (
+                      <FormControl mt={2} isRequired>
+                        <FormLabel>Custom Discipline</FormLabel>
+                        <Input
+                          placeholder="Enter custom discipline"
+                          value={newContractor.discipline}
+                          onChange={(e) =>
+                            setNewContractor((prevContractor) => ({
+                              ...prevContractor,
+                              discipline: e.target.value,
+                            }))
+                          }
+                        />
+                      </FormControl>
+                    )}
                   </FormControl>
                   <FormControl mt={2}>
                     <FormLabel>Request Date</FormLabel>
@@ -381,7 +455,7 @@ export default function Contractors() {
                     />
                   </FormControl>
                   <FormControl mt={2} isRequired>
-                    <FormLabel>Contractor Rate ($/hr)</FormLabel>
+                    <FormLabel>Discipline Charge-out Rate ($/hr)</FormLabel>
                     <Input
                       type="number"
                       placeholder="Enter rate"
@@ -394,6 +468,7 @@ export default function Contractors() {
                       }
                     />
                   </FormControl>
+
                   <FormControl mt={2} isRequired>
                     <FormLabel>Contractor Hours Estimate</FormLabel>
                     <Input
@@ -408,6 +483,7 @@ export default function Contractors() {
                       }
                     />
                   </FormControl>
+
                 </AlertDialogBody>
                 <AlertDialogFooter>
                   <Button
@@ -427,4 +503,6 @@ export default function Contractors() {
       </Flex>
     </Flex>
   );
-}
+};
+
+export default Contractors;
