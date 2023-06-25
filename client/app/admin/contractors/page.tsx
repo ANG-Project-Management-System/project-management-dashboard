@@ -280,7 +280,7 @@ const Contractors: React.FC = () => {
                     aria-label="Download timesheets"
                     variant="outline"
                     colorScheme="blue"
-                    onClick={() => setDeleteContractor(contractor)}
+                    // onClick={() => }
                   />
                 </Td>
                 <Td>

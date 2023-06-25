@@ -108,8 +108,10 @@ const Contractors: React.FC = () => {
     }
 
     return (
-      <VStack align="start" mt={2}>
-        <Text>Uploaded Files:</Text>
+      <VStack align="start" mt={4}>
+        <Text>
+            Uploaded Files:
+        </Text>
         {files.map((file, index) => (
           <Flex key={index} align="flex">
             <Text>{file.name}</Text>
@@ -380,7 +382,7 @@ const Contractors: React.FC = () => {
                     aria-label="Download Timesheets"
                     variant="outline"
                     colorScheme="blue"
-                    onClick={() => setDeleteContractor(contractor)}
+                    // onClick={() => }
                   />
                 </Td>
                 <Td>
@@ -446,7 +448,7 @@ const Contractors: React.FC = () => {
                 <AlertDialogBody>
                   <form ref={formRef} onSubmit={handleSubmit}>
                     <FormControl id="projectAttachments" mt={4}>
-                      <FormLabel>Project Attachments</FormLabel>
+                      <FormLabel>Attached Timesheets</FormLabel>
                       <Button
                         as="label"
                         htmlFor="fileUpload"
