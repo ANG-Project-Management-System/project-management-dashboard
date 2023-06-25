@@ -21,6 +21,7 @@ import {
   IconFileSpreadsheet,
   IconFileInvoice,
   IconFileDollar,
+  IconUsers,
 } from "@tabler/icons-react";
 
 interface LinkItemProps {
@@ -31,7 +32,8 @@ interface LinkItemProps {
 
 const LinkItems: Array<LinkItemProps> = [
   { name: "Project Overview", icon: IconHome, path: "/admin/project-overview" },
-  { name: "Contractors", icon: IconNotebook, path: "/admin/contractors" },
+  { name: "Master Contractors", icon: IconUsers, path: "/admin/master-contractors" },
+  { name: "Project Contractors", icon: IconNotebook, path: "/admin/contractors" },
   { name: "Estimates", icon: IconFileAnalytics, path: "/admin/estimates" },
   { name: "Timesheets", icon: IconFileSpreadsheet, path: "/admin/timesheets" },
   { name: "Expenses", icon: IconFileDollar, path: "/admin/expenses" },

@@ -1,6 +1,6 @@
 export const metadata = {
   title: "Forms | RFQ",
-  description: "Request for Quotation form for the Admin/PM",
+  description: "Request for Quotation form for the Admin.",
 };
 
 export default function AdminLayout({

@@ -33,7 +33,9 @@ interface Contractor {
   name: string;
   phone: string;
   email: string;
+  availability: string;
   discipline: string;
+  hourlyRate: number;
   status: string;
   date: string;
   rate: number;
@@ -63,8 +65,10 @@ const Contractors: React.FC = () => {
     id: 0,
     name: "",
     phone: "",
+    availability: "",
     email: "",
     discipline: "",
+    hourlyRate: 0,
     status: "PENDING",
     date: new Date().toISOString().slice(0, 10),
     rate: 0,
@@ -199,7 +203,9 @@ const Contractors: React.FC = () => {
       name: "",
       phone: "",
       email: "",
+      availability: "",
       discipline: "",
+      hourlyRate: 0,
       status: "PENDING",
       date: new Date().toISOString().slice(0, 10),
       rate: 0,
@@ -228,12 +234,12 @@ const Contractors: React.FC = () => {
       <Flex mt={2} direction="column" p={5} w="full">
         <Flex justify="space-between" align="center" mb={10}>
           <Heading mt={20} size="lg">
-            Project Contractors
+            Master Contractors
           </Heading>
           <Flex>
             <Input
               mt={20}
-              mr={4}
+              mr={8}
               w="270px"
               placeholder="Search by name or discipline"
               value={searchQuery}
@@ -255,10 +261,11 @@ const Contractors: React.FC = () => {
               <Th>Contractor Name</Th>
               <Th>Contractor Phone</Th>
               <Th>Contractor Email</Th>
-              <Th>Discipline</Th>
+              <Th>Contractor Availability</Th>
               <Th>Initial Request Date</Th>
-              <Th>Discipline Charge Out Rate ($/hr)</Th>
-              <Th>Contractor Hours Estimate</Th>
+              <Th>Specialty (Discipline)</Th>
+              <Th>Contractor Hourly Rate ($/hr)</Th>
+              <Th>Discipline Charge out Rate ($/hr)</Th>
               <Th>Actions</Th>
             </Tr>
           </Thead>
@@ -269,10 +276,11 @@ const Contractors: React.FC = () => {
                 <Td>{contractor.name}</Td>
                 <Td>{contractor.phone}</Td>
                 <Td>{contractor.email}</Td>
-                <Td>{contractor.discipline}</Td>
+                <Td>{contractor.availability}</Td>
                 <Td>{contractor.date}</Td>
+                <Td>{contractor.discipline}</Td>
+                <Td>{contractor.hourlyRate}</Td>
                 <Td>{contractor.rate}</Td>
-                <Td>{contractor.estimate}</Td>
                 <Td>
                   <IconButton
                     icon={<DeleteIcon />}
