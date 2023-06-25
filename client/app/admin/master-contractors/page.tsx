@@ -33,12 +33,13 @@ interface Contractor {
   name: string;
   phone: string;
   email: string;
+  availability: string;
   discipline: string;
+  hourlyRate: number;
   status: string;
   date: string;
   rate: number;
   estimate: number;
-  timesheet: string;
 }
 
 interface ContractorFromApi {
@@ -64,14 +65,16 @@ const Contractors: React.FC = () => {
     id: 0,
     name: "",
     phone: "",
+    availability: "",
     email: "",
     discipline: "",
+    hourlyRate: 0,
     status: "PENDING",
     date: new Date().toISOString().slice(0, 10),
     rate: 0,
     estimate: 0,
-    timesheet: "",
   });
+  const [selectedAvailability, setSelectedAvailability] = useState<string>("");
   const [showCustomDiscipline, setShowCustomDiscipline] = useState(false);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [filteredContractors, setFilteredContractors] = useState<Contractor[]>(
@@ -175,7 +178,7 @@ const Contractors: React.FC = () => {
 
   const handleNewContractorSubmit = () => {
     let chargeOutRate = 0;
-    let contractorEstimate = newContractor.estimate;
+    let contractorHourlyRate = newContractor.hourlyRate;
 
     if (selectedDiscipline && selectedDiscipline !== "Custom") {
       chargeOutRate =
@@ -184,14 +187,15 @@ const Contractors: React.FC = () => {
         ] || 0;
     } else if (selectedDiscipline === "Custom") {
       chargeOutRate = parseFloat(newContractor.rate.toString());
-      contractorEstimate = parseFloat(newContractor.estimate.toString());
+      contractorHourlyRate = parseFloat(newContractor.hourlyRate.toString());
     }
 
     const newContractorWithId: Contractor = {
       ...newContractor,
       id: Math.floor(Math.random() * 900000) + 100000,
       rate: chargeOutRate,
-      estimate: contractorEstimate,
+      estimate: contractorHourlyRate,
+      availability: selectedAvailability,
     };
 
     const updatedContractors = [...contractors, newContractorWithId];
@@ -201,12 +205,13 @@ const Contractors: React.FC = () => {
       name: "",
       phone: "",
       email: "",
+      availability: "",
       discipline: "",
+      hourlyRate: 0,
       status: "PENDING",
       date: new Date().toISOString().slice(0, 10),
       rate: 0,
       estimate: 0,
-      timesheet: "",
     });
     setShowNewContractorForm(false);
     setSelectedDiscipline("");
@@ -223,7 +228,7 @@ const Contractors: React.FC = () => {
     "Senior Designer / Checker": 120.0,
     "Intermediate Designer": 108.0,
     "Junior Designer": 90.0,
-    "Administrative": 68.0,
+    Administrative: 68.0,
   };
 
   return (
@@ -231,12 +236,12 @@ const Contractors: React.FC = () => {
       <Flex mt={2} direction="column" p={5} w="full">
         <Flex justify="space-between" align="center" mb={10}>
           <Heading mt={20} size="lg">
-            Project Contractors
+            Master Contractors
           </Heading>
           <Flex>
             <Input
               mt={20}
-              mr={4}
+              mr={8}
               w="270px"
               placeholder="Search by name or discipline"
               value={searchQuery}
@@ -258,11 +263,11 @@ const Contractors: React.FC = () => {
               <Th>Contractor Name</Th>
               <Th>Contractor Phone</Th>
               <Th>Contractor Email</Th>
-              <Th>Specialty (Discipline)</Th>
+              <Th>Contractor Availability</Th>
               <Th>Initial Request Date</Th>
-              <Th>Discipline Charge Out Rate ($/hr)</Th>
-              <Th>Contractor Hours Estimate</Th>
-              <Th>Contractor Timesheet</Th>
+              <Th>Specialty (Discipline)</Th>
+              <Th>Contractor Hourly Rate ($/hr)</Th>
+              <Th>Discipline Charge out Rate ($/hr)</Th>
               <Th>Actions</Th>
             </Tr>
           </Thead>
@@ -273,11 +278,11 @@ const Contractors: React.FC = () => {
                 <Td>{contractor.name}</Td>
                 <Td>{contractor.phone}</Td>
                 <Td>{contractor.email}</Td>
-                <Td>{contractor.discipline}</Td>
+                <Td>{contractor.availability}</Td>
                 <Td>{contractor.date}</Td>
+                <Td>{contractor.discipline}</Td>
+                <Td>{contractor.hourlyRate}</Td>
                 <Td>{contractor.rate}</Td>
-                <Td>{contractor.estimate}</Td>
-                <Td>{contractor.timesheet}</Td>
                 <Td>
                   <IconButton
                     icon={<DeleteIcon />}
@@ -379,8 +384,28 @@ const Contractors: React.FC = () => {
                       }
                     />
                   </FormControl>
+
+                  <FormControl mt={2} isRequired>
+                    <FormLabel>Contractor Availability</FormLabel>
+                    <Select
+                      isRequired
+                      placeholder="Select Availability"
+                      value={selectedAvailability}
+                      onChange={(e) => setSelectedAvailability(e.target.value)}
+                    >
+                      <option value="Full time - anytime">
+                        Full time - anytime
+                      </option>
+                      <option value="Weekends only">Weekends only</option>
+                      <option value="Evenings only">Evenings only</option>
+                      <option value="9 to 5, Monday through Friday">
+                        9 to 5, Monday through Friday
+                      </option>
+                    </Select>
+                  </FormControl>
+
                   <FormControl mt={2}>
-                    <FormLabel>Specialty (Discipline)</FormLabel>
+                    <FormLabel>Discipline</FormLabel>
                     <Select
                       isRequired
                       placeholder="Select discipline"
@@ -459,6 +484,7 @@ const Contractors: React.FC = () => {
                       }
                     />
                   </FormControl>
+                  
                   <FormControl mt={2} isRequired>
                     <FormLabel>Discipline Charge Out Rate ($/hr)</FormLabel>
                     <Input
@@ -473,22 +499,19 @@ const Contractors: React.FC = () => {
                       }
                     />
                   </FormControl>
-
                   <FormControl mt={2} isRequired>
-                    <FormLabel>Contractor Hours Estimate</FormLabel>
+                    <FormLabel>Contractor Hourly Rate ($/hr)</FormLabel>
                     <Input
                       type="number"
-                      placeholder="Enter estimate"
-                      value={newContractor.estimate}
+                      value={newContractor.hourlyRate}
                       onChange={(e) =>
                         setNewContractor((prevContractor) => ({
                           ...prevContractor,
-                          estimate: parseFloat(e.target.value),
+                          hourlyRate: parseFloat(e.target.value),
                         }))
                       }
                     />
                   </FormControl>
-
                 </AlertDialogBody>
                 <AlertDialogFooter>
                   <Button
