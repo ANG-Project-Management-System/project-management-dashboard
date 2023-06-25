@@ -25,7 +25,7 @@ import {
   Input,
   Select,
 } from "@chakra-ui/react";
-import { AddIcon, DeleteIcon } from "@chakra-ui/icons";
+import { AddIcon, DeleteIcon, DownloadIcon } from "@chakra-ui/icons";
 import Pagination from "@/app/components/Pagination";
 
 interface Contractor {
@@ -38,7 +38,6 @@ interface Contractor {
   date: string;
   rate: number;
   estimate: number;
-  timesheet: string;
 }
 
 interface ContractorFromApi {
@@ -70,7 +69,6 @@ const Contractors: React.FC = () => {
     date: new Date().toISOString().slice(0, 10),
     rate: 0,
     estimate: 0,
-    timesheet: "",
   });
   const [showCustomDiscipline, setShowCustomDiscipline] = useState(false);
   const [searchQuery, setSearchQuery] = useState<string>("");
@@ -206,7 +204,6 @@ const Contractors: React.FC = () => {
       date: new Date().toISOString().slice(0, 10),
       rate: 0,
       estimate: 0,
-      timesheet: "",
     });
     setShowNewContractorForm(false);
     setSelectedDiscipline("");
@@ -262,7 +259,7 @@ const Contractors: React.FC = () => {
               <Th>Initial Request Date</Th>
               <Th>Discipline Charge Out Rate ($/hr)</Th>
               <Th>Contractor Hours Estimate</Th>
-              <Th>Contractor Timesheet</Th>
+              <Th>Contractor Timesheets</Th>
               <Th>Actions</Th>
             </Tr>
           </Thead>
@@ -277,7 +274,15 @@ const Contractors: React.FC = () => {
                 <Td>{contractor.date}</Td>
                 <Td>{contractor.rate}</Td>
                 <Td>{contractor.estimate}</Td>
-                <Td>{contractor.timesheet}</Td>
+                <Td>
+                  <IconButton
+                    icon={<DownloadIcon />}
+                    aria-label="Download timesheets"
+                    variant="outline"
+                    colorScheme="blue"
+                    // onClick={() => }
+                  />
+                </Td>
                 <Td>
                   <IconButton
                     icon={<DeleteIcon />}
