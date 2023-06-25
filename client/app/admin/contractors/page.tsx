@@ -38,6 +38,7 @@ interface Contractor {
   date: string;
   rate: number;
   estimate: number;
+  timesheet: string;
 }
 
 interface ContractorFromApi {
@@ -69,6 +70,7 @@ const Contractors: React.FC = () => {
     date: new Date().toISOString().slice(0, 10),
     rate: 0,
     estimate: 0,
+    timesheet: "",
   });
   const [showCustomDiscipline, setShowCustomDiscipline] = useState(false);
   const [searchQuery, setSearchQuery] = useState<string>("");
@@ -204,6 +206,7 @@ const Contractors: React.FC = () => {
       date: new Date().toISOString().slice(0, 10),
       rate: 0,
       estimate: 0,
+      timesheet: "",
     });
     setShowNewContractorForm(false);
     setSelectedDiscipline("");
@@ -255,10 +258,11 @@ const Contractors: React.FC = () => {
               <Th>Contractor Name</Th>
               <Th>Contractor Phone</Th>
               <Th>Contractor Email</Th>
-              <Th>Discipline</Th>
+              <Th>Specialty (Discipline)</Th>
               <Th>Initial Request Date</Th>
               <Th>Discipline Charge Out Rate ($/hr)</Th>
               <Th>Contractor Hours Estimate</Th>
+              <Th>Contractor Timesheet</Th>
               <Th>Actions</Th>
             </Tr>
           </Thead>
@@ -273,6 +277,7 @@ const Contractors: React.FC = () => {
                 <Td>{contractor.date}</Td>
                 <Td>{contractor.rate}</Td>
                 <Td>{contractor.estimate}</Td>
+                <Td>{contractor.timesheet}</Td>
                 <Td>
                   <IconButton
                     icon={<DeleteIcon />}
@@ -375,7 +380,7 @@ const Contractors: React.FC = () => {
                     />
                   </FormControl>
                   <FormControl mt={2}>
-                    <FormLabel>Discipline</FormLabel>
+                    <FormLabel>Specialty (Discipline)</FormLabel>
                     <Select
                       isRequired
                       placeholder="Select discipline"
@@ -442,7 +447,7 @@ const Contractors: React.FC = () => {
                     )}
                   </FormControl>
                   <FormControl mt={2}>
-                    <FormLabel>Request Date</FormLabel>
+                    <FormLabel>Initial Request Date</FormLabel>
                     <Input
                       placeholder="Enter date (YYYY-MM-DD)"
                       value={newContractor.date}

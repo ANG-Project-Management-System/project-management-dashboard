@@ -74,6 +74,7 @@ const Contractors: React.FC = () => {
     rate: 0,
     estimate: 0,
   });
+  const [selectedAvailability, setSelectedAvailability] = useState<string>("");
   const [showCustomDiscipline, setShowCustomDiscipline] = useState(false);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [filteredContractors, setFilteredContractors] = useState<Contractor[]>(
@@ -177,7 +178,7 @@ const Contractors: React.FC = () => {
 
   const handleNewContractorSubmit = () => {
     let chargeOutRate = 0;
-    let contractorEstimate = newContractor.estimate;
+    let contractorHourlyRate = newContractor.hourlyRate;
 
     if (selectedDiscipline && selectedDiscipline !== "Custom") {
       chargeOutRate =
@@ -186,14 +187,15 @@ const Contractors: React.FC = () => {
         ] || 0;
     } else if (selectedDiscipline === "Custom") {
       chargeOutRate = parseFloat(newContractor.rate.toString());
-      contractorEstimate = parseFloat(newContractor.estimate.toString());
+      contractorHourlyRate = parseFloat(newContractor.hourlyRate.toString());
     }
 
     const newContractorWithId: Contractor = {
       ...newContractor,
       id: Math.floor(Math.random() * 900000) + 100000,
       rate: chargeOutRate,
-      estimate: contractorEstimate,
+      estimate: contractorHourlyRate,
+      availability: selectedAvailability,
     };
 
     const updatedContractors = [...contractors, newContractorWithId];
@@ -226,7 +228,7 @@ const Contractors: React.FC = () => {
     "Senior Designer / Checker": 120.0,
     "Intermediate Designer": 108.0,
     "Junior Designer": 90.0,
-    "Administrative": 68.0,
+    Administrative: 68.0,
   };
 
   return (
@@ -382,6 +384,26 @@ const Contractors: React.FC = () => {
                       }
                     />
                   </FormControl>
+
+                  <FormControl mt={2} isRequired>
+                    <FormLabel>Contractor Availability</FormLabel>
+                    <Select
+                      isRequired
+                      placeholder="Select Availability"
+                      value={selectedAvailability}
+                      onChange={(e) => setSelectedAvailability(e.target.value)}
+                    >
+                      <option value="Full time - anytime">
+                        Full time - anytime
+                      </option>
+                      <option value="Weekends only">Weekends only</option>
+                      <option value="Evenings only">Evenings only</option>
+                      <option value="9 to 5, Monday through Friday">
+                        9 to 5, Monday through Friday
+                      </option>
+                    </Select>
+                  </FormControl>
+
                   <FormControl mt={2}>
                     <FormLabel>Discipline</FormLabel>
                     <Select
@@ -450,7 +472,7 @@ const Contractors: React.FC = () => {
                     )}
                   </FormControl>
                   <FormControl mt={2}>
-                    <FormLabel>Request Date</FormLabel>
+                    <FormLabel>Initial Request Date</FormLabel>
                     <Input
                       placeholder="Enter date (YYYY-MM-DD)"
                       value={newContractor.date}
@@ -462,6 +484,7 @@ const Contractors: React.FC = () => {
                       }
                     />
                   </FormControl>
+                  
                   <FormControl mt={2} isRequired>
                     <FormLabel>Discipline Charge Out Rate ($/hr)</FormLabel>
                     <Input
@@ -476,22 +499,19 @@ const Contractors: React.FC = () => {
                       }
                     />
                   </FormControl>
-
                   <FormControl mt={2} isRequired>
-                    <FormLabel>Contractor Hours Estimate</FormLabel>
+                    <FormLabel>Contractor Hourly Rate ($/hr)</FormLabel>
                     <Input
                       type="number"
-                      placeholder="Enter estimate"
-                      value={newContractor.estimate}
+                      value={newContractor.hourlyRate}
                       onChange={(e) =>
                         setNewContractor((prevContractor) => ({
                           ...prevContractor,
-                          estimate: parseFloat(e.target.value),
+                          hourlyRate: parseFloat(e.target.value),
                         }))
                       }
                     />
                   </FormControl>
-
                 </AlertDialogBody>
                 <AlertDialogFooter>
                   <Button
