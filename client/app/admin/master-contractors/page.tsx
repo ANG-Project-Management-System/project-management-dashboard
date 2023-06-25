@@ -24,8 +24,16 @@ import {
   FormLabel,
   Input,
   Select,
+  VStack,
+  Text,
 } from "@chakra-ui/react";
-import { AddIcon, DeleteIcon } from "@chakra-ui/icons";
+import { useToast } from "@chakra-ui/toast";
+import {
+  AddIcon,
+  DeleteIcon,
+  DownloadIcon,
+  SettingsIcon,
+} from "@chakra-ui/icons";
 import Pagination from "@/app/components/Pagination";
 
 interface Contractor {
@@ -54,6 +62,9 @@ interface ContractorFromApi {
 }
 
 const Contractors: React.FC = () => {
+  const toast = useToast();
+  const [showUploadTimesheets, setShowUploadTimesheets] = useState(false);
+
   const [contractors, setContractors] = useState<Contractor[]>([]);
   const [page, setPage] = useState<number>(1);
   const itemsPerPage = 10;
@@ -74,6 +85,75 @@ const Contractors: React.FC = () => {
     rate: 0,
     estimate: 0,
   });
+
+  const [files, setFiles] = useState<File[]>([]);
+  const formRef = useRef<HTMLFormElement>(null);
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const fileList = event.target.files;
+    if (fileList && fileList.length > 0) {
+      const selectedFiles = Array.from(fileList);
+      setFiles([...files, ...selectedFiles]);
+    }
+  };
+
+  const handleRemoveFile = (index: any) => {
+    const updatedFiles = files.filter((_, i) => i !== index);
+    setFiles(updatedFiles);
+  };
+
+  const renderUploadedFiles = () => {
+    if (files.length === 0) {
+      return null;
+    }
+
+    return (
+      <VStack align="start" mt={2}>
+        <Text>Uploaded Files:</Text>
+        {files.map((file, index) => (
+          <Flex key={index} align="flex">
+            <Text>{file.name}</Text>
+            <Button
+              size="sm"
+              colorScheme="white"
+              onClick={() => handleRemoveFile(index)}
+              textColor="black"
+              _hover={{ backgroundColor: "gray.200" }}
+            >
+              X
+            </Button>
+          </Flex>
+        ))}
+      </VStack>
+    );
+  };
+
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    const formData = new FormData(formRef.current!);
+
+    // Rest of the form fields
+
+    if (files.length > 0) {
+      files.forEach((file) => {
+        formData.append("files", file);
+      });
+    }
+
+    console.log("Project Files:", files);
+    setShowUploadTimesheets(false);
+
+    toast({
+        title: "Timesheet Uploaded",
+        description:
+          "The timesheet has been successfully uploaded and is available for download.",
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+      });
+  };
+
   const [selectedAvailability, setSelectedAvailability] = useState<string>("");
   const [showCustomDiscipline, setShowCustomDiscipline] = useState(false);
   const [searchQuery, setSearchQuery] = useState<string>("");
@@ -268,6 +348,8 @@ const Contractors: React.FC = () => {
               <Th>Specialty (Discipline)</Th>
               <Th>Contractor Hourly Rate ($/hr)</Th>
               <Th>Discipline Charge out Rate ($/hr)</Th>
+              <Th>Upload Timesheets</Th>
+              <Th>Download Timesheets</Th>
               <Th>Actions</Th>
             </Tr>
           </Thead>
@@ -283,6 +365,24 @@ const Contractors: React.FC = () => {
                 <Td>{contractor.discipline}</Td>
                 <Td>{contractor.hourlyRate}</Td>
                 <Td>{contractor.rate}</Td>
+                <Td>
+                  <IconButton
+                    icon={<AddIcon />}
+                    aria-label="Upload Timesheets"
+                    variant="outline"
+                    colorScheme="green"
+                    onClick={() => setShowUploadTimesheets(true)}
+                  />
+                </Td>
+                <Td>
+                  <IconButton
+                    icon={<DownloadIcon />}
+                    aria-label="Download Timesheets"
+                    variant="outline"
+                    colorScheme="blue"
+                    onClick={() => setDeleteContractor(contractor)}
+                  />
+                </Td>
                 <Td>
                   <IconButton
                     icon={<DeleteIcon />}
@@ -301,6 +401,7 @@ const Contractors: React.FC = () => {
           totalPages={Math.ceil(contractors.length / itemsPerPage)}
           onPageChange={setPage}
         />
+
         <AlertDialog
           isOpen={Boolean(deleteContractor)}
           leastDestructiveRef={cancelRef}
@@ -329,6 +430,71 @@ const Contractors: React.FC = () => {
             </AlertDialogContent>
           </AlertDialogOverlay>
         </AlertDialog>
+
+        {showUploadTimesheets && (
+          <AlertDialog
+            isOpen={showUploadTimesheets}
+            leastDestructiveRef={cancelRef}
+            onClose={() => setShowUploadTimesheets(false)}
+          >
+            <AlertDialogOverlay>
+              <AlertDialogContent>
+                <AlertDialogHeader fontSize="lg" fontWeight="bold">
+                  Upload Timesheets
+                </AlertDialogHeader>
+                <AlertDialogCloseButton />
+                <AlertDialogBody>
+                  <form ref={formRef} onSubmit={handleSubmit}>
+                    <FormControl id="projectAttachments" mt={4}>
+                      <FormLabel>Project Attachments</FormLabel>
+                      <Button
+                        as="label"
+                        htmlFor="fileUpload"
+                        leftIcon={<SettingsIcon />}
+                        cursor="pointer"
+                      >
+                        Click to Upload
+                      </Button>
+                      <Input
+                        id="fileUpload"
+                        type="file"
+                        accept=".xls,.xlsx,.xlsm,.csv,.docx,.pdf,.ppt,"
+                        multiple
+                        onChange={handleFileChange}
+                        opacity={0}
+                        position="absolute"
+                        zIndex="-1"
+                      />
+
+                      {renderUploadedFiles()}
+                    </FormControl>
+                    <Flex 
+                        justifyContent="flex-end"
+                        marginRight={-4}
+                        mt={10}
+                        p={2}
+                    >
+                      <Button
+                        ref={cancelRef}
+                        onClick={() => setShowUploadTimesheets(false)}
+                        marginRight={3}
+                      >
+                        Cancel
+                      </Button>
+                      <Button 
+                        colorScheme="blue" 
+                        type="submit"
+                    >
+                        Submit
+                      </Button>
+                    </Flex>
+                  </form>
+                </AlertDialogBody>
+              </AlertDialogContent>
+            </AlertDialogOverlay>
+          </AlertDialog>
+        )}
+
         {showNewContractorForm && (
           <AlertDialog
             isOpen={showNewContractorForm}
@@ -484,7 +650,7 @@ const Contractors: React.FC = () => {
                       }
                     />
                   </FormControl>
-                  
+
                   <FormControl mt={2} isRequired>
                     <FormLabel>Discipline Charge Out Rate ($/hr)</FormLabel>
                     <Input
