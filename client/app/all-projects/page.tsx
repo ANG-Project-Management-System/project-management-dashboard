@@ -14,142 +14,67 @@ import Providers from "../components/Providers";
 import Chakra from "../components/Chakra";
 import Navbar from "../components/ProjectNavbar";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface Project {
-  projectName: string;
-  projectNumber: string;
-  lastUpdated: string;
-  status: string;
-  description: string;
+  Project_Number: string;
+  Client_Company_Name: string;
+  Client_Contact_Name: string;
+  Client_Email: string;
+  Client_Contact_Phone_Number: string;
+  Client_Address: string;
+  Project_Name: string;
+  Project_Description: string;
+  Proposed_Start_Date: string;
+  Proposed_Project_Completion_Date: string;
+  Project_Disciplines_Engineering: string[];
+  Project_Disciplines_Design_Drafting: string[];
+  Project_Type: string;
+  Status: string;
+  "As of date:": number;
+  "Total Approved Budget:": number;
+  "Original PO Value:": number;
+  "Expenses: (ABSA Fees, TSSA fees, etc.):": number;
+  "Approx. hours remaining (based on blended rate of $120/hour)": number;
+  "Remaining Budget:": number;
+  Contractors: {
+    Contractor_Name: string;
+    Contractor_Phone_Number: string;
+    Contractor_Email: string;
+    Contractor_Availability: string;
+    Start_Date: string;
+    Specialty_Discipline: string;
+    Contractor_Hourly_Rate: number;
+    Discipline_Charge_Out_Rate: number;
+  }[];
 }
-
-const cardContent: Project[] = [
-  {
-    projectName: "academyfabricators-ledcor-pipeline-end-cap-fabrication",
-    projectNumber: "88-02032023-01",
-    lastUpdated: "2023-03-05 11:00",
-    status: "Active",
-    description:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-  },
-  {
-    projectName: "Project Two",
-    projectNumber: "002",
-    lastUpdated: "2023-06-19 12:00",
-    status: "Active",
-    description:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-  },
-  {
-    projectName: "Project Three",
-    projectNumber: "003",
-    lastUpdated: "2023-06-19 13:00",
-    status: "Active",
-    description:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-  },
-  {
-    projectName: "Project Four",
-    projectNumber: "004",
-    lastUpdated: "2023-06-19 14:00",
-    status: "Active",
-    description:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-  },
-  {
-    projectName: "Project Five",
-    projectNumber: "005",
-    lastUpdated: "2023-06-19 15:00",
-    status: "Inactive",
-    description:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-  },
-];
-
-interface ProjectCardProps {
-  project: Project;
-  selectProject: (project: Project) => void;
-}
-
-const ProjectCard: React.FC<ProjectCardProps> = ({ project, selectProject }) => {
-  return (
-    <Box
-      width="full"
-      borderWidth="1px"
-      borderRadius="lg"
-      overflow="hidden"
-      p={8}
-      boxShadow="lg"
-      m={3}
-    >
-      <Flex justifyContent="space-between">
-        <Box>
-          <Text mb={2}>
-            <strong>Project Name:</strong> {project.projectName}
-          </Text>
-          <Text mb={2}>
-            <strong>Project Number:</strong> {project.projectNumber}
-          </Text>
-        </Box>
-        <Flex align="center">
-          <Text mr={4}>
-            <strong>Last Updated:</strong> {project.lastUpdated}
-          </Text>
-          <strong className="mr-2">Status:</strong>
-          <Badge
-            colorScheme="white"
-            borderRadius="lg"
-            px={2}
-            py={1}
-            borderWidth={1}
-            borderColor={project.status === "Active" ? "green" : "red"}
-          >
-            {project.status}
-          </Badge>
-          <Link href={`/admin`}>
-              <Button
-                rightIcon={<ChevronRightIcon />}
-                colorScheme="blue"
-                ml={6}
-                onClick={() => {
-                  selectProject(project);
-                  localStorage.setItem('selectedProject', JSON.stringify(project)); // Store selected project in Local Storage
-                }} 
-              >
-                Open
-              </Button>
-            </Link>
-        </Flex>
-      </Flex>
-      <Divider my={3} borderColor={useColorModeValue("gray.200", "gray.700")} />
-      <Text>
-        <strong>Project Description:</strong> {project.description}
-      </Text>
-    </Box>
-  );
-};
 
 const Projects: React.FC = () => {
-  const getInitialProject = (): Project | null => {
-    const storedProject = localStorage.getItem('selectedProject');
-    if (storedProject) {
-      try {
-        return JSON.parse(storedProject) as Project;
-      } catch (error) {
-        console.error(error);
-        return null;
-      }
+  const [projects, setProjects] = useState<Project[]>([]);
+
+  useEffect(() => {
+    fetchProjects();
+  }, []);
+
+  const fetchProjects = async () => {
+    try {
+      const response = await fetch("http://localhost:3000/api/projects");
+      const data = await response.json();
+      console.log("Projects:", data);
+      setProjects(data);
+    } catch (error) {
+      console.error("Error fetching projects:", error);
     }
-    return null;
   };
 
-  const [selectedProject, setSelectedProject] = useState<Project | null>(getInitialProject); // Initialize selectedProject state from Local Storage
+  const selectProject = (project: Project) => {
+    // Handle project selection
+    console.log("Selected project:", project);
+  };
   return (
     <Providers>
       <Chakra>
-        <Navbar /> 
-        state down to Navbar
+        <Navbar />
         <Flex direction="column" w="full" p={5}>
           <Flex
             mt={20}
@@ -158,12 +83,74 @@ const Projects: React.FC = () => {
             justify="center"
             w="full"
           >
-            {cardContent.map((project, index) => (
-              <ProjectCard
-                project={project}
+            {projects && projects.map((project, index) => (
+              <Box
                 key={index}
-                selectProject={setSelectedProject}
-              /> // Pass setSelectedProject function down to each ProjectCard
+                width="full"
+                borderWidth="1px"
+                borderRadius="lg"
+                overflow="hidden"
+                p={8}
+                boxShadow="lg"
+                m={3}
+              >
+                {/* Project details */}
+                <Flex justifyContent="space-between">
+                  <Box>
+                    <Text mb={2}>
+                      <strong>Project Name:</strong> {project.Project_Name}
+                    </Text>
+                    <Text mb={2}>
+                      <strong>Project Number:</strong>{" "}
+                      {project.Project_Number}
+                    </Text>
+                  </Box>
+                  {/* Status and action */}
+                  <Flex align="center">
+                    <Text mr={4}>
+                      <strong>As of date:</strong> {project["As of date:"]}
+                    </Text>
+                    <strong className="mr-2">Status:</strong>
+                    <Badge
+                      colorScheme="white"
+                      borderRadius="lg"
+                      px={2}
+                      py={1}
+                      borderWidth={1}
+                      borderColor={
+                        project.Status === "Active"
+                              ? "green"
+                              : project.Status === "Complete"
+                              ? "green"
+                              : project.Status === "In Progress"
+                              ? "orange"
+                              : "red"
+                      }
+                    >
+                      {project.Status}
+                    </Badge>
+                    <Link href={`/admin`}>
+                      <Button
+                        rightIcon={<ChevronRightIcon />}
+                        colorScheme="blue"
+                        ml={6}
+                        onClick={() => selectProject(project)}
+                      >
+                        Open
+                      </Button>
+                    </Link>
+                  </Flex>
+                </Flex>
+                {/* Project description */}
+                <Divider
+                  my={3}
+                  borderColor={useColorModeValue("gray.200", "gray.700")}
+                />
+                <Text>
+                  <strong>Project Description:</strong>{" "}
+                  {project.Project_Description}
+                </Text>
+              </Box>
             ))}
           </Flex>
         </Flex>
