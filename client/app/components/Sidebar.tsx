@@ -34,8 +34,8 @@ const LinkItems: Array<LinkItemProps> = [
   { name: "Project Overview", icon: IconHome, path: "/admin/project-overview" },
   { name: "Master Contractors", icon: IconUsers, path: "/admin/master-contractors" },
   { name: "Project Contractors", icon: IconNotebook, path: "/admin/contractors" },
+  { name: "Cost Management", icon: IconFileSpreadsheet, path: "/admin/cost-management" },
   { name: "Estimates", icon: IconFileAnalytics, path: "/admin/estimates" },
-  { name: "Timesheets", icon: IconFileSpreadsheet, path: "/admin/timesheets" },
   { name: "Expenses", icon: IconFileDollar, path: "/admin/expenses" },
   { name: "Invoices", icon: IconFileInvoice, path: "/admin/invoices" },
 ];

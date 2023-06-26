@@ -1,6 +1,6 @@
 export const metadata = {
-  title: "Timesheets",
-  description: "Timesheets page for the Admin/PM.",
+  title: "Cost Management",
+  description: "Cost Management page for the Admin.",
 };
 
 export default function AdminLayout({
