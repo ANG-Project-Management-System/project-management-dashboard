@@ -576,6 +576,7 @@ const ProjectOverview = () => {
               size="md"
               value={progressPercentage}
               hasStripe
+              isAnimated
             />
           </Box>
 
