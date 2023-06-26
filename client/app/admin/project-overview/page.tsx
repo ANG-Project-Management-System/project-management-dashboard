@@ -33,6 +33,7 @@ import {
   IconButton,
   useToast,
   Textarea,
+  Progress,
 } from "@chakra-ui/react";
 import {
   EditIcon,
@@ -290,6 +291,48 @@ const ProjectOverview = () => {
     });
   };
 
+  const [totalCosts, setTotalCosts] = useState<number[]>([]);
+  const [totalApprovedBudget, setTotalApprovedBudget] = useState<number>(0);
+
+  useEffect(() => {
+    const apiUrl = "http://localhost:3000/api/project?number=88-02032023-01";
+
+    fetch(apiUrl)
+      .then((response) => response.json())
+      .then((data) => {
+        if (data && data.contractors) {
+          const totalCosts = data.contractors.map(
+            (contractor: any) => contractor["Total cost"]
+          );
+          const totalApprovedBudget = data.project["Total Approved Budget:"];
+
+          setTotalCosts(totalCosts);
+          setTotalApprovedBudget(totalApprovedBudget);
+          console.log(data);
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+      });
+  }, []);
+
+  const [totalCostsSum, setTotalCostsSum] = useState<number>(0);
+  const [progressPercentage, setProgressPercentage] = useState<number>(0);
+
+  useEffect(() => {
+    const totalCostsSum = totalCosts.reduce(
+      (accumulator, currentCost) => accumulator + currentCost,
+      0
+    );
+    setTotalCostsSum(totalCostsSum);
+
+    // Add condition to avoid division by zero
+    if (totalApprovedBudget > 0) {
+      const progressPercentage = (totalCostsSum / totalApprovedBudget) * 100;
+      setProgressPercentage(progressPercentage); // Update the state variable
+    }
+  }, [totalCosts, totalApprovedBudget]);
+
   return (
     <Flex>
       <Flex mt={20} direction="column" p={5}>
@@ -351,6 +394,37 @@ const ProjectOverview = () => {
               <strong>Project Description:</strong>{" "}
               {selectedProject.description}
             </Text>
+            <Text>
+              <strong>Project Disciplines (Engineering):</strong>{" "}
+              {selectedProject.description}
+            </Text>
+            <Text>
+              <strong>Project Disciplines (Design & Drafting):</strong>{" "}
+              {selectedProject.description}
+            </Text>
+            <Text>
+              <strong>Project Type:</strong> {selectedProject.description}
+            </Text>
+            <br />
+            <Text fontSize="xl" fontWeight="bold" mb={2}>
+              Client Information
+            </Text>
+            <Text>
+              <strong>Client Name:</strong> {selectedProject.description}
+            </Text>
+            <Text>
+              <strong>Client Email:</strong> {selectedProject.description}
+            </Text>
+            <Text>
+              <strong>Client Phone Number:</strong>{" "}
+              {selectedProject.description}
+            </Text>
+            <Text>
+              <strong>Client Company:</strong> {selectedProject.description}
+            </Text>
+            <Text>
+              <strong>Client Address:</strong> {selectedProject.description}
+            </Text>
           </Box>
           <Box>{/* Your dropdowns and checkboxes go here */}</Box>
         </Grid>
@@ -358,7 +432,7 @@ const ProjectOverview = () => {
         <Divider my={4} />
 
         <Text fontSize="xl" fontWeight="bold">
-          Project Form
+          Project Form for Change Order
         </Text>
 
         <form id="projectForm" ref={formRef} onSubmit={handleSubmit}>
@@ -479,6 +553,34 @@ const ProjectOverview = () => {
 
           <Divider my={4} />
 
+          <Text fontSize="xl" fontWeight="bold" mb={4}>
+            Budgeted Hours
+          </Text>
+
+          <Text fontSize="xl">
+            Total Approved Budget: ${totalApprovedBudget}
+          </Text>
+
+          <Text fontSize="xl">
+            Total Cost Used: ${totalCostsSum}
+          </Text>
+
+          <Text fontSize="xl" mt={4} mb={2}>
+            {/* Display the percentage here */}
+            Budget Hours Used: <strong>{progressPercentage.toFixed(2)}%</strong>
+          </Text>
+
+          <Box width="45%">
+            <Progress
+              colorScheme="teal"
+              size="md"
+              value={progressPercentage}
+              hasStripe
+            />
+          </Box>
+
+          <Divider my={5} />
+
           <Text fontSize="xl" fontWeight="bold" mb={3}>
             Project Comments
           </Text>
@@ -539,15 +641,25 @@ const ProjectOverview = () => {
                       >
                         <option value="null">-</option>{" "}
                         {/* Added null option */}
-                        <option value="10">10%</option>
-                        <option value="20">20%</option>
-                        <option value="30">30%</option>
-                        <option value="40">40%</option>
-                        <option value="50">50%</option>
-                        <option value="60">60%</option>
-                        <option value="70">70%</option>
-                        <option value="80">80%</option>
-                        <option value="90">90%</option>
+                        <option value="10">5%</option>
+                        <option value="20">10%</option>
+                        <option value="30">15%</option>
+                        <option value="40">20%</option>
+                        <option value="50">25%</option>
+                        <option value="60">30%</option>
+                        <option value="70">35%</option>
+                        <option value="80">40%</option>
+                        <option value="90">45%</option>
+                        <option value="100">50%</option>
+                        <option value="10">55%</option>
+                        <option value="20">60%</option>
+                        <option value="30">65%</option>
+                        <option value="40">70%</option>
+                        <option value="50">75%</option>
+                        <option value="60">80%</option>
+                        <option value="70">85%</option>
+                        <option value="80">90%</option>
+                        <option value="90">95%</option>
                         <option value="100">100%</option>
                       </Select>
                     </Td>
@@ -678,8 +790,6 @@ const ProjectOverview = () => {
             </Tbody>
           </Table>
         </form>
-
-        <Divider my={4} />
       </Flex>
 
       <AlertDialog
