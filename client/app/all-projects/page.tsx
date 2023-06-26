@@ -108,7 +108,7 @@ const Projects: React.FC = () => {
                   {/* Status and action */}
                   <Flex align="center">
                     <Text mr={4}>
-                      <strong>As of date:</strong> {project["As of date:"]}
+                      <strong>As of date:</strong> {project.Proposed_Start_Date.slice(0, 10)}
                     </Text>
                     <strong className="mr-2">Status:</strong>
                     <Badge
