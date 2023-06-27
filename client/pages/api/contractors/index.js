@@ -1,12 +1,8 @@
-import { MongoClient, ServerApiVersion } from 'mongodb';
+import { MongoClient, ServerApiVersion, ObjectId } from 'mongodb';
 
 const handler = async (req, res) => {
     const { method } = req;
     let id = req.query.id;
-    // If it's DELETE or PUT method, parse the id from JSON format.
-    if (method === 'DELETE' || method === 'PUT') {
-        id = JSON.parse(id);
-    }
     const body = req.body;
     const uri = `mongodb+srv://${process.env.MONGO_USER}:${encodeURIComponent(process.env.MONGO_PASSWORD)}@${process.env.MONGO_CLUSTER}/?retryWrites=true&w=majority`;
 
@@ -23,94 +19,95 @@ const handler = async (req, res) => {
             try {
                 await client.connect();
 
-                // Get the contractors document.
-                const contractorsDocument = await client.db(process.env.MONGO_DB)
-                    .collection('proj')
-                    .findOne({ _id: 'contractors' });
-
-                // Extract contractors data from the document or return empty array.
-                const contractors = contractorsDocument ? contractorsDocument.data : [];
+                // Get all contractor documents.
+                const contractors = await client.db(process.env.MONGO_DB)
+                    .collection('contractors')
+                    .find().toArray();
 
                 return res.status(200).json(contractors);
             } catch (error) {
                 console.error(error);
                 return res.status(500).json({ error: 'Error connecting to db', details: error });
             }
+            finally {
+                client.close();
+            }
             break;
+
 
         case 'POST':
             try {
                 await client.connect();
-        
-                // Insert a new contractor in the data array of the contractors document.
+
+                // Insert a new contractor document.
                 const result = await client.db(process.env.MONGO_DB)
-                    .collection('proj')
-                    .updateOne(
-                        { _id: 'contractors' },
-                        { $push: { data: body } },
-                        { upsert: true }
-                    );
-        
-                return res.status(201).json(body);
+                    .collection('contractors')
+                    .insertOne(body);
+
+                return res.status(201).json(result.ops[0]);
             } catch (error) {
                 console.error(error);
                 return res.status(500).json({ error: 'Error connecting to db', details: error });
             }
+            finally {
+                client.close();
+            }
             break;
-        
+
         case 'PUT':
             try {
                 await client.connect();
-        
-                // Update a contractor in the data array of the contractors document.
+
+                // Update the specific contractor document.
                 const result = await client.db(process.env.MONGO_DB)
-                    .collection('proj')
+                    .collection('contractors')
                     .updateOne(
-                        { _id: 'contractors', "data.Contractor_Name": body.Contractor_Name },
-                        { $set: { "data.$": body } }
+                        { _id: new ObjectId(id) },
+                        { $set: body }
                     );
-        
+
                 if (result.matchedCount === 0) {
                     return res.status(404).json({ error: 'Contractor not found' });
                 }
-        
+
                 return res.status(200).json(body);
             } catch (error) {
                 console.error(error);
                 return res.status(500).json({ error: 'Error connecting to db', details: error });
             }
+            finally {
+                client.close();
+            }
             break;
-            
+
         case 'DELETE':
             try {
                 await client.connect();
-        
-                // Remove a contractor from the data array of the contractors document.
+
+                // Delete the specific contractor document.
                 const result = await client.db(process.env.MONGO_DB)
-                    .collection('proj')
-                    .updateOne(
-                        { _id: 'contractors' },
-                        { $pull: { data: { Contractor_Name: id } } }
+                    .collection('contractors')
+                    .deleteOne(
+                        { _id: new ObjectId(id) }
                     );
-        
-                if (result.matchedCount === 0) {
+
+                if (result.deletedCount === 0) {
                     return res.status(404).json({ error: 'Contractor not found' });
                 }
-        
+
                 return res.status(200).json({ message: 'Contractor deleted' });
             } catch (error) {
                 console.error(error);
                 return res.status(500).json({ error: 'Error connecting to db', details: error });
             }
+            finally {
+                client.close();
+            }
             break;
-                
+
         default:
             res.setHeader('Allow', ['GET', 'POST', 'PUT', 'DELETE']);
             res.status(405).end(`Method ${method} Not Allowed`);
-    }
-
-    if (client) {
-        client.close();
     }
 }
 
