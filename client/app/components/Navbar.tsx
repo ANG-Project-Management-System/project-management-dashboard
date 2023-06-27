@@ -72,14 +72,6 @@ const NavLink = ({ children }: NavLinkProps) => {
   );
 };
 
-interface Project {
-  projectName: string;
-  projectNumber: string;
-  lastUpdated: string;
-  status: string;
-  description: string;
-}
-
 const getCurrentRoute = () => {
   if (typeof window !== "undefined") {
     return window.location.pathname;
@@ -99,16 +91,21 @@ export default function Navbar() {
     setIsExpanded(!isExpanded);
   };
 
-  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  interface SelectedProject {
+    name: string;
+    number: string;
+  }
+
+  const [selectedProject, setSelectedProject] = useState<SelectedProject | null>(null);
 
   useEffect(() => {
     const storedProject =
       typeof window !== "undefined"
-        ? localStorage.getItem("selectedProject")
+        ? localStorage.getItem('selectedProjectInfo')
         : null;
     if (storedProject) {
       try {
-        setSelectedProject(JSON.parse(storedProject) as Project);
+        setSelectedProject(JSON.parse(storedProject) as SelectedProject);
       } catch (error) {
         console.error(error);
       }
@@ -188,9 +185,9 @@ export default function Navbar() {
           <Box textAlign="center">
             {selectedProject ? (
               <Text>
-                Project Name: <strong>{selectedProject.projectName}</strong>{" "}
+                Project Name: <strong>{selectedProject.name}</strong>{" "}
                 <br />
-                Project Number: <strong>{selectedProject.projectNumber}</strong>
+                Project Number: <strong>{selectedProject.number}</strong>
               </Text>
             ) : (
               "Project Selection"
