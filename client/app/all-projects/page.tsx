@@ -67,10 +67,14 @@ const Projects: React.FC = () => {
     }
   };
 
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+
   const selectProject = (project: Project) => {
+    setSelectedProject(project);
     // Handle project selection
     console.log("Selected project:", project);
   };
+  
   return (
     <Providers>
       <Chakra>
@@ -83,75 +87,85 @@ const Projects: React.FC = () => {
             justify="center"
             w="full"
           >
-            {projects && projects.map((project, index) => (
-              <Box
-                key={index}
-                width="full"
-                borderWidth="1px"
-                borderRadius="lg"
-                overflow="hidden"
-                p={8}
-                boxShadow="lg"
-                m={3}
-              >
-                {/* Project details */}
-                <Flex justifyContent="space-between">
-                  <Box>
-                    <Text mb={2}>
-                      <strong>Project Name:</strong> {project.Project_Name}
-                    </Text>
-                    <Text mb={2}>
-                      <strong>Project Number:</strong>{" "}
-                      {project.Project_Number}
-                    </Text>
-                  </Box>
-                  {/* Status and action */}
-                  <Flex align="center">
-                    <Text mr={4}>
-                      <strong>As of date:</strong> {project.Proposed_Start_Date.slice(0, 10)}
-                    </Text>
-                    <strong className="mr-2">Status:</strong>
-                    <Badge
-                      colorScheme="white"
-                      borderRadius="lg"
-                      px={2}
-                      py={1}
-                      borderWidth={1}
-                      borderColor={
-                        project.Status === "Active"
-                              ? "green"
-                              : project.Status === "Complete"
-                              ? "green"
-                              : project.Status === "In Progress"
-                              ? "orange"
-                              : "red"
-                      }
-                    >
-                      {project.Status}
-                    </Badge>
-                    <Link href={`/admin`}>
-                      <Button
-                        rightIcon={<ChevronRightIcon />}
-                        colorScheme="blue"
-                        ml={6}
-                        onClick={() => selectProject(project)}
+            {projects &&
+              projects.map((project, index) => (
+                <Box
+                  key={index}
+                  width="full"
+                  borderWidth="1px"
+                  borderRadius="lg"
+                  overflow="hidden"
+                  p={8}
+                  boxShadow="lg"
+                  m={3}
+                >
+                  {/* Project details */}
+                  <Flex justifyContent="space-between">
+                    <Box>
+                      <Text mb={2}>
+                        <strong>Project Name:</strong> {project.Project_Name}
+                      </Text>
+                      <Text mb={2}>
+                        <strong>Project Number:</strong>{" "}
+                        {project.Project_Number}
+                      </Text>
+                    </Box>
+                    {/* Status and action */}
+                    <Flex align="center">
+                      <Text mr={4}>
+                        <strong>As of date:</strong>{" "}
+                        {project.Proposed_Start_Date.slice(0, 10)}
+                      </Text>
+                      <strong className="mr-2">Status:</strong>
+                      <Badge
+                        colorScheme="white"
+                        borderRadius="lg"
+                        px={2}
+                        py={1}
+                        borderWidth={1}
+                        borderColor={
+                          project.Status === "Complete"
+                            ? "green"
+                            : project.Status === "In Progress"
+                            ? "blue"
+                            : "red"
+                        }
                       >
-                        Open
-                      </Button>
-                    </Link>
+                        {project.Status}
+                      </Badge>
+                      <Link href={`/admin`}>
+                        <Button
+                          rightIcon={<ChevronRightIcon />}
+                          colorScheme="blue"
+                          ml={6}
+                          onClick={() => {
+                            selectProject(project);
+                            localStorage.setItem(
+                              "selectedProjectInfo",
+                              JSON.stringify({
+                                name: project.Project_Name,
+                                number: project.Project_Number,
+                              })
+                            ); 
+                            console.log("Selected project:", project);
+                          }}
+                        >
+                          Open
+                        </Button>
+                      </Link>
+                    </Flex>
                   </Flex>
-                </Flex>
-                {/* Project description */}
-                <Divider
-                  my={3}
-                  borderColor={useColorModeValue("gray.200", "gray.700")}
-                />
-                <Text>
-                  <strong>Project Description:</strong>{" "}
-                  {project.Project_Description}
-                </Text>
-              </Box>
-            ))}
+                  {/* Project description */}
+                  <Divider
+                    my={3}
+                    borderColor={useColorModeValue("gray.200", "gray.700")}
+                  />
+                  <Text>
+                    <strong>Project Description:</strong>{" "}
+                    {project.Project_Description}
+                  </Text>
+                </Box>
+              ))}
           </Flex>
         </Flex>
       </Chakra>
