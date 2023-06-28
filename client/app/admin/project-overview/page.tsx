@@ -81,18 +81,18 @@ const ProjectOverview = () => {
       });
   }, []);
 
-    // Retrieve selected project information from local storage
-    const storedProjectInfo = localStorage.getItem("selectedProjectInfo");
-    const selectedProjectInfo = storedProjectInfo
-      ? JSON.parse(storedProjectInfo)
-      : null;
-  
-    // Find the selected project based on project name and number
-    const selectedProject = projectData.find(
-      (project) =>
-        project.Project_Number === selectedProjectInfo?.number &&
-        project.Project_Name === selectedProjectInfo?.name
-    );
+  // Retrieve selected project information from local storage
+  const storedProjectInfo = localStorage.getItem("selectedProjectInfo");
+  const selectedProjectInfo = storedProjectInfo
+    ? JSON.parse(storedProjectInfo)
+    : null;
+
+  // Find the selected project based on project name and number
+  const selectedProject = projectData.find(
+    (project) =>
+      project.Project_Number === selectedProjectInfo?.number &&
+      project.Project_Name === selectedProjectInfo?.name
+  );
 
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
@@ -410,7 +410,12 @@ const ProjectOverview = () => {
                 </HStack>
               </Flex>
             )}
-            <Button rightIcon={<ExternalLinkIcon />} colorScheme="teal" ml={3} mr={-1}>
+            <Button
+              rightIcon={<ExternalLinkIcon />}
+              colorScheme="teal"
+              ml={3}
+              mr={-1}
+            >
               Share to Contractors
             </Button>
           </Flex>
@@ -420,52 +425,68 @@ const ProjectOverview = () => {
 
         <Grid templateColumns="repeat(2, 1fr)" gap={6}>
           {selectedProject ? (
-              <Box minWidth="80vw">
-                <Text>
-                  <strong>Project Name:</strong> {selectedProject.Project_Name}
-                </Text>
-                <Text>
-                  <strong>Project Number:</strong> {selectedProject.Project_Number}
-                </Text>
-                <Text>
-                  <strong>Project Description:</strong>{" "}
-                  {selectedProject.Project_Description}
-                </Text>
-                <Text>
-                  <strong>Project Disciplines (Engineering):</strong>{" "}
-                  {selectedProject.Project_Disciplines_Engineering.join(", ")}
-                </Text>
-                <Text>
-                  <strong>Project Disciplines (Design & Drafting):</strong>{" "}
-                  {selectedProject.Project_Disciplines_Design_Drafting.join(", ")}
-                </Text>
-                <Text>
-                  <strong>Project Type:</strong> {selectedProject.Project_Type}
-                </Text>
-                <br />
-                <Text fontSize="xl" fontWeight="bold" mb={2}>
-                  Client Information
-                </Text>
-                <Text>
-                  <strong>Client Name:</strong> {selectedProject.Client_Contact_Name}
-                </Text>
-                <Text>
-                  <strong>Client Email:</strong> {selectedProject.Client_Email}
-                </Text>
-                <Text>
-                  <strong>Client Phone Number:</strong>{" "}
-                  {selectedProject.Client_Contact_Phone_Number}
-                </Text>
-                <Text>
-                  <strong>Client Company:</strong> {selectedProject.Client_Company_Name}
-                </Text>
-                <Text>
-                  <strong>Client Address:</strong> {selectedProject.Client_Address}
-                </Text>
-              </Box>
-            ) : (
+            <Box minWidth="80vw">
+              <Text>
+                <strong>Project Name:</strong> {selectedProject.Project_Name}
+              </Text>
+              <Text>
+                <strong>Project Number:</strong>{" "}
+                {selectedProject.Project_Number}
+              </Text>
+              <Text>
+                <strong>Project Description:</strong>{" "}
+                {selectedProject.Project_Description}
+              </Text>
+              <Text>
+                <strong>Project Disciplines (Engineering):</strong>{" "}
+                {selectedProject.Project_Disciplines_Engineering.join(", ")}
+              </Text>
+              <Text>
+                <strong>Project Disciplines (Design & Drafting):</strong>{" "}
+                {selectedProject.Project_Disciplines_Design_Drafting.join(", ")}
+              </Text>
+              <Text>
+                <strong>Project Type:</strong> {selectedProject.Project_Type}
+              </Text>
+              <br />
+              <Text fontSize="xl" fontWeight="bold" mb={2}>
+                Client Information
+              </Text>
+              <Text>
+                <strong>Client Name:</strong>{" "}
+                {selectedProject.Client_Contact_Name}
+              </Text>
+              <Text>
+                <strong>Client Email:</strong> {selectedProject.Client_Email}
+              </Text>
+              <Text>
+                <strong>Client Phone Number:</strong>{" "}
+                {selectedProject.Client_Contact_Phone_Number}
+              </Text>
+              <Text>
+                <strong>Client Company:</strong>{" "}
+                {selectedProject.Client_Company_Name}
+              </Text>
+              <Text>
+                <strong>Client Address:</strong>{" "}
+                {selectedProject.Client_Address}
+              </Text>
+            </Box>
+          ) : (
+            <Flex direction="column">
               <Text>Loading project data...</Text>
-            )}
+              {/* <Box width="45%">
+                <Progress
+                  colorScheme="blue"
+                  size="xs"
+                  value={progressPercentage}
+                  hasStripe
+                  isAnimated
+                  isIndeterminate
+                />
+              </Box> */}
+            </Flex>
+          )}
         </Grid>
 
         <Divider my={4} />
@@ -600,9 +621,7 @@ const ProjectOverview = () => {
             Total Approved Budget: ${totalApprovedBudget}
           </Text>
 
-          <Text fontSize="xl">
-            Total Cost Used: ${totalCostsSum}
-          </Text>
+          <Text fontSize="xl">Total Cost Used: ${totalCostsSum}</Text>
 
           <Text fontSize="xl" mt={4} mb={2}>
             {/* Display the percentage here */}
