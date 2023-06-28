@@ -47,15 +47,52 @@ import {
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
+type ProjectAPI = {
+  _id: string;
+  Project_Number: string;
+  Client_Company_Name: string;
+  Client_Contact_Name: string;
+  Client_Email: string;
+  Client_Contact_Phone_Number: string;
+  Client_Address: string;
+  Project_Name: string;
+  Project_Description: string;
+  Proposed_Start_Date: string;
+  Proposed_Project_Completion_Date: string;
+  Project_Disciplines_Engineering: string[];
+  Project_Disciplines_Design_Drafting: string[];
+  Project_Type: string;
+  Status: string;
+  Contractors: string[];
+};
+
 const ProjectOverview = () => {
-  const selectedProject = {
-    projectName: "Project One",
-    projectNumber: "001",
-    lastUpdated: "2023-06-19 11:00",
-    status: "Active",
-    description:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-  };
+  const [projectData, setProjectData] = useState<ProjectAPI[]>([]);
+
+  // Fetch project data from API
+  useEffect(() => {
+    fetch("http://localhost:3000/api/projects")
+      .then((response) => response.json())
+      .then((data) => {
+        setProjectData(data);
+      })
+      .catch((error) => {
+        console.error("Error fetching project data:", error);
+      });
+  }, []);
+
+    // Retrieve selected project information from local storage
+    const storedProjectInfo = localStorage.getItem("selectedProjectInfo");
+    const selectedProjectInfo = storedProjectInfo
+      ? JSON.parse(storedProjectInfo)
+      : null;
+  
+    // Find the selected project based on project name and number
+    const selectedProject = projectData.find(
+      (project) =>
+        project.Project_Number === selectedProjectInfo?.number &&
+        project.Project_Name === selectedProjectInfo?.name
+    );
 
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
@@ -335,11 +372,10 @@ const ProjectOverview = () => {
 
   return (
     <Flex>
-      <Flex mt={20} direction="column" p={5}>
+      <Flex mt={20} direction="column" p={5} position="relative">
         <Flex justifyContent="space-between">
           <Box>
             <Heading size="lg">Project Information</Heading>
-            {/* Display your project information here */}
           </Box>
           <Flex alignItems="center">
             {!isEditable ? (
@@ -374,7 +410,7 @@ const ProjectOverview = () => {
                 </HStack>
               </Flex>
             )}
-            <Button rightIcon={<ExternalLinkIcon />} colorScheme="teal" ml={3}>
+            <Button rightIcon={<ExternalLinkIcon />} colorScheme="teal" ml={3} mr={-1}>
               Share to Contractors
             </Button>
           </Flex>
@@ -383,50 +419,53 @@ const ProjectOverview = () => {
         <Divider my={4} />
 
         <Grid templateColumns="repeat(2, 1fr)" gap={6}>
-          <Box>
-            <Text mb={2}>
-              <strong>Project Name:</strong> {selectedProject.projectName}
-            </Text>
-            <Text mb={2}>
-              <strong>Project Number:</strong> {selectedProject.projectNumber}
-            </Text>
-            <Text>
-              <strong>Project Description:</strong>{" "}
-              {selectedProject.description}
-            </Text>
-            <Text>
-              <strong>Project Disciplines (Engineering):</strong>{" "}
-              {selectedProject.description}
-            </Text>
-            <Text>
-              <strong>Project Disciplines (Design & Drafting):</strong>{" "}
-              {selectedProject.description}
-            </Text>
-            <Text>
-              <strong>Project Type:</strong> {selectedProject.description}
-            </Text>
-            <br />
-            <Text fontSize="xl" fontWeight="bold" mb={2}>
-              Client Information
-            </Text>
-            <Text>
-              <strong>Client Name:</strong> {selectedProject.description}
-            </Text>
-            <Text>
-              <strong>Client Email:</strong> {selectedProject.description}
-            </Text>
-            <Text>
-              <strong>Client Phone Number:</strong>{" "}
-              {selectedProject.description}
-            </Text>
-            <Text>
-              <strong>Client Company:</strong> {selectedProject.description}
-            </Text>
-            <Text>
-              <strong>Client Address:</strong> {selectedProject.description}
-            </Text>
-          </Box>
-          <Box>{/* Your dropdowns and checkboxes go here */}</Box>
+          {selectedProject ? (
+              <Box minWidth="80vw">
+                <Text>
+                  <strong>Project Name:</strong> {selectedProject.Project_Name}
+                </Text>
+                <Text>
+                  <strong>Project Number:</strong> {selectedProject.Project_Number}
+                </Text>
+                <Text>
+                  <strong>Project Description:</strong>{" "}
+                  {selectedProject.Project_Description}
+                </Text>
+                <Text>
+                  <strong>Project Disciplines (Engineering):</strong>{" "}
+                  {selectedProject.Project_Disciplines_Engineering.join(", ")}
+                </Text>
+                <Text>
+                  <strong>Project Disciplines (Design & Drafting):</strong>{" "}
+                  {selectedProject.Project_Disciplines_Design_Drafting.join(", ")}
+                </Text>
+                <Text>
+                  <strong>Project Type:</strong> {selectedProject.Project_Type}
+                </Text>
+                <br />
+                <Text fontSize="xl" fontWeight="bold" mb={2}>
+                  Client Information
+                </Text>
+                <Text>
+                  <strong>Client Name:</strong> {selectedProject.Client_Contact_Name}
+                </Text>
+                <Text>
+                  <strong>Client Email:</strong> {selectedProject.Client_Email}
+                </Text>
+                <Text>
+                  <strong>Client Phone Number:</strong>{" "}
+                  {selectedProject.Client_Contact_Phone_Number}
+                </Text>
+                <Text>
+                  <strong>Client Company:</strong> {selectedProject.Client_Company_Name}
+                </Text>
+                <Text>
+                  <strong>Client Address:</strong> {selectedProject.Client_Address}
+                </Text>
+              </Box>
+            ) : (
+              <Text>Loading project data...</Text>
+            )}
         </Grid>
 
         <Divider my={4} />
