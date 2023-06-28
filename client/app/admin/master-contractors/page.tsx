@@ -268,18 +268,37 @@ const Contractors: React.FC = () => {
     Administrative: 68.0,
   };
 
+  const saveContractorsToLocalStorage = (data: ContractorFromApi[]) => {
+    localStorage.setItem("masterContractors", JSON.stringify(data));
+  };
+
+  const loadContractorsFromLocalStorage = (): ContractorFromApi[] => {
+    const storedData = localStorage.getItem("masterContractors");
+    if (storedData) {
+      return JSON.parse(storedData);
+    }
+    return [];
+  };
+
   useEffect(() => {
     const fetchContractors = async () => {
       try {
         const response = await fetch("http://localhost:3000/api/contractors");
         const data = await response.json();
         setContractorsAPI(data);
+        saveContractorsToLocalStorage(data); // Save data to local storage
       } catch (error) {
         console.error("Error fetching contractors:", error);
       }
     };
-
-    fetchContractors();
+  
+    const storedContractors = loadContractorsFromLocalStorage(); // Load data from local storage
+  
+    if (storedContractors.length > 0) {
+      setContractorsAPI(storedContractors);
+    } else {
+      fetchContractors();
+    }
   }, []);
 
   return (
