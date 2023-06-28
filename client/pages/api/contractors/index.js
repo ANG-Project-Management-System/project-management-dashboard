@@ -34,7 +34,6 @@ const handler = async (req, res) => {
             }
             break;
 
-
         case 'POST':
             try {
                 await client.connect();
@@ -43,8 +42,10 @@ const handler = async (req, res) => {
                 const result = await client.db(process.env.MONGO_DB)
                     .collection('contractors')
                     .insertOne(body);
+                
+                console.log(result);
 
-                return res.status(201).json(result.ops[0]);
+                return res.status(201).json(result.ops);
             } catch (error) {
                 console.error(error);
                 return res.status(500).json({ error: 'Error connecting to db', details: error });
