@@ -37,52 +37,51 @@ import {
 import Pagination from "@/app/components/Pagination";
 
 interface Contractor {
-  id: number;
-  name: string;
-  phone: string;
-  email: string;
-  availability: string;
-  discipline: string;
-  hourlyRate: number;
-  status: string;
-  date: string;
-  rate: number;
+  Contractor_Name: string;
+  Contractor_Phone_Number: string;
+  Contractor_Email: string;
+  Contractor_Availability: string;
+  Start_Date: string;
+  Specialty_Discipline: string;
+  Contractor_Hourly_Rate: number;
+  Discipline_Charge_Out_Rate: number;
   estimate: number;
 }
 
 interface ContractorFromApi {
-  "Team Members": string;
-  Discipline: string;
-  "Hours charged to date": number;
-  "Billout Rate ($/hour)": number;
-  "Total cost": number;
-  Date: string;
-  Email: string;
-  "Phone Number": string;
+  Contractor_Name: string;
+  Contractor_Phone_Number: string;
+  Contractor_Email: string;
+  Contractor_Availability: string;
+  Start_Date: string;
+  Specialty_Discipline: string;
+  Contractor_Hourly_Rate: number;
+  Discipline_Charge_Out_Rate: number;
+  Timesheets: Array<{ Week: string; Timesheet_File: string }>;
 }
 
 const Contractors: React.FC = () => {
   const toast = useToast();
   const [showUploadTimesheets, setShowUploadTimesheets] = useState(false);
 
-  const [contractors, setContractors] = useState<Contractor[]>([]);
+  const [contractors, setContractors] = useState<ContractorFromApi[]>([]);
+  const [contractorsAPI, setContractorsAPI] = useState<ContractorFromApi[]>([]);
   const [page, setPage] = useState<number>(1);
   const itemsPerPage = 10;
-  const [deleteContractor, setDeleteContractor] = useState<Contractor | null>(
-    null
-  );
+  const [
+    deleteContractor,
+    setDeleteContractor,
+  ] = useState<ContractorFromApi | null>(null);
   const [showNewContractorForm, setShowNewContractorForm] = useState(false);
   const [newContractor, setNewContractor] = useState<Contractor>({
-    id: 0,
-    name: "",
-    phone: "",
-    availability: "",
-    email: "",
-    discipline: "",
-    hourlyRate: 0,
-    status: "PENDING",
-    date: new Date().toISOString().slice(0, 10),
-    rate: 0,
+    Contractor_Name: "",
+    Contractor_Phone_Number: "",
+    Contractor_Email: "",
+    Contractor_Availability: "",
+    Start_Date: new Date().toISOString().slice(0, 10),
+    Specialty_Discipline: "",
+    Contractor_Hourly_Rate: 0,
+    Discipline_Charge_Out_Rate: 0,
     estimate: 0,
   });
 
@@ -109,9 +108,7 @@ const Contractors: React.FC = () => {
 
     return (
       <VStack align="start" mt={4}>
-        <Text>
-            Uploaded Files:
-        </Text>
+        <Text>Uploaded Files:</Text>
         {files.map((file, index) => (
           <Flex key={index} align="flex">
             <Text>{file.name}</Text>
@@ -132,36 +129,52 @@ const Contractors: React.FC = () => {
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-
+  
     const formData = new FormData(formRef.current!);
-
+  
     // Rest of the form fields
-
+  
     if (files.length > 0) {
       files.forEach((file) => {
         formData.append("files", file);
       });
     }
-
+  
     console.log("Project Files:", files);
     setShowUploadTimesheets(false);
-
+  
     toast({
-        title: "Timesheet Uploaded",
-        description:
-          "The timesheet has been successfully uploaded and is available for download.",
-        status: "success",
-        duration: 5000,
-        isClosable: true,
-      });
+      title: "Timesheet Uploaded",
+      description:
+        "The timesheet has been successfully uploaded and is available for download.",
+      status: "success",
+      duration: 5000,
+      isClosable: true,
+    });
+  
+    // Clear form and other states
+    setNewContractor({
+      Contractor_Name: "",
+      Contractor_Phone_Number: "",
+      Contractor_Email: "",
+      Contractor_Availability: "",
+      Start_Date: new Date().toISOString().slice(0, 10),
+      Specialty_Discipline: "",
+      Contractor_Hourly_Rate: 0,
+      Discipline_Charge_Out_Rate: 0,
+      estimate: 0,
+    });
+    setSelectedAvailability("");
+    setSelectedDiscipline("");
+    setCustomHour(0);
   };
 
   const [selectedAvailability, setSelectedAvailability] = useState<string>("");
   const [showCustomDiscipline, setShowCustomDiscipline] = useState(false);
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const [filteredContractors, setFilteredContractors] = useState<Contractor[]>(
-    []
-  );
+  const [filteredContractors, setFilteredContractors] = useState<
+    ContractorFromApi[]
+  >([]);
   const [selectedDiscipline, setSelectedDiscipline] = useState<string>("");
   const [customHour, setCustomHour] = useState<number>(0);
 
@@ -172,95 +185,40 @@ const Contractors: React.FC = () => {
     const query = event.target.value;
     setSearchQuery(query);
 
-    const filtered = contractors.filter((contractor) => {
-      const isNameMatch = contractor.name
-        .toLowerCase()
-        .includes(query.toLowerCase());
-      const isDisciplineMatch = contractor.discipline
-        .toLowerCase()
-        .startsWith(query.toLowerCase());
-      const isStatusMatch =
-        contractor.status.toLowerCase() === query.toLowerCase();
+    const filtered = contractorsAPI.filter((contractor) => {
+      const isNameMatch = contractor.Contractor_Name.toLowerCase().includes(
+        query.toLowerCase()
+      );
+      const isDisciplineMatch = contractor.Specialty_Discipline.toLowerCase().startsWith(
+        query.toLowerCase()
+      );
 
-      return isNameMatch || isDisciplineMatch || isStatusMatch;
+      return isNameMatch || isDisciplineMatch;
     });
 
     setFilteredContractors(filtered);
   };
 
   const visibleContractors =
-    searchQuery !== ""
-      ? filteredContractors
-      : contractors.slice(startIndex, endIndex);
-
-  const apiUrl = "http://localhost:3000/api/project?number=88-02032023-01";
-
-  useEffect(() => {
-    const cacheKey = "contractors";
-    const cachedData = localStorage.getItem(cacheKey);
-
-    if (cachedData) {
-      const { data, timestamp } = JSON.parse(cachedData);
-      const expirationTime = 24 * 60 * 60 * 1000; // 24 hours
-      const currentTime = new Date().getTime();
-
-      if (currentTime - timestamp < expirationTime) {
-        setContractors(data);
-        return;
-      }
-    }
-
-    fetch(apiUrl)
-      .then((response) => response.json())
-      .then((data) => {
-        if (data && data.contractors) {
-          const contractorsFromApi = data.contractors.map(
-            (contractor: ContractorFromApi, index: number) => ({
-              id: index,
-              name: contractor["Team Members"],
-              discipline: contractor["Discipline"],
-              phone: contractor["Phone Number"],
-              email: contractor["Email"],
-              status: "", // not available in JSON data
-              date: contractor["Date"],
-              rate: contractor["Billout Rate ($/hour)"],
-              estimate: contractor["Hours charged to date"],
-              coRate: contractor["Total cost"],
-            })
-          );
-
-          setContractors(contractorsFromApi);
-          localStorage.setItem(
-            cacheKey,
-            JSON.stringify({
-              data: contractorsFromApi,
-              timestamp: new Date().getTime(),
-            })
-          );
-        } else {
-          console.error("Invalid API response:", data);
-        }
-      })
-      .catch((error) => {
-        console.error("Error fetching data:", error);
-      });
-  }, []);
+  searchQuery !== ""
+    ? filteredContractors
+    : contractorsAPI.slice(startIndex, endIndex);
 
   const cancelRef = useRef<HTMLButtonElement | null>(null);
 
   const handleDelete = () => {
     if (deleteContractor) {
-      const updatedContractors = contractors.filter(
+      const updatedContractors = contractorsAPI.filter(
         (contractor) => contractor !== deleteContractor
       );
-      setContractors(updatedContractors);
+      setContractorsAPI(updatedContractors);
       setDeleteContractor(null);
     }
   };
 
   const handleNewContractorSubmit = () => {
     let chargeOutRate = 0;
-    let contractorHourlyRate = newContractor.hourlyRate;
+    let contractorHourlyRate = newContractor.Contractor_Hourly_Rate;
 
     if (selectedDiscipline && selectedDiscipline !== "Custom") {
       chargeOutRate =
@@ -268,32 +226,29 @@ const Contractors: React.FC = () => {
           selectedDiscipline as keyof typeof disciplineChargeOutRates
         ] || 0;
     } else if (selectedDiscipline === "Custom") {
-      chargeOutRate = parseFloat(newContractor.rate.toString());
-      contractorHourlyRate = parseFloat(newContractor.hourlyRate.toString());
+      chargeOutRate = parseFloat(newContractor.Discipline_Charge_Out_Rate.toString());
+      contractorHourlyRate = parseFloat(newContractor.Contractor_Hourly_Rate.toString());
     }
 
     const newContractorWithId: Contractor = {
       ...newContractor,
-      id: Math.floor(Math.random() * 900000) + 100000,
-      rate: chargeOutRate,
-      estimate: contractorHourlyRate,
-      availability: selectedAvailability,
+      Discipline_Charge_Out_Rate: chargeOutRate,
+      Contractor_Hourly_Rate: contractorHourlyRate,
+      Contractor_Availability: selectedAvailability,
     };
 
-    const updatedContractors = [...contractors, newContractorWithId];
-    setContractors(updatedContractors);
+    const updatedContractors = [...contractorsAPI, newContractorWithId];
+    setContractorsAPI(updatedContractors as ContractorFromApi[]);
     setNewContractor({
-      id: 0,
-      name: "",
-      phone: "",
-      email: "",
-      availability: "",
-      discipline: "",
-      hourlyRate: 0,
-      status: "PENDING",
-      date: new Date().toISOString().slice(0, 10),
-      rate: 0,
-      estimate: 0,
+        Contractor_Name: "",
+        Contractor_Phone_Number: "",
+        Contractor_Email: "",
+        Contractor_Availability: "",
+        Start_Date: new Date().toISOString().slice(0, 10),
+        Specialty_Discipline: "",
+        Contractor_Hourly_Rate: 0,
+        Discipline_Charge_Out_Rate: 0,
+        estimate: 0,
     });
     setShowNewContractorForm(false);
     setSelectedDiscipline("");
@@ -312,6 +267,20 @@ const Contractors: React.FC = () => {
     "Junior Designer": 90.0,
     Administrative: 68.0,
   };
+
+  useEffect(() => {
+    const fetchContractors = async () => {
+      try {
+        const response = await fetch("http://localhost:3000/api/contractors");
+        const data = await response.json();
+        setContractorsAPI(data);
+      } catch (error) {
+        console.error("Error fetching contractors:", error);
+      }
+    };
+
+    fetchContractors();
+  }, []);
 
   return (
     <Flex>
@@ -357,16 +326,16 @@ const Contractors: React.FC = () => {
           </Thead>
 
           <Tbody>
-            {visibleContractors.map((contractor) => (
-              <Tr key={contractor.id}>
-                <Td>{contractor.name}</Td>
-                <Td>{contractor.phone}</Td>
-                <Td>{contractor.email}</Td>
-                <Td>{contractor.availability}</Td>
-                <Td>{contractor.date}</Td>
-                <Td>{contractor.discipline}</Td>
-                <Td>{contractor.hourlyRate}</Td>
-                <Td>{contractor.rate}</Td>
+            {visibleContractors.map((contractor, index) => (
+              <Tr key={index}>
+                <Td>{contractor.Contractor_Name}</Td>
+                <Td>{contractor.Contractor_Phone_Number}</Td>
+                <Td>{contractor.Contractor_Email}</Td>
+                <Td>{contractor.Contractor_Availability}</Td>
+                <Td>{contractor.Start_Date}</Td>
+                <Td>{contractor.Specialty_Discipline}</Td>
+                <Td>{contractor.Contractor_Hourly_Rate}</Td>
+                <Td>{contractor.Discipline_Charge_Out_Rate}</Td>
                 <Td>
                   <IconButton
                     icon={<AddIcon />}
@@ -400,7 +369,7 @@ const Contractors: React.FC = () => {
         </Table>
         <Pagination
           currentPage={page}
-          totalPages={Math.ceil(contractors.length / itemsPerPage)}
+          totalPages={Math.ceil(contractorsAPI.length / itemsPerPage)}
           onPageChange={setPage}
         />
 
@@ -470,11 +439,11 @@ const Contractors: React.FC = () => {
 
                       {renderUploadedFiles()}
                     </FormControl>
-                    <Flex 
-                        justifyContent="flex-end"
-                        marginRight={-4}
-                        mt={10}
-                        p={2}
+                    <Flex
+                      justifyContent="flex-end"
+                      marginRight={-4}
+                      mt={10}
+                      p={2}
                     >
                       <Button
                         ref={cancelRef}
@@ -483,10 +452,7 @@ const Contractors: React.FC = () => {
                       >
                         Cancel
                       </Button>
-                      <Button 
-                        colorScheme="blue" 
-                        type="submit"
-                    >
+                      <Button colorScheme="blue" type="submit">
                         Submit
                       </Button>
                     </Flex>
@@ -516,11 +482,11 @@ const Contractors: React.FC = () => {
                     <FormLabel>Contractor Name</FormLabel>
                     <Input
                       placeholder="Enter name"
-                      value={newContractor.name}
+                      value={newContractor.Contractor_Name}
                       onChange={(e) =>
                         setNewContractor((prevContractor) => ({
                           ...prevContractor,
-                          name: e.target.value,
+                          Contractor_Name: e.target.value,
                         }))
                       }
                     />
@@ -530,11 +496,11 @@ const Contractors: React.FC = () => {
                     <Input
                       isRequired
                       placeholder="Ex. 403-123-4567"
-                      value={newContractor.phone}
+                      value={newContractor.Contractor_Phone_Number}
                       onChange={(e) =>
                         setNewContractor((prevContractor) => ({
                           ...prevContractor,
-                          phone: e.target.value,
+                          Contractor_Phone_Number: e.target.value,
                         }))
                       }
                     />
@@ -543,11 +509,11 @@ const Contractors: React.FC = () => {
                     <FormLabel>Contractor Email</FormLabel>
                     <Input
                       placeholder="Example@gmail.com"
-                      value={newContractor.email}
+                      value={newContractor.Contractor_Email}
                       onChange={(e) =>
                         setNewContractor((prevContractor) => ({
                           ...prevContractor,
-                          email: e.target.value,
+                          Contractor_Email: e.target.value,
                         }))
                       }
                     />
@@ -590,8 +556,8 @@ const Contractors: React.FC = () => {
                         setSelectedDiscipline(selectedDiscipline);
                         setNewContractor((prevContractor) => ({
                           ...prevContractor,
-                          discipline: selectedDiscipline,
-                          rate:
+                          Specialty_Discipline: selectedDiscipline,
+                          Discipline_Charge_Out_Rate:
                             disciplineChargeOutRates[
                               selectedDiscipline as keyof typeof disciplineChargeOutRates
                             ] || 0,
@@ -628,11 +594,11 @@ const Contractors: React.FC = () => {
                         <FormLabel>Custom Discipline</FormLabel>
                         <Input
                           placeholder="Enter custom discipline"
-                          value={newContractor.discipline}
+                          value={newContractor.Specialty_Discipline}
                           onChange={(e) =>
                             setNewContractor((prevContractor) => ({
                               ...prevContractor,
-                              discipline: e.target.value,
+                              Specialty_Discipline: e.target.value,
                             }))
                           }
                         />
@@ -643,11 +609,11 @@ const Contractors: React.FC = () => {
                     <FormLabel>Initial Request Date</FormLabel>
                     <Input
                       placeholder="Enter date (YYYY-MM-DD)"
-                      value={newContractor.date}
+                      value={newContractor.Start_Date}
                       onChange={(e) =>
                         setNewContractor((prevContractor) => ({
                           ...prevContractor,
-                          date: e.target.value,
+                          Start_Date: e.target.value,
                         }))
                       }
                     />
@@ -658,11 +624,11 @@ const Contractors: React.FC = () => {
                     <Input
                       type="number"
                       placeholder="Enter rate"
-                      value={newContractor.rate}
+                      value={newContractor.Discipline_Charge_Out_Rate}
                       onChange={(e) =>
                         setNewContractor((prevContractor) => ({
                           ...prevContractor,
-                          rate: parseFloat(e.target.value),
+                          Discipline_Charge_Out_Rate: parseFloat(e.target.value),
                         }))
                       }
                     />
@@ -671,11 +637,11 @@ const Contractors: React.FC = () => {
                     <FormLabel>Contractor Hourly Rate ($/hr)</FormLabel>
                     <Input
                       type="number"
-                      value={newContractor.hourlyRate}
+                      value={newContractor.Contractor_Hourly_Rate}
                       onChange={(e) =>
                         setNewContractor((prevContractor) => ({
                           ...prevContractor,
-                          hourlyRate: parseFloat(e.target.value),
+                          Contractor_Hourly_Rate: parseFloat(e.target.value),
                         }))
                       }
                     />
