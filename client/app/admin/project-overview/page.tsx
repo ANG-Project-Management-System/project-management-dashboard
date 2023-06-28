@@ -67,18 +67,39 @@ type ProjectAPI = {
 };
 
 const ProjectOverview = () => {
+  const saveProjectDataToLocalStorage = (data: ProjectAPI[]) => {
+    localStorage.setItem("projectData", JSON.stringify(data));
+  };
+
+  const loadProjectDataFromLocalStorage = (): ProjectAPI[] => {
+    const storedData = localStorage.getItem("projectData");
+    if (storedData) {
+      return JSON.parse(storedData);
+    }
+    return [];
+  };
+
   const [projectData, setProjectData] = useState<ProjectAPI[]>([]);
 
-  // Fetch project data from API
   useEffect(() => {
-    fetch("http://localhost:3000/api/projects")
-      .then((response) => response.json())
-      .then((data) => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch("http://localhost:3000/api/projects");
+        const data = await response.json();
         setProjectData(data);
-      })
-      .catch((error) => {
+        saveProjectDataToLocalStorage(data); // Save project data to local storage
+      } catch (error) {
         console.error("Error fetching project data:", error);
-      });
+      }
+    };
+
+    const storedProjectData = loadProjectDataFromLocalStorage(); // Load project data from local storage
+
+    if (storedProjectData.length > 0) {
+      setProjectData(storedProjectData);
+    } else {
+      fetchData();
+    }
   }, []);
 
   // Retrieve selected project information from local storage
@@ -623,7 +644,7 @@ const ProjectOverview = () => {
 
           <Text fontSize="xl">Total Cost Used: ${totalCostsSum}</Text>
 
-          <Text fontSize="xl" mt={4} mb={2}>
+          <Text fontSize="xl" mt={4} mb={1}>
             {/* Display the percentage here */}
             Budget Hours Used: <strong>{progressPercentage.toFixed(2)}%</strong>
           </Text>
