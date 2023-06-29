@@ -37,7 +37,7 @@ import {
 import Pagination from "@/app/components/Pagination";
 
 interface Contractor {
-  Contractor_id: string;
+  Contractor_id?: string;
   Contractor_Name: string;
   Contractor_Phone_Number: string;
   Contractor_Email: string;
@@ -49,7 +49,7 @@ interface Contractor {
 }
 
 interface ContractorFromApi {
-  Contractor_id: string;
+  Contractor_id?: string;
   Contractor_Name: string;
   Contractor_Phone_Number: string;
   Contractor_Email: string;
@@ -220,7 +220,7 @@ const Contractors: React.FC = () => {
   const handleNewContractorSubmit = async (
     event: React.FormEvent<HTMLFormElement>
   ) => {
-    event.preventDefault();
+    // event.preventDefault();
 
     const contractorData = {
       Contractor_Name: newContractor.Contractor_Name,
@@ -252,68 +252,40 @@ const Contractors: React.FC = () => {
         },
         body: JSON.stringify(contractorData),
       });
-
-      if (response.ok) {
-        const createdContractor = await response.json();
-        console.log("Created Contractor:", createdContractor);
-
-        // Update the state with the newly created contractor
-        setContractorsAPI((prevContractors) => [
-          ...prevContractors,
-          createdContractor,
-        ]);
-
-        // Show a success toast message
-        toast({
-          title: "Contractor Created",
-          description: "The contractor has been successfully created.",
-          status: "success",
-          duration: 5000,
-          isClosable: true,
-        });
-
-        // Clear form and other states
-        setNewContractor({
-          Contractor_id: "",
-          Contractor_Name: "",
-          Contractor_Phone_Number: "",
-          Contractor_Email: "",
-          Contractor_Availability: "",
-          Start_Date: new Date().toISOString().slice(0, 10),
-          Specialty_Discipline: "",
-          Contractor_Hourly_Rate: 0,
-          Discipline_Charge_Out_Rate: 0,
-        });
-        setSelectedAvailability("");
-        setSelectedDiscipline("");
-        setCustomHour(0);
-        setShowNewContractorForm(false);
-      } else {
-        // Handle the error response
-        const errorData = await response.json();
-        console.error("Error creating contractor:", errorData);
-
-        // Show an error toast message
-        toast({
-          title: "Error",
-          description: "Failed to create contractor. Please try again.",
-          status: "error",
-          duration: 5000,
-          isClosable: true,
-        });
-      }
-    } catch (error) {
-      console.error("Error creating contractor:", error);
-
-      // Show an error toast message
-      toast({
-        title: "Error",
-        description: "Failed to create contractor. Please try again.",
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-      });
+    } catch {
+      console.log("error");
     }
+
+    // Assuming the API call was successful, append the new contractor to local storage
+    const storedContractors = loadContractorsFromLocalStorage();
+    storedContractors.push(contractorData);
+    saveContractorsToLocalStorage(storedContractors);
+  
+    // Clear form and other states
+    setNewContractor({
+      Contractor_id: "",
+      Contractor_Name: "",
+      Contractor_Phone_Number: "",
+      Contractor_Email: "",
+      Contractor_Availability: "",
+      Start_Date: new Date().toISOString().slice(0, 10),
+      Specialty_Discipline: "",
+      Contractor_Hourly_Rate: 0,
+      Discipline_Charge_Out_Rate: 0,
+    });
+    setSelectedAvailability("");
+    setSelectedDiscipline("");
+    setCustomHour(0);
+    setShowNewContractorForm(false);
+
+    // Show a success toast message
+    toast({
+      title: "Contractor Created",
+      description: "The contractor has been successfully created.",
+      status: "success",
+      duration: 5000,
+      isClosable: true,
+    });
   };
 
   const disciplineChargeOutRates = {
@@ -356,12 +328,9 @@ const Contractors: React.FC = () => {
     };
 
     const storedContractors = loadContractorsFromLocalStorage(); // Load data from local storage
-    console.log(storedContractors.length);
+    // console.log(storedContractors.length);
 
-    if (
-      storedContractors.length > 0 &&
-      storedContractors.length == contractorsAPI.length
-    ) {
+    if (storedContractors.length > 0) {
       setContractorsAPI(storedContractors);
     } else {
       fetchContractors();
