@@ -218,13 +218,13 @@ const Contractors: React.FC = () => {
     console.log(deleteContractor?._id);
 
     toast({
-        title: "Contractor Created",
-        description: "The contractor has been successfully deleted.",
-        status: "success",
-        duration: 3000,
-        isClosable: true,
-      });
-  
+      title: "Contractor Deleted",
+      description: "The contractor has been successfully deleted.",
+      status: "success",
+      duration: 3000,
+      isClosable: true,
+    });
+
     try {
       const response = await fetch(
         `http://localhost:3000/api/contractors?id=${deleteContractor?._id}`,
@@ -232,14 +232,27 @@ const Contractors: React.FC = () => {
           method: "DELETE",
         }
       );
-      
+
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
-  
+
+    //   // Assuming the API call was successful, remove the specific contractor from local storage
+    //   const storedContractors = loadContractorsFromLocalStorage();
+    //   console.log(storedContractors);
+    //   const updatedContractorsStorage = storedContractors.filter(
+    //     (contractor) =>
+    //       contractor.Contractor_Name !== deleteContractor?.Contractor_Name &&
+    //       contractor.Contractor_Phone_Number !==
+    //         deleteContractor?.Contractor_Phone_Number &&
+    //       contractor.Contractor_Email !== deleteContractor?.Contractor_Email
+    //   );
+    //   console.log(updatedContractorsStorage);
+    //   saveContractorsToLocalStorage(updatedContractorsStorage);
+
       const result = await response.text();
       console.log(result);
-  
+
       const updatedContractors = contractorsAPI.filter(
         (contractor) => contractor._id !== deleteContractor?._id
       );
@@ -248,7 +261,7 @@ const Contractors: React.FC = () => {
     } catch (error) {
       console.error("Error:", error);
     }
-  };  
+  };
 
   const handleNewContractorSubmit = async (
     event: React.FormEvent<HTMLFormElement>
