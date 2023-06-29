@@ -37,6 +37,7 @@ import {
 import Pagination from "@/app/components/Pagination";
 
 interface Contractor {
+  Contractor_id: string;
   Contractor_Name: string;
   Contractor_Phone_Number: string;
   Contractor_Email: string;
@@ -45,10 +46,10 @@ interface Contractor {
   Specialty_Discipline: string;
   Contractor_Hourly_Rate: number;
   Discipline_Charge_Out_Rate: number;
-  estimate: number;
 }
 
 interface ContractorFromApi {
+  Contractor_id: string;
   Contractor_Name: string;
   Contractor_Phone_Number: string;
   Contractor_Email: string;
@@ -74,6 +75,7 @@ const Contractors: React.FC = () => {
   ] = useState<ContractorFromApi | null>(null);
   const [showNewContractorForm, setShowNewContractorForm] = useState(false);
   const [newContractor, setNewContractor] = useState<Contractor>({
+    Contractor_id: "",
     Contractor_Name: "",
     Contractor_Phone_Number: "",
     Contractor_Email: "",
@@ -82,7 +84,6 @@ const Contractors: React.FC = () => {
     Specialty_Discipline: "",
     Contractor_Hourly_Rate: 0,
     Discipline_Charge_Out_Rate: 0,
-    estimate: 0,
   });
 
   const [files, setFiles] = useState<File[]>([]);
@@ -129,20 +130,20 @@ const Contractors: React.FC = () => {
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-  
+
     const formData = new FormData(formRef.current!);
-  
+
     // Rest of the form fields
-  
+
     if (files.length > 0) {
       files.forEach((file) => {
         formData.append("files", file);
       });
     }
-  
+
     console.log("Project Files:", files);
     setShowUploadTimesheets(false);
-  
+
     toast({
       title: "Timesheet Uploaded",
       description:
@@ -151,9 +152,10 @@ const Contractors: React.FC = () => {
       duration: 5000,
       isClosable: true,
     });
-  
+
     // Clear form and other states
     setNewContractor({
+      Contractor_id: "",
       Contractor_Name: "",
       Contractor_Phone_Number: "",
       Contractor_Email: "",
@@ -162,7 +164,6 @@ const Contractors: React.FC = () => {
       Specialty_Discipline: "",
       Contractor_Hourly_Rate: 0,
       Discipline_Charge_Out_Rate: 0,
-      estimate: 0,
     });
     setSelectedAvailability("");
     setSelectedDiscipline("");
@@ -200,9 +201,9 @@ const Contractors: React.FC = () => {
   };
 
   const visibleContractors =
-  searchQuery !== ""
-    ? filteredContractors
-    : contractorsAPI.slice(startIndex, endIndex);
+    searchQuery !== ""
+      ? filteredContractors
+      : contractorsAPI.slice(startIndex, endIndex);
 
   const cancelRef = useRef<HTMLButtonElement | null>(null);
 
@@ -216,43 +217,103 @@ const Contractors: React.FC = () => {
     }
   };
 
-  const handleNewContractorSubmit = () => {
-    let chargeOutRate = 0;
-    let contractorHourlyRate = newContractor.Contractor_Hourly_Rate;
+  const handleNewContractorSubmit = async (
+    event: React.FormEvent<HTMLFormElement>
+  ) => {
+    event.preventDefault();
 
-    if (selectedDiscipline && selectedDiscipline !== "Custom") {
-      chargeOutRate =
-        disciplineChargeOutRates[
-          selectedDiscipline as keyof typeof disciplineChargeOutRates
-        ] || 0;
-    } else if (selectedDiscipline === "Custom") {
-      chargeOutRate = parseFloat(newContractor.Discipline_Charge_Out_Rate.toString());
-      contractorHourlyRate = parseFloat(newContractor.Contractor_Hourly_Rate.toString());
-    }
-
-    const newContractorWithId: Contractor = {
-      ...newContractor,
-      Discipline_Charge_Out_Rate: chargeOutRate,
-      Contractor_Hourly_Rate: contractorHourlyRate,
+    const contractorData = {
+      Contractor_Name: newContractor.Contractor_Name,
+      Contractor_Phone_Number: newContractor.Contractor_Phone_Number,
+      Contractor_Email: newContractor.Contractor_Email,
       Contractor_Availability: selectedAvailability,
+      Start_Date: newContractor.Start_Date,
+      Specialty_Discipline: newContractor.Specialty_Discipline,
+      Contractor_Hourly_Rate: newContractor.Contractor_Hourly_Rate,
+      Discipline_Charge_Out_Rate: newContractor.Discipline_Charge_Out_Rate,
+      Timesheets: [
+        {
+          Week: "2023-06-30T00:00:00Z",
+          Timesheet_File: "timesheet_2023_06_30.pdf",
+        },
+        {
+          Week: "2023-07-07T00:00:00Z",
+          Timesheet_File: "timesheet_2023_07_07.pdf",
+        },
+      ],
+      Projects_involved: ["649b3185efb9872048179345"],
     };
 
-    const updatedContractors = [...contractorsAPI, newContractorWithId];
-    setContractorsAPI(updatedContractors as ContractorFromApi[]);
-    setNewContractor({
-        Contractor_Name: "",
-        Contractor_Phone_Number: "",
-        Contractor_Email: "",
-        Contractor_Availability: "",
-        Start_Date: new Date().toISOString().slice(0, 10),
-        Specialty_Discipline: "",
-        Contractor_Hourly_Rate: 0,
-        Discipline_Charge_Out_Rate: 0,
-        estimate: 0,
-    });
-    setShowNewContractorForm(false);
-    setSelectedDiscipline("");
-    setCustomHour(0);
+    try {
+      const response = await fetch("http://localhost:3000/api/contractors", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(contractorData),
+      });
+
+      if (response.ok) {
+        const createdContractor = await response.json();
+        console.log("Created Contractor:", createdContractor);
+
+        // Update the state with the newly created contractor
+        setContractorsAPI((prevContractors) => [
+          ...prevContractors,
+          createdContractor,
+        ]);
+
+        // Show a success toast message
+        toast({
+          title: "Contractor Created",
+          description: "The contractor has been successfully created.",
+          status: "success",
+          duration: 5000,
+          isClosable: true,
+        });
+
+        // Clear form and other states
+        setNewContractor({
+          Contractor_id: "",
+          Contractor_Name: "",
+          Contractor_Phone_Number: "",
+          Contractor_Email: "",
+          Contractor_Availability: "",
+          Start_Date: new Date().toISOString().slice(0, 10),
+          Specialty_Discipline: "",
+          Contractor_Hourly_Rate: 0,
+          Discipline_Charge_Out_Rate: 0,
+        });
+        setSelectedAvailability("");
+        setSelectedDiscipline("");
+        setCustomHour(0);
+        setShowNewContractorForm(false);
+      } else {
+        // Handle the error response
+        const errorData = await response.json();
+        console.error("Error creating contractor:", errorData);
+
+        // Show an error toast message
+        toast({
+          title: "Error",
+          description: "Failed to create contractor. Please try again.",
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+        });
+      }
+    } catch (error) {
+      console.error("Error creating contractor:", error);
+
+      // Show an error toast message
+      toast({
+        title: "Error",
+        description: "Failed to create contractor. Please try again.",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+    }
   };
 
   const disciplineChargeOutRates = {
@@ -280,6 +341,8 @@ const Contractors: React.FC = () => {
     return [];
   };
 
+  console.log(contractorsAPI);
+
   useEffect(() => {
     const fetchContractors = async () => {
       try {
@@ -291,10 +354,14 @@ const Contractors: React.FC = () => {
         console.error("Error fetching contractors:", error);
       }
     };
-  
+
     const storedContractors = loadContractorsFromLocalStorage(); // Load data from local storage
-  
-    if (storedContractors.length > 0) {
+    console.log(storedContractors.length);
+
+    if (
+      storedContractors.length > 0 &&
+      storedContractors.length == contractorsAPI.length
+    ) {
       setContractorsAPI(storedContractors);
     } else {
       fetchContractors();
@@ -345,8 +412,8 @@ const Contractors: React.FC = () => {
           </Thead>
 
           <Tbody>
-            {visibleContractors.map((contractor, index) => (
-              <Tr key={index}>
+            {visibleContractors.map((contractor) => (
+              <Tr key={contractor.Contractor_id}>
                 <Td>{contractor.Contractor_Name}</Td>
                 <Td>{contractor.Contractor_Phone_Number}</Td>
                 <Td>{contractor.Contractor_Email}</Td>
@@ -647,7 +714,9 @@ const Contractors: React.FC = () => {
                       onChange={(e) =>
                         setNewContractor((prevContractor) => ({
                           ...prevContractor,
-                          Discipline_Charge_Out_Rate: parseFloat(e.target.value),
+                          Discipline_Charge_Out_Rate: parseFloat(
+                            e.target.value
+                          ),
                         }))
                       }
                     />
