@@ -37,7 +37,7 @@ import {
 import Pagination from "@/app/components/Pagination";
 
 interface Contractor {
-  Contractor_id?: string;
+  _id?: string;
   Contractor_Name: string;
   Contractor_Phone_Number: string;
   Contractor_Email: string;
@@ -49,7 +49,7 @@ interface Contractor {
 }
 
 interface ContractorFromApi {
-  Contractor_id?: string;
+  _id?: string;
   Contractor_Name: string;
   Contractor_Phone_Number: string;
   Contractor_Email: string;
@@ -75,7 +75,6 @@ const Contractors: React.FC = () => {
   ] = useState<ContractorFromApi | null>(null);
   const [showNewContractorForm, setShowNewContractorForm] = useState(false);
   const [newContractor, setNewContractor] = useState<Contractor>({
-    Contractor_id: "",
     Contractor_Name: "",
     Contractor_Phone_Number: "",
     Contractor_Email: "",
@@ -155,7 +154,6 @@ const Contractors: React.FC = () => {
 
     // Clear form and other states
     setNewContractor({
-      Contractor_id: "",
       Contractor_Name: "",
       Contractor_Phone_Number: "",
       Contractor_Email: "",
@@ -207,7 +205,7 @@ const Contractors: React.FC = () => {
 
   const cancelRef = useRef<HTMLButtonElement | null>(null);
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (deleteContractor) {
       const updatedContractors = contractorsAPI.filter(
         (contractor) => contractor !== deleteContractor
@@ -215,7 +213,34 @@ const Contractors: React.FC = () => {
       setContractorsAPI(updatedContractors);
       setDeleteContractor(null);
     }
-  };
+
+    // debugging view
+    console.log(deleteContractor?._id);
+  
+    try {
+      const response = await fetch(
+        `http://localhost:3000/api/contractors?id=${deleteContractor?._id}`,
+        {
+          method: "DELETE",
+        }
+      );
+      
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+  
+      const result = await response.text();
+      console.log(result);
+  
+      const updatedContractors = contractorsAPI.filter(
+        (contractor) => contractor._id !== deleteContractor?._id
+      );
+      setContractorsAPI(updatedContractors);
+      setDeleteContractor(null);
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };  
 
   const handleNewContractorSubmit = async (
     event: React.FormEvent<HTMLFormElement>
@@ -260,10 +285,9 @@ const Contractors: React.FC = () => {
     const storedContractors = loadContractorsFromLocalStorage();
     storedContractors.push(contractorData);
     saveContractorsToLocalStorage(storedContractors);
-  
+
     // Clear form and other states
     setNewContractor({
-      Contractor_id: "",
       Contractor_Name: "",
       Contractor_Phone_Number: "",
       Contractor_Email: "",
@@ -322,6 +346,7 @@ const Contractors: React.FC = () => {
         const data = await response.json();
         setContractorsAPI(data);
         saveContractorsToLocalStorage(data); // Save data to local storage
+        console.log(contractorsAPI);
       } catch (error) {
         console.error("Error fetching contractors:", error);
       }
@@ -330,7 +355,7 @@ const Contractors: React.FC = () => {
     const storedContractors = loadContractorsFromLocalStorage(); // Load data from local storage
     // console.log(storedContractors.length);
 
-    if (storedContractors.length > 0) {
+    if (storedContractors.length < 0) {
       setContractorsAPI(storedContractors);
     } else {
       fetchContractors();
@@ -382,7 +407,7 @@ const Contractors: React.FC = () => {
 
           <Tbody>
             {visibleContractors.map((contractor) => (
-              <Tr key={contractor.Contractor_id}>
+              <Tr key={contractor._id}>
                 <Td>{contractor.Contractor_Name}</Td>
                 <Td>{contractor.Contractor_Phone_Number}</Td>
                 <Td>{contractor.Contractor_Email}</Td>
