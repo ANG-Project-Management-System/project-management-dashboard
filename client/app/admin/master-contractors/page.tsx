@@ -37,6 +37,7 @@ import {
 import Pagination from "@/app/components/Pagination";
 
 interface Contractor {
+  _id?: string;
   Contractor_Name: string;
   Contractor_Phone_Number: string;
   Contractor_Email: string;
@@ -45,10 +46,10 @@ interface Contractor {
   Specialty_Discipline: string;
   Contractor_Hourly_Rate: number;
   Discipline_Charge_Out_Rate: number;
-  estimate: number;
 }
 
 interface ContractorFromApi {
+  _id?: string;
   Contractor_Name: string;
   Contractor_Phone_Number: string;
   Contractor_Email: string;
@@ -82,7 +83,6 @@ const Contractors: React.FC = () => {
     Specialty_Discipline: "",
     Contractor_Hourly_Rate: 0,
     Discipline_Charge_Out_Rate: 0,
-    estimate: 0,
   });
 
   const [files, setFiles] = useState<File[]>([]);
@@ -129,20 +129,20 @@ const Contractors: React.FC = () => {
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-  
+
     const formData = new FormData(formRef.current!);
-  
+
     // Rest of the form fields
-  
+
     if (files.length > 0) {
       files.forEach((file) => {
         formData.append("files", file);
       });
     }
-  
+
     console.log("Project Files:", files);
     setShowUploadTimesheets(false);
-  
+
     toast({
       title: "Timesheet Uploaded",
       description:
@@ -151,7 +151,7 @@ const Contractors: React.FC = () => {
       duration: 5000,
       isClosable: true,
     });
-  
+
     // Clear form and other states
     setNewContractor({
       Contractor_Name: "",
@@ -162,7 +162,6 @@ const Contractors: React.FC = () => {
       Specialty_Discipline: "",
       Contractor_Hourly_Rate: 0,
       Discipline_Charge_Out_Rate: 0,
-      estimate: 0,
     });
     setSelectedAvailability("");
     setSelectedDiscipline("");
@@ -200,13 +199,13 @@ const Contractors: React.FC = () => {
   };
 
   const visibleContractors =
-  searchQuery !== ""
-    ? filteredContractors
-    : contractorsAPI.slice(startIndex, endIndex);
+    searchQuery !== ""
+      ? filteredContractors
+      : contractorsAPI.slice(startIndex, endIndex);
 
   const cancelRef = useRef<HTMLButtonElement | null>(null);
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (deleteContractor) {
       const updatedContractors = contractorsAPI.filter(
         (contractor) => contractor !== deleteContractor
@@ -214,45 +213,124 @@ const Contractors: React.FC = () => {
       setContractorsAPI(updatedContractors);
       setDeleteContractor(null);
     }
+
+    // debugging view
+    console.log(deleteContractor?._id);
+
+    toast({
+      title: "Contractor Deleted",
+      description: "The contractor has been successfully deleted.",
+      status: "success",
+      duration: 3000,
+      isClosable: true,
+    });
+
+    try {
+      const response = await fetch(
+        `http://localhost:3000/api/contractors?id=${deleteContractor?._id}`,
+        {
+          method: "DELETE",
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+    //   // Assuming the API call was successful, remove the specific contractor from local storage
+    //   const storedContractors = loadContractorsFromLocalStorage();
+    //   console.log(storedContractors);
+    //   const updatedContractorsStorage = storedContractors.filter(
+    //     (contractor) =>
+    //       contractor.Contractor_Name !== deleteContractor?.Contractor_Name &&
+    //       contractor.Contractor_Phone_Number !==
+    //         deleteContractor?.Contractor_Phone_Number &&
+    //       contractor.Contractor_Email !== deleteContractor?.Contractor_Email
+    //   );
+    //   console.log(updatedContractorsStorage);
+    //   saveContractorsToLocalStorage(updatedContractorsStorage);
+
+      const result = await response.text();
+      console.log(result);
+
+      const updatedContractors = contractorsAPI.filter(
+        (contractor) => contractor._id !== deleteContractor?._id
+      );
+      setContractorsAPI(updatedContractors);
+      setDeleteContractor(null);
+    } catch (error) {
+      console.error("Error:", error);
+    }
   };
 
-  const handleNewContractorSubmit = () => {
-    let chargeOutRate = 0;
-    let contractorHourlyRate = newContractor.Contractor_Hourly_Rate;
+  const handleNewContractorSubmit = async (
+    event: React.FormEvent<HTMLFormElement>
+  ) => {
+    // event.preventDefault();
 
-    if (selectedDiscipline && selectedDiscipline !== "Custom") {
-      chargeOutRate =
-        disciplineChargeOutRates[
-          selectedDiscipline as keyof typeof disciplineChargeOutRates
-        ] || 0;
-    } else if (selectedDiscipline === "Custom") {
-      chargeOutRate = parseFloat(newContractor.Discipline_Charge_Out_Rate.toString());
-      contractorHourlyRate = parseFloat(newContractor.Contractor_Hourly_Rate.toString());
-    }
-
-    const newContractorWithId: Contractor = {
-      ...newContractor,
-      Discipline_Charge_Out_Rate: chargeOutRate,
-      Contractor_Hourly_Rate: contractorHourlyRate,
+    const contractorData = {
+      Contractor_Name: newContractor.Contractor_Name,
+      Contractor_Phone_Number: newContractor.Contractor_Phone_Number,
+      Contractor_Email: newContractor.Contractor_Email,
       Contractor_Availability: selectedAvailability,
+      Start_Date: newContractor.Start_Date,
+      Specialty_Discipline: newContractor.Specialty_Discipline,
+      Contractor_Hourly_Rate: newContractor.Contractor_Hourly_Rate,
+      Discipline_Charge_Out_Rate: newContractor.Discipline_Charge_Out_Rate,
+      Timesheets: [
+        {
+          Week: "2023-06-30T00:00:00Z",
+          Timesheet_File: "timesheet_2023_06_30.pdf",
+        },
+        {
+          Week: "2023-07-07T00:00:00Z",
+          Timesheet_File: "timesheet_2023_07_07.pdf",
+        },
+      ],
+      Projects_involved: ["649b3185efb9872048179345"],
     };
 
-    const updatedContractors = [...contractorsAPI, newContractorWithId];
-    setContractorsAPI(updatedContractors as ContractorFromApi[]);
+    try {
+      const response = await fetch("http://localhost:3000/api/contractors", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(contractorData),
+      });
+    } catch {
+      console.log("error");
+    }
+
+    // Assuming the API call was successful, append the new contractor to local storage
+    const storedContractors = loadContractorsFromLocalStorage();
+    storedContractors.push(contractorData);
+    saveContractorsToLocalStorage(storedContractors);
+
+    // Clear form and other states
     setNewContractor({
-        Contractor_Name: "",
-        Contractor_Phone_Number: "",
-        Contractor_Email: "",
-        Contractor_Availability: "",
-        Start_Date: new Date().toISOString().slice(0, 10),
-        Specialty_Discipline: "",
-        Contractor_Hourly_Rate: 0,
-        Discipline_Charge_Out_Rate: 0,
-        estimate: 0,
+      Contractor_Name: "",
+      Contractor_Phone_Number: "",
+      Contractor_Email: "",
+      Contractor_Availability: "",
+      Start_Date: new Date().toISOString().slice(0, 10),
+      Specialty_Discipline: "",
+      Contractor_Hourly_Rate: 0,
+      Discipline_Charge_Out_Rate: 0,
     });
-    setShowNewContractorForm(false);
+    setSelectedAvailability("");
     setSelectedDiscipline("");
     setCustomHour(0);
+    setShowNewContractorForm(false);
+
+    // Show a success toast message
+    toast({
+      title: "Contractor Created",
+      description: "The contractor has been successfully created.",
+      status: "success",
+      duration: 5000,
+      isClosable: true,
+    });
   };
 
   const disciplineChargeOutRates = {
@@ -280,6 +358,8 @@ const Contractors: React.FC = () => {
     return [];
   };
 
+  console.log(contractorsAPI);
+
   useEffect(() => {
     const fetchContractors = async () => {
       try {
@@ -287,14 +367,16 @@ const Contractors: React.FC = () => {
         const data = await response.json();
         setContractorsAPI(data);
         saveContractorsToLocalStorage(data); // Save data to local storage
+        console.log(contractorsAPI);
       } catch (error) {
         console.error("Error fetching contractors:", error);
       }
     };
-  
+
     const storedContractors = loadContractorsFromLocalStorage(); // Load data from local storage
-  
-    if (storedContractors.length > 0) {
+    // console.log(storedContractors.length);
+
+    if (storedContractors.length < 0) {
       setContractorsAPI(storedContractors);
     } else {
       fetchContractors();
@@ -345,8 +427,8 @@ const Contractors: React.FC = () => {
           </Thead>
 
           <Tbody>
-            {visibleContractors.map((contractor, index) => (
-              <Tr key={index}>
+            {visibleContractors.map((contractor) => (
+              <Tr key={contractor._id}>
                 <Td>{contractor.Contractor_Name}</Td>
                 <Td>{contractor.Contractor_Phone_Number}</Td>
                 <Td>{contractor.Contractor_Email}</Td>
@@ -647,7 +729,9 @@ const Contractors: React.FC = () => {
                       onChange={(e) =>
                         setNewContractor((prevContractor) => ({
                           ...prevContractor,
-                          Discipline_Charge_Out_Rate: parseFloat(e.target.value),
+                          Discipline_Charge_Out_Rate: parseFloat(
+                            e.target.value
+                          ),
                         }))
                       }
                     />
