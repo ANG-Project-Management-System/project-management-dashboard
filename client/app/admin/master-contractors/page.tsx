@@ -216,6 +216,14 @@ const Contractors: React.FC = () => {
 
     // debugging view
     console.log(deleteContractor?._id);
+
+    toast({
+        title: "Contractor Created",
+        description: "The contractor has been successfully deleted.",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+      });
   
     try {
       const response = await fetch(
