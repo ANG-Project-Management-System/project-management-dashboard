@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   Box,
   Flex,
@@ -26,6 +26,32 @@ import "react-datepicker/dist/react-datepicker.css";
 import Chakra from "@/app/components/Chakra";
 import Providers from "@/app/components/Providers";
 import Navbar from "@/app/components/Navbar";
+
+interface Project {
+  _id: string;
+  Project_Number: string;
+  Client_Company_Name: string;
+  Client_Contact_Name: string;
+  Client_Email: string;
+  Client_Contact_Phone_Number: string;
+  Client_Address: string;
+  Project_Name: string;
+  Project_Description: string;
+  Proposed_Start_Date: string;
+  Proposed_Project_Completion_Date: string;
+  Project_Disciplines_Engineering: string[];
+  Project_Disciplines_Design_Drafting: string[];
+  Project_Type: string;
+  Status: string;
+  "As of date:": string;
+  "Total Approved Budget:": number;
+  "Original PO Value:": number;
+  "Expenses: (ABSA Fees, TSSA fees, etc.):": number;
+  "Approx. hours remaining (based on blended rate of $120/hour)": number;
+  "Remaining Budget:": number;
+  Contractors: string[];
+  // ProjectAttachments: File[];
+}
 
 const RequestForQuotation = () => {
   const [startDate, setStartDate] = useState<Date | null>(null);
@@ -58,6 +84,22 @@ const RequestForQuotation = () => {
       return null;
     }
 
+    const [projectAPI, setProjectAPI] = useState<Project[]>([]);
+
+    useEffect(() => {
+      const fetchProjects = async () => {
+        try {
+          const response = await fetch("http://localhost:3000/api/projects");
+          const data = await response.json();
+          setProjectAPI(data);
+          console.log(projectAPI);
+        } catch (error) {
+          console.error("Error fetching contractors:", error);
+        }
+      };
+  
+    }, []);
+
     return (
       <VStack align="start" mt={2}>
         <Text>Uploaded Files:</Text>
@@ -79,7 +121,7 @@ const RequestForQuotation = () => {
     );
   };
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     const formData = new FormData(formRef.current!);
@@ -102,6 +144,9 @@ const RequestForQuotation = () => {
 
     const projectName = formData.get("projectName");
     console.log("Project Name:", projectName);
+
+    const projectNumber = formData.get("projectNumber");
+    console.log("Project Number:", projectNumber);
 
     const projectDescription = formData.get("projectDescription");
     console.log("Project Description:", projectDescription);
@@ -130,6 +175,37 @@ const RequestForQuotation = () => {
     );
 
     console.log("Project Files:", files);
+
+    const projectData = {
+      Project_Number: projectNumber,
+      Client_Company_Name: clientCompany,
+      Client_Contact_Name: clientName,
+      Client_Email: clientEmail,
+      Client_Contact_Phone_Number: clientPhone,
+      Client_Address: clientAddress,
+      Project_Name: projectName,
+      Project_Description: projectDescription,
+      Proposed_Start_Date: startDate,
+      Proposed_Project_Completion_Date: endDate,
+      Project_Disciplines_Engineering: selectedDisciplinesEng,
+      Project_Disciplines_Design_Drafting: selectedDisciplinesDesDraft,
+      Project_Type: projectType,
+      Status: "Request",
+      Contractors: "",
+      // ProjectAttachments: files,
+    }
+
+    try {
+      const response = await fetch("http://localhost:3000/api/projects", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(projectData),
+      });
+    } catch {
+      console.log("error");
+    }
 
     // Perform form submission or other actions
     // ...
@@ -174,12 +250,7 @@ const RequestForQuotation = () => {
 
                   <FormControl id="clientPhone" mt={4} isRequired>
                     <FormLabel>Client Phone Number</FormLabel>
-                    <NumberInput>
-                      <NumberInputField
-                        name="clientPhone"
-                        placeholder="+1 403 999 9999"
-                      />
-                    </NumberInput>
+                    <Input name="clientPhone" placeholder="4039999999" />
                   </FormControl>
 
                   <FormControl id="clientCompany" mt={4} isRequired>
@@ -200,6 +271,11 @@ const RequestForQuotation = () => {
                   <FormControl id="projectName" isRequired>
                     <FormLabel>Project Name</FormLabel>
                     <Input name="projectName" placeholder="Project Name" />
+                  </FormControl>
+
+                  <FormControl id="projectNumber" mt={4} isRequired>
+                    <FormLabel>Project Number</FormLabel>
+                    <Input name="projectNumber" placeholder="Project Number" />
                   </FormControl>
 
                   <FormControl id="projectDescription" mt={4} isRequired>

@@ -95,7 +95,7 @@ const ProjectOverview = () => {
 
     const storedProjectData = loadProjectDataFromLocalStorage(); // Load project data from local storage
 
-    if (storedProjectData.length > 0) {
+    if (storedProjectData.length < 0) {
       setProjectData(storedProjectData);
     } else {
       fetchData();
