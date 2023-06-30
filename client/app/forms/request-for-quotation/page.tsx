@@ -19,6 +19,7 @@ import {
   HStack,
   Text,
   Grid,
+  useToast,
 } from "@chakra-ui/react";
 import { SettingsIcon } from "@chakra-ui/icons";
 import DatePicker from "react-datepicker";
@@ -66,6 +67,8 @@ const RequestForQuotation = () => {
     setSelectedDisciplinesDesDraft,
   ] = useState<string[]>([]);
 
+  const toast = useToast();
+
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const fileList = event.target.files;
     if (fileList && fileList.length > 0) {
@@ -83,22 +86,6 @@ const RequestForQuotation = () => {
     if (files.length === 0) {
       return null;
     }
-
-    const [projectAPI, setProjectAPI] = useState<Project[]>([]);
-
-    useEffect(() => {
-      const fetchProjects = async () => {
-        try {
-          const response = await fetch("http://localhost:3000/api/projects");
-          const data = await response.json();
-          setProjectAPI(data);
-          console.log(projectAPI);
-        } catch (error) {
-          console.error("Error fetching contractors:", error);
-        }
-      };
-  
-    }, []);
 
     return (
       <VStack align="start" mt={2}>
@@ -203,6 +190,16 @@ const RequestForQuotation = () => {
         },
         body: JSON.stringify(projectData),
       });
+
+      toast({
+        title: "Project Created!",
+        description:
+          `The request for "${projectName}" has been successfully submitted.`,
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+      });
+
     } catch {
       console.log("error");
     }
@@ -250,7 +247,7 @@ const RequestForQuotation = () => {
 
                   <FormControl id="clientPhone" mt={4} isRequired>
                     <FormLabel>Client Phone Number</FormLabel>
-                    <Input name="clientPhone" placeholder="4039999999" />
+                    <Input name="clientPhone" placeholder="+1-403-123-4567" />
                   </FormControl>
 
                   <FormControl id="clientCompany" mt={4} isRequired>
