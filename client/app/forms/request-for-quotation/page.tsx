@@ -26,7 +26,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Chakra from "@/app/components/Chakra";
 import Providers from "@/app/components/Providers";
-import Navbar from "@/app/components/Navbar";
+import Navbar from "@/app/components/NavbarForms";
 
 interface Project {
   _id: string;
