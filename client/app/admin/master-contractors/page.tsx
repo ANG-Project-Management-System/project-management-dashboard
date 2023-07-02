@@ -168,13 +168,17 @@ const Contractors: React.FC = () => {
     setCustomHour(0);
   };
 
+  const [selectedSeniority, setSelectedSeniority] = useState<string>("");
+  const [selectedSpecialty, setSelectedSpecialty] = useState<string>("");
+  const [selectedDiscipline, setSelectedDiscipline] = useState<string>("");
+  const [selectedRateSheetCategory, setSelectedRateSheetCategory] = useState<string>("");
   const [selectedAvailability, setSelectedAvailability] = useState<string>("");
   const [showCustomDiscipline, setShowCustomDiscipline] = useState(false);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [filteredContractors, setFilteredContractors] = useState<
     ContractorFromApi[]
   >([]);
-  const [selectedDiscipline, setSelectedDiscipline] = useState<string>("");
+  
   const [customHour, setCustomHour] = useState<number>(0);
 
   const startIndex = (page - 1) * itemsPerPage;
@@ -700,24 +704,24 @@ const Contractors: React.FC = () => {
                     <FormLabel>Rate Sheet Category</FormLabel>
                     <Select
                       isRequired
-                      placeholder="Select discipline"
-                      value={selectedDiscipline}
+                      placeholder="Select Rate Sheet Category"
+                      value={selectedRateSheetCategory}
                       onChange={(e) => {
-                        const selectedDiscipline = e.target.value;
+                        const selectedRateSheetCategory = e.target.value;
 
-                        if (selectedDiscipline === "Custom") {
+                        if (selectedRateSheetCategory === "Custom") {
                           setShowCustomDiscipline(true);
                         } else {
                           setShowCustomDiscipline(false);
                         }
 
-                        setSelectedDiscipline(selectedDiscipline);
+                        setSelectedDiscipline(selectedRateSheetCategory);
                         setNewContractor((prevContractor) => ({
                           ...prevContractor,
-                          Specialty_Discipline: selectedDiscipline,
+                          Specialty_Discipline: selectedRateSheetCategory,
                           Discipline_Charge_Out_Rate:
                             disciplineChargeOutRates[
-                              selectedDiscipline as keyof typeof disciplineChargeOutRates
+                              selectedRateSheetCategory as keyof typeof disciplineChargeOutRates
                             ] || 0,
                         }));
                       }}
