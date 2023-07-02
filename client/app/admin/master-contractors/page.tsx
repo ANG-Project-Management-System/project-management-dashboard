@@ -171,14 +171,16 @@ const Contractors: React.FC = () => {
   const [selectedSeniority, setSelectedSeniority] = useState<string>("");
   const [selectedSpecialty, setSelectedSpecialty] = useState<string>("");
   const [selectedDiscipline, setSelectedDiscipline] = useState<string>("");
-  const [selectedRateSheetCategory, setSelectedRateSheetCategory] = useState<string>("");
+  const [selectedRateSheetCategory, setSelectedRateSheetCategory] = useState<
+    string
+  >("");
   const [selectedAvailability, setSelectedAvailability] = useState<string>("");
   const [showCustomDiscipline, setShowCustomDiscipline] = useState(false);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [filteredContractors, setFilteredContractors] = useState<
     ContractorFromApi[]
   >([]);
-  
+
   const [customHour, setCustomHour] = useState<number>(0);
 
   const startIndex = (page - 1) * itemsPerPage;
@@ -241,18 +243,18 @@ const Contractors: React.FC = () => {
         throw new Error("Network response was not ok");
       }
 
-    //   // Assuming the API call was successful, remove the specific contractor from local storage
-    //   const storedContractors = loadContractorsFromLocalStorage();
-    //   console.log(storedContractors);
-    //   const updatedContractorsStorage = storedContractors.filter(
-    //     (contractor) =>
-    //       contractor.Contractor_Name !== deleteContractor?.Contractor_Name &&
-    //       contractor.Contractor_Phone_Number !==
-    //         deleteContractor?.Contractor_Phone_Number &&
-    //       contractor.Contractor_Email !== deleteContractor?.Contractor_Email
-    //   );
-    //   console.log(updatedContractorsStorage);
-    //   saveContractorsToLocalStorage(updatedContractorsStorage);
+      //   // Assuming the API call was successful, remove the specific contractor from local storage
+      //   const storedContractors = loadContractorsFromLocalStorage();
+      //   console.log(storedContractors);
+      //   const updatedContractorsStorage = storedContractors.filter(
+      //     (contractor) =>
+      //       contractor.Contractor_Name !== deleteContractor?.Contractor_Name &&
+      //       contractor.Contractor_Phone_Number !==
+      //         deleteContractor?.Contractor_Phone_Number &&
+      //       contractor.Contractor_Email !== deleteContractor?.Contractor_Email
+      //   );
+      //   console.log(updatedContractorsStorage);
+      //   saveContractorsToLocalStorage(updatedContractorsStorage);
 
       const result = await response.text();
       console.log(result);
@@ -632,14 +634,13 @@ const Contractors: React.FC = () => {
                       value={selectedDiscipline}
                       onChange={(e) => setSelectedDiscipline(e.target.value)}
                     >
-                      <option value="Full time - anytime">
-                        Full time - anytime
+                      <option value="Management">Management</option>
+                      <option value="Engineering">Engineering</option>
+                      <option value="Design & Drafting">
+                        Design & Drafting
                       </option>
-                      <option value="Weekends only">Weekends only</option>
-                      <option value="Evenings only">Evenings only</option>
-                      <option value="9 to 5, Monday through Friday">
-                        9 to 5, Monday through Friday
-                      </option>
+                      <option value="Admin">Admin</option>
+                      <option value="Other">Other</option>
                     </Select>
                   </FormControl>
 
@@ -651,14 +652,78 @@ const Contractors: React.FC = () => {
                       value={selectedSpecialty}
                       onChange={(e) => setSelectedSpecialty(e.target.value)}
                     >
-                      <option value="Full time - anytime">
-                        Full time - anytime
-                      </option>
-                      <option value="Weekends only">Weekends only</option>
-                      <option value="Evenings only">Evenings only</option>
-                      <option value="9 to 5, Monday through Friday">
-                        9 to 5, Monday through Friday
-                      </option>
+                      {selectedDiscipline === "Management" && (
+                        <>
+                          <option value="Project Management">
+                            Project Management
+                          </option>
+                          <option value="Engineering Manager">
+                            Engineering Manager
+                          </option>
+                          <option value="Project Engineer">
+                            Project Engineer
+                          </option>
+                          <option value="Other">Other</option>
+                        </>
+                      )}
+
+                      {selectedDiscipline === "Engineering" && (
+                        <>
+                          <option value="Principal Engineer">
+                            Principal Engineer
+                          </option>
+                          <option value="Process/Chemical">
+                            Process/Chemical
+                          </option>
+                          <option value="Mechanical">Mechanical</option>
+                          <option value="Structural">Structural</option>
+                          <option value="Piping Stress">Piping Stress</option>
+                          <option value="Electrical">Electrical</option>
+                          <option value="Instrumentation">
+                            Instrumentation
+                          </option>
+                          <option value="HVAC">HVAC</option>
+                          <option value="Civil">Civil</option>
+                          <option value="Pressure Vessel">
+                            Pressure Vessel
+                          </option>
+                          <option value="Other Specialty">
+                            Other Specialty
+                          </option>
+                        </>
+                      )}
+
+                      {selectedDiscipline === "Design & Drafting" && (
+                        <>
+                          <option value="Process/Chemical">
+                            Process/Chemical
+                          </option>
+                          <option value="Mechanical">Mechanical</option>
+                          <option value="Structural/Civil">
+                            Structural/Civil
+                          </option>
+                          <option value="Pressure Vessel">
+                            Pressure Vessel
+                          </option>
+                          <option value="Electrical">Electrical</option>
+                          <option value="Instrumentation">
+                            Instrumentation
+                          </option>
+                          <option value="Other">Other</option>
+                        </>
+                      )}
+
+                      {selectedDiscipline === "Admin" && (
+                        <>
+                          <option value="Admin">Admin</option>
+                        </>
+                      )}
+
+                      {selectedDiscipline === "Other" && (
+                        <>
+                          <option value="Admin">Admin</option>
+                        </>
+                      )}
                     </Select>
                   </FormControl>
 
@@ -666,18 +731,17 @@ const Contractors: React.FC = () => {
                     <FormLabel>Seniority</FormLabel>
                     <Select
                       isRequired
-                      placeholder="Select Availability"
+                      placeholder="Select Seniority"
                       value={selectedSeniority}
                       onChange={(e) => setSelectedSeniority(e.target.value)}
                     >
-                      <option value="Full time - anytime">
-                        Full time - anytime
-                      </option>
-                      <option value="Weekends only">Weekends only</option>
-                      <option value="Evenings only">Evenings only</option>
-                      <option value="9 to 5, Monday through Friday">
-                        9 to 5, Monday through Friday
-                      </option>
+                      <option value="Senior">Senior</option>
+                      {selectedSpecialty !== "Principal Engineer" && (
+                        <>
+                          <option value="Intermediate">Intermediate</option>
+                          <option value="Junior">Junior</option>
+                        </>
+                      )}
                     </Select>
                   </FormControl>
 
