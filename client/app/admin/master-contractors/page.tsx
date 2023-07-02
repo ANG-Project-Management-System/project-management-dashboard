@@ -621,6 +621,63 @@ const Contractors: React.FC = () => {
                   </FormControl>
 
                   <FormControl mt={2} isRequired>
+                    <FormLabel>Discipline</FormLabel>
+                    <Select
+                      isRequired
+                      placeholder="Select Discipline"
+                      value={selectedDiscipline}
+                      onChange={(e) => setSelectedDiscipline(e.target.value)}
+                    >
+                      <option value="Full time - anytime">
+                        Full time - anytime
+                      </option>
+                      <option value="Weekends only">Weekends only</option>
+                      <option value="Evenings only">Evenings only</option>
+                      <option value="9 to 5, Monday through Friday">
+                        9 to 5, Monday through Friday
+                      </option>
+                    </Select>
+                  </FormControl>
+
+                  <FormControl mt={2} isRequired>
+                    <FormLabel>Specialty</FormLabel>
+                    <Select
+                      isRequired
+                      placeholder="Select Specialty"
+                      value={selectedSpecialty}
+                      onChange={(e) => setSelectedSpecialty(e.target.value)}
+                    >
+                      <option value="Full time - anytime">
+                        Full time - anytime
+                      </option>
+                      <option value="Weekends only">Weekends only</option>
+                      <option value="Evenings only">Evenings only</option>
+                      <option value="9 to 5, Monday through Friday">
+                        9 to 5, Monday through Friday
+                      </option>
+                    </Select>
+                  </FormControl>
+
+                  <FormControl mt={2} isRequired>
+                    <FormLabel>Seniority</FormLabel>
+                    <Select
+                      isRequired
+                      placeholder="Select Availability"
+                      value={selectedSeniority}
+                      onChange={(e) => setSelectedSeniority(e.target.value)}
+                    >
+                      <option value="Full time - anytime">
+                        Full time - anytime
+                      </option>
+                      <option value="Weekends only">Weekends only</option>
+                      <option value="Evenings only">Evenings only</option>
+                      <option value="9 to 5, Monday through Friday">
+                        9 to 5, Monday through Friday
+                      </option>
+                    </Select>
+                  </FormControl>
+
+                  <FormControl mt={2} isRequired>
                     <FormLabel>Contractor Availability</FormLabel>
                     <Select
                       isRequired
@@ -640,7 +697,7 @@ const Contractors: React.FC = () => {
                   </FormControl>
 
                   <FormControl mt={2}>
-                    <FormLabel>Discipline</FormLabel>
+                    <FormLabel>Rate Sheet Category</FormLabel>
                     <Select
                       isRequired
                       placeholder="Select discipline"
