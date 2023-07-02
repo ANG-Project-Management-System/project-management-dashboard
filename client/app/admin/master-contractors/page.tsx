@@ -326,6 +326,9 @@ const Contractors: React.FC = () => {
     });
     setSelectedAvailability("");
     setSelectedDiscipline("");
+    setSelectedSpecialty("");
+    setSelectedSpecialty("");
+    setSelectedSeniority("");
     setCustomHour(0);
     setShowNewContractorForm(false);
 
@@ -627,6 +630,25 @@ const Contractors: React.FC = () => {
                   </FormControl>
 
                   <FormControl mt={2} isRequired>
+                    <FormLabel>Contractor Availability</FormLabel>
+                    <Select
+                      isRequired
+                      placeholder="Select Availability"
+                      value={selectedAvailability}
+                      onChange={(e) => setSelectedAvailability(e.target.value)}
+                    >
+                      <option value="Full time - anytime">
+                        Full time - anytime
+                      </option>
+                      <option value="Weekends only">Weekends only</option>
+                      <option value="Evenings only">Evenings only</option>
+                      <option value="9 to 5, Monday through Friday">
+                        9 to 5, Monday through Friday
+                      </option>
+                    </Select>
+                  </FormControl>
+
+                  <FormControl mt={2} isRequired>
                     <FormLabel>Discipline</FormLabel>
                     <Select
                       isRequired
@@ -745,25 +767,6 @@ const Contractors: React.FC = () => {
                     </Select>
                   </FormControl>
 
-                  <FormControl mt={2} isRequired>
-                    <FormLabel>Contractor Availability</FormLabel>
-                    <Select
-                      isRequired
-                      placeholder="Select Availability"
-                      value={selectedAvailability}
-                      onChange={(e) => setSelectedAvailability(e.target.value)}
-                    >
-                      <option value="Full time - anytime">
-                        Full time - anytime
-                      </option>
-                      <option value="Weekends only">Weekends only</option>
-                      <option value="Evenings only">Evenings only</option>
-                      <option value="9 to 5, Monday through Friday">
-                        9 to 5, Monday through Friday
-                      </option>
-                    </Select>
-                  </FormControl>
-
                   <FormControl mt={2}>
                     <FormLabel>Rate Sheet Category</FormLabel>
                     <Select
@@ -779,7 +782,7 @@ const Contractors: React.FC = () => {
                           setShowCustomDiscipline(false);
                         }
 
-                        setSelectedDiscipline(selectedRateSheetCategory);
+                        setSelectedRateSheetCategory(selectedRateSheetCategory);
                         setNewContractor((prevContractor) => ({
                           ...prevContractor,
                           Specialty_Discipline: selectedRateSheetCategory,
@@ -817,10 +820,14 @@ const Contractors: React.FC = () => {
 
                     {showCustomDiscipline && (
                       <FormControl mt={2} isRequired>
-                        <FormLabel>Custom Discipline</FormLabel>
+                        <FormLabel>Custom Rate Sheet Category</FormLabel>
                         <Input
                           placeholder="Enter custom discipline"
-                          value={newContractor.Specialty_Discipline}
+                          value={
+                            newContractor.Specialty_Discipline !== "Custom"
+                              ? newContractor.Specialty_Discipline
+                              : ""
+                          }
                           onChange={(e) =>
                             setNewContractor((prevContractor) => ({
                               ...prevContractor,
@@ -830,19 +837,6 @@ const Contractors: React.FC = () => {
                         />
                       </FormControl>
                     )}
-                  </FormControl>
-                  <FormControl mt={2}>
-                    <FormLabel>Initial Request Date</FormLabel>
-                    <Input
-                      placeholder="Enter date (YYYY-MM-DD)"
-                      value={newContractor.Start_Date}
-                      onChange={(e) =>
-                        setNewContractor((prevContractor) => ({
-                          ...prevContractor,
-                          Start_Date: e.target.value,
-                        }))
-                      }
-                    />
                   </FormControl>
 
                   <FormControl mt={2} isRequired>
@@ -870,6 +864,20 @@ const Contractors: React.FC = () => {
                         setNewContractor((prevContractor) => ({
                           ...prevContractor,
                           Contractor_Hourly_Rate: parseFloat(e.target.value),
+                        }))
+                      }
+                    />
+                  </FormControl>
+
+                  <FormControl mt={2}>
+                    <FormLabel>Initial Request Date</FormLabel>
+                    <Input
+                      placeholder="Enter date (YYYY-MM-DD)"
+                      value={newContractor.Start_Date}
+                      onChange={(e) =>
+                        setNewContractor((prevContractor) => ({
+                          ...prevContractor,
+                          Start_Date: e.target.value,
                         }))
                       }
                     />
