@@ -46,6 +46,7 @@ interface Contractor {
   Specialty_Discipline: string;
   Contractor_Hourly_Rate: number;
   Discipline_Charge_Out_Rate: number;
+  Discipline_Item_Number: string;
 }
 
 interface ContractorFromApi {
@@ -58,6 +59,7 @@ interface ContractorFromApi {
   Specialty_Discipline: string;
   Contractor_Hourly_Rate: number;
   Discipline_Charge_Out_Rate: number;
+  Discipline_Item_Number: string;
   Timesheets: Array<{ Week: string; Timesheet_File: string }>;
 }
 
@@ -83,6 +85,7 @@ const Contractors: React.FC = () => {
     Specialty_Discipline: "",
     Contractor_Hourly_Rate: 0,
     Discipline_Charge_Out_Rate: 0,
+    Discipline_Item_Number: "",
   });
 
   const [files, setFiles] = useState<File[]>([]);
@@ -162,19 +165,26 @@ const Contractors: React.FC = () => {
       Specialty_Discipline: "",
       Contractor_Hourly_Rate: 0,
       Discipline_Charge_Out_Rate: 0,
+      Discipline_Item_Number: "",
     });
     setSelectedAvailability("");
     setSelectedDiscipline("");
     setCustomHour(0);
   };
 
+  const [selectedSeniority, setSelectedSeniority] = useState<string>("");
+  const [selectedSpecialty, setSelectedSpecialty] = useState<string>("");
+  const [selectedDiscipline, setSelectedDiscipline] = useState<string>("");
+  const [selectedRateSheetCategory, setSelectedRateSheetCategory] = useState<
+    string
+  >("");
   const [selectedAvailability, setSelectedAvailability] = useState<string>("");
   const [showCustomDiscipline, setShowCustomDiscipline] = useState(false);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [filteredContractors, setFilteredContractors] = useState<
     ContractorFromApi[]
   >([]);
-  const [selectedDiscipline, setSelectedDiscipline] = useState<string>("");
+
   const [customHour, setCustomHour] = useState<number>(0);
 
   const startIndex = (page - 1) * itemsPerPage;
@@ -237,18 +247,18 @@ const Contractors: React.FC = () => {
         throw new Error("Network response was not ok");
       }
 
-    //   // Assuming the API call was successful, remove the specific contractor from local storage
-    //   const storedContractors = loadContractorsFromLocalStorage();
-    //   console.log(storedContractors);
-    //   const updatedContractorsStorage = storedContractors.filter(
-    //     (contractor) =>
-    //       contractor.Contractor_Name !== deleteContractor?.Contractor_Name &&
-    //       contractor.Contractor_Phone_Number !==
-    //         deleteContractor?.Contractor_Phone_Number &&
-    //       contractor.Contractor_Email !== deleteContractor?.Contractor_Email
-    //   );
-    //   console.log(updatedContractorsStorage);
-    //   saveContractorsToLocalStorage(updatedContractorsStorage);
+      //   // Assuming the API call was successful, remove the specific contractor from local storage
+      //   const storedContractors = loadContractorsFromLocalStorage();
+      //   console.log(storedContractors);
+      //   const updatedContractorsStorage = storedContractors.filter(
+      //     (contractor) =>
+      //       contractor.Contractor_Name !== deleteContractor?.Contractor_Name &&
+      //       contractor.Contractor_Phone_Number !==
+      //         deleteContractor?.Contractor_Phone_Number &&
+      //       contractor.Contractor_Email !== deleteContractor?.Contractor_Email
+      //   );
+      //   console.log(updatedContractorsStorage);
+      //   saveContractorsToLocalStorage(updatedContractorsStorage);
 
       const result = await response.text();
       console.log(result);
@@ -277,6 +287,7 @@ const Contractors: React.FC = () => {
       Specialty_Discipline: newContractor.Specialty_Discipline,
       Contractor_Hourly_Rate: newContractor.Contractor_Hourly_Rate,
       Discipline_Charge_Out_Rate: newContractor.Discipline_Charge_Out_Rate,
+      Discipline_Item_Number: newContractor.Discipline_Item_Number,
       Timesheets: [
         {
           Week: "2023-06-30T00:00:00Z",
@@ -317,9 +328,13 @@ const Contractors: React.FC = () => {
       Specialty_Discipline: "",
       Contractor_Hourly_Rate: 0,
       Discipline_Charge_Out_Rate: 0,
+      Discipline_Item_Number: "",
     });
     setSelectedAvailability("");
     setSelectedDiscipline("");
+    setSelectedSpecialty("");
+    setSelectedSpecialty("");
+    setSelectedSeniority("");
     setCustomHour(0);
     setShowNewContractorForm(false);
 
@@ -345,6 +360,19 @@ const Contractors: React.FC = () => {
     "Junior Designer": 90.0,
     Administrative: 68.0,
   };
+
+  const itemNumberofRateCategory = {
+    "Principal Engineer": "010",
+    "Senior Stress Engineer": "011",
+    "Senior Process Engineer": "012",
+    "Senior *Engineer": "013",
+    "Intermediate Engineer": "014",
+    "Project Manager": "031",
+    "Senior Designer / Checker": "041",
+    "Intermediate Designer": "042",
+    "Junior Designer": "043",
+    Administrative: "051",
+  }
 
   const saveContractorsToLocalStorage = (data: ContractorFromApi[]) => {
     localStorage.setItem("masterContractors", JSON.stringify(data));
@@ -639,29 +667,152 @@ const Contractors: React.FC = () => {
                     </Select>
                   </FormControl>
 
-                  <FormControl mt={2}>
+                  <FormControl mt={2} isRequired>
                     <FormLabel>Discipline</FormLabel>
                     <Select
                       isRequired
-                      placeholder="Select discipline"
+                      placeholder="Select Discipline"
                       value={selectedDiscipline}
-                      onChange={(e) => {
-                        const selectedDiscipline = e.target.value;
+                      onChange={(e) => setSelectedDiscipline(e.target.value)}
+                    >
+                      <option value="Management">Management</option>
+                      <option value="Engineering">Engineering</option>
+                      <option value="Design & Drafting">
+                        Design & Drafting
+                      </option>
+                      <option value="Admin">Admin</option>
+                      <option value="Other">Other</option>
+                    </Select>
+                  </FormControl>
 
-                        if (selectedDiscipline === "Custom") {
+                  <FormControl mt={2} isRequired>
+                    <FormLabel>Specialty</FormLabel>
+                    <Select
+                      isRequired
+                      placeholder="Select Specialty"
+                      value={selectedSpecialty}
+                      onChange={(e) => setSelectedSpecialty(e.target.value)}
+                    >
+                      {selectedDiscipline === "Management" && (
+                        <>
+                          <option value="Project Management">
+                            Project Management
+                          </option>
+                          <option value="Engineering Manager">
+                            Engineering Manager
+                          </option>
+                          <option value="Project Engineer">
+                            Project Engineer
+                          </option>
+                          <option value="Other">Other</option>
+                        </>
+                      )}
+
+                      {selectedDiscipline === "Engineering" && (
+                        <>
+                          <option value="Principal Engineer">
+                            Principal Engineer
+                          </option>
+                          <option value="Process/Chemical">
+                            Process/Chemical
+                          </option>
+                          <option value="Mechanical">Mechanical</option>
+                          <option value="Structural">Structural</option>
+                          <option value="Piping Stress">Piping Stress</option>
+                          <option value="Electrical">Electrical</option>
+                          <option value="Instrumentation">
+                            Instrumentation
+                          </option>
+                          <option value="HVAC">HVAC</option>
+                          <option value="Civil">Civil</option>
+                          <option value="Pressure Vessel">
+                            Pressure Vessel
+                          </option>
+                          <option value="Other Specialty">
+                            Other Specialty
+                          </option>
+                        </>
+                      )}
+
+                      {selectedDiscipline === "Design & Drafting" && (
+                        <>
+                          <option value="Process/Chemical">
+                            Process/Chemical
+                          </option>
+                          <option value="Mechanical">Mechanical</option>
+                          <option value="Structural/Civil">
+                            Structural/Civil
+                          </option>
+                          <option value="Pressure Vessel">
+                            Pressure Vessel
+                          </option>
+                          <option value="Electrical">Electrical</option>
+                          <option value="Instrumentation">
+                            Instrumentation
+                          </option>
+                          <option value="Other">Other</option>
+                        </>
+                      )}
+
+                      {selectedDiscipline === "Admin" && (
+                        <>
+                          <option value="Admin">Admin</option>
+                        </>
+                      )}
+
+                      {selectedDiscipline === "Other" && (
+                        <>
+                          <option value="Admin">Admin</option>
+                        </>
+                      )}
+                    </Select>
+                  </FormControl>
+
+                  <FormControl mt={2} isRequired>
+                    <FormLabel>Seniority</FormLabel>
+                    <Select
+                      isRequired
+                      placeholder="Select Seniority"
+                      value={selectedSeniority}
+                      onChange={(e) => setSelectedSeniority(e.target.value)}
+                    >
+                      <option value="Senior">Senior</option>
+                      {selectedSpecialty !== "Principal Engineer" && (
+                        <>
+                          <option value="Intermediate">Intermediate</option>
+                          <option value="Junior">Junior</option>
+                        </>
+                      )}
+                    </Select>
+                  </FormControl>
+
+                  <FormControl mt={2}>
+                    <FormLabel>Rate Sheet Category</FormLabel>
+                    <Select
+                      isRequired
+                      placeholder="Select Rate Sheet Category"
+                      value={selectedRateSheetCategory}
+                      onChange={(e) => {
+                        const selectedRateSheetCategory = e.target.value;
+
+                        if (selectedRateSheetCategory === "Custom") {
                           setShowCustomDiscipline(true);
                         } else {
                           setShowCustomDiscipline(false);
                         }
 
-                        setSelectedDiscipline(selectedDiscipline);
+                        setSelectedRateSheetCategory(selectedRateSheetCategory);
                         setNewContractor((prevContractor) => ({
                           ...prevContractor,
-                          Specialty_Discipline: selectedDiscipline,
+                          Specialty_Discipline: selectedRateSheetCategory,
                           Discipline_Charge_Out_Rate:
                             disciplineChargeOutRates[
-                              selectedDiscipline as keyof typeof disciplineChargeOutRates
+                              selectedRateSheetCategory as keyof typeof disciplineChargeOutRates
                             ] || 0,
+                          Discipline_Item_Number:
+                            itemNumberofRateCategory[
+                              selectedRateSheetCategory as keyof typeof itemNumberofRateCategory
+                            ] || "",
                         }));
                       }}
                     >
@@ -692,10 +843,14 @@ const Contractors: React.FC = () => {
 
                     {showCustomDiscipline && (
                       <FormControl mt={2} isRequired>
-                        <FormLabel>Custom Discipline</FormLabel>
+                        <FormLabel>Custom Rate Sheet Category</FormLabel>
                         <Input
-                          placeholder="Enter custom discipline"
-                          value={newContractor.Specialty_Discipline}
+                          placeholder="Enter custom rate sheet category"
+                          value={
+                            newContractor.Specialty_Discipline !== "Custom"
+                              ? newContractor.Specialty_Discipline
+                              : ""
+                          }
                           onChange={(e) =>
                             setNewContractor((prevContractor) => ({
                               ...prevContractor,
@@ -706,15 +861,18 @@ const Contractors: React.FC = () => {
                       </FormControl>
                     )}
                   </FormControl>
-                  <FormControl mt={2}>
-                    <FormLabel>Initial Request Date</FormLabel>
+
+                  <FormControl mt={2} isRequired>
+                    <FormLabel>Item #</FormLabel>
                     <Input
-                      placeholder="Enter date (YYYY-MM-DD)"
-                      value={newContractor.Start_Date}
+                      type="string"
+                      placeholder="Item #"
+                      readOnly
+                      value={newContractor.Discipline_Item_Number}
                       onChange={(e) =>
                         setNewContractor((prevContractor) => ({
                           ...prevContractor,
-                          Start_Date: e.target.value,
+                          Discipline_Item_Number: e.target.value,
                         }))
                       }
                     />
@@ -736,6 +894,7 @@ const Contractors: React.FC = () => {
                       }
                     />
                   </FormControl>
+                  
                   <FormControl mt={2} isRequired>
                     <FormLabel>Contractor Hourly Rate ($/hr)</FormLabel>
                     <Input
@@ -745,6 +904,20 @@ const Contractors: React.FC = () => {
                         setNewContractor((prevContractor) => ({
                           ...prevContractor,
                           Contractor_Hourly_Rate: parseFloat(e.target.value),
+                        }))
+                      }
+                    />
+                  </FormControl>
+
+                  <FormControl mt={2}>
+                    <FormLabel>Initial Request Date</FormLabel>
+                    <Input
+                      placeholder="Enter date (YYYY-MM-DD)"
+                      value={newContractor.Start_Date}
+                      onChange={(e) =>
+                        setNewContractor((prevContractor) => ({
+                          ...prevContractor,
+                          Start_Date: e.target.value,
                         }))
                       }
                     />
