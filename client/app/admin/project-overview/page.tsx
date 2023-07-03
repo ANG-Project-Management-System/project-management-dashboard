@@ -143,7 +143,7 @@ const ProjectOverview = () => {
     }[]
   >([]);
 
-  const handleConfirmSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleConfirmSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     const formData = new FormData(formRef.current!);
@@ -158,6 +158,54 @@ const ProjectOverview = () => {
     console.log("Start Date:", startDate);
     const endDate = formData.get("endDate");
     console.log("End Date:", endDate);
+
+    const updatedProject = {
+      ...selectedProject,
+      Project_Disciplines_Engineering: selectedDisciplinesEng,
+      Project_Disciplines_Design_Drafting: selectedDisciplinesDesDraft,
+      Project_Type: projectType,
+      Proposed_Start_Date: startDate,
+      Proposed_Project_Completion_Date: endDate,
+    };
+
+    console.log(selectedProject?._id);
+    
+    try {
+  
+      const response = await fetch(
+        `http://localhost:3000/api/projects?id=${selectedProject?._id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(updatedProject),
+        }
+      );
+  
+      if (!response.ok) {
+        const responseBody = await response.json();  // Parse response body as JSON
+        console.error('Error status:', response.status);
+        console.error('Response body:', responseBody);
+        throw new Error("Network response was not ok");
+      } else {
+        toast({
+          title: "Project Updated",
+          description: "The project has been successfully updated.",
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        });
+      }   
+  
+      const result = await response.json();
+      console.log(result);
+  
+      // setProjectData(updatedProjects);
+      // setUpdateProject(null);
+    } catch (error) {
+      console.error("Error:", error);
+    }
 
     setIsEditable(false);
     setIsOpen(false);
@@ -341,51 +389,6 @@ const ProjectOverview = () => {
     });
   };
 
-  const handleUpdate = async () => {
-    if (updateProject) {
-      const updatedProject = projectData.filter(
-        (project) => project !== updateProject
-      );
-      setProjectData(updatedProject);
-      setUpdateProject(null);
-    }
-
-    // debugging view
-    console.log(updateProject?._id);
-
-    toast({
-      title: "Project Updated",
-      description: "The project has been successfully updated.",
-      status: "success",
-      duration: 3000,
-      isClosable: true,
-    });
-
-    try {
-      const response = await fetch(
-        `http://localhost:3000/api/contractors?id=${updateProject?._id}`,
-        {
-          method: "PUT",
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-
-      const result = await response.text();
-      console.log(result);
-
-      const updatedProjects = projectData.filter(
-        (project) => project._id !== updateProject?._id
-      );
-      setProjectData(updatedProjects);
-      setUpdateProject(null);
-    } catch (error) {
-      console.error("Error:", error);
-    }
-  };
-
   const [totalCosts, setTotalCosts] = useState<number[]>([]);
   const [totalApprovedBudget, setTotalApprovedBudget] = useState<number>(0);
 
@@ -505,6 +508,12 @@ const ProjectOverview = () => {
               </Text>
               <Text>
                 <strong>Project Type:</strong> {selectedProject.Project_Type}
+              </Text>
+              <Text>
+                <strong>Project Start Date:</strong> {selectedProject.Proposed_Start_Date}
+              </Text>
+              <Text>
+                <strong>Project End Date:</strong> {selectedProject.Proposed_Project_Completion_Date}
               </Text>
               <br />
               <Text fontSize="xl" fontWeight="bold" mb={2}>
