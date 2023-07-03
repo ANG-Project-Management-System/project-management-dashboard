@@ -358,7 +358,7 @@ const Contractors: React.FC = () => {
     "Senior Designer / Checker": 120.0,
     "Intermediate Designer": 108.0,
     "Junior Designer": 90.0,
-    Administrative: 68.0,
+    "Administrative": 68.0,
   };
 
   const itemNumberofRateCategory = {
@@ -371,7 +371,8 @@ const Contractors: React.FC = () => {
     "Senior Designer / Checker": "041",
     "Intermediate Designer": "042",
     "Junior Designer": "043",
-    Administrative: "051",
+    "Administrative": "051",
+    "Custom": "N/A",
   }
 
   const saveContractorsToLocalStorage = (data: ContractorFromApi[]) => {
@@ -786,10 +787,9 @@ const Contractors: React.FC = () => {
                     </Select>
                   </FormControl>
 
-                  <FormControl mt={2}>
+                  <FormControl mt={2} isRequired> 
                     <FormLabel>Rate Sheet Category</FormLabel>
                     <Select
-                      isRequired
                       placeholder="Select Rate Sheet Category"
                       value={selectedRateSheetCategory}
                       onChange={(e) => {
@@ -862,7 +862,7 @@ const Contractors: React.FC = () => {
                     )}
                   </FormControl>
 
-                  <FormControl mt={2} isRequired>
+                  <FormControl mt={2}>
                     <FormLabel>Item #</FormLabel>
                     <Input
                       type="string"
@@ -878,7 +878,10 @@ const Contractors: React.FC = () => {
                     />
                   </FormControl>
 
-                  <FormControl mt={2} isRequired>
+                  <FormControl 
+                    mt={2} 
+                    isRequired={selectedRateSheetCategory === "Custom"}
+                  >
                     <FormLabel>Discipline Charge Out Rate ($/hr)</FormLabel>
                     <Input
                       type="number"
