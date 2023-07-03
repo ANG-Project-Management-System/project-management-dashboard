@@ -886,6 +886,7 @@ const Contractors: React.FC = () => {
                     <Input
                       type="number"
                       placeholder="Enter rate"
+                      readOnly={selectedRateSheetCategory !== "Custom"}
                       value={newContractor.Discipline_Charge_Out_Rate}
                       onChange={(e) =>
                         setNewContractor((prevContractor) => ({
