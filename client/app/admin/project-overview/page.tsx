@@ -64,6 +64,7 @@ type ProjectAPI = {
   Project_Type: string;
   Status: string;
   Contractors: string[];
+  Project_Comments: string[];
 };
 
 const ProjectOverview = () => {
@@ -80,6 +81,7 @@ const ProjectOverview = () => {
   };
 
   const [projectData, setProjectData] = useState<ProjectAPI[]>([]);
+  const [updateProject, setUpdateProject] = useState<ProjectAPI | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -141,19 +143,9 @@ const ProjectOverview = () => {
     }[]
   >([]);
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleConfirmSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    // // Validate start date and end date
-    // if (!startDate || !endDate) {
-    //   console.error("Invalid date values");
-    //   return;
-    // }
-
-    setIsOpen(true);
-  };
-
-  const handleConfirmSubmit = () => {
     const formData = new FormData(formRef.current!);
     console.log("Project Disciplines (Engineering): ", selectedDisciplinesEng);
     console.log(
@@ -349,6 +341,51 @@ const ProjectOverview = () => {
     });
   };
 
+  const handleUpdate = async () => {
+    if (updateProject) {
+      const updatedProject = projectData.filter(
+        (project) => project !== updateProject
+      );
+      setProjectData(updatedProject);
+      setUpdateProject(null);
+    }
+
+    // debugging view
+    console.log(updateProject?._id);
+
+    toast({
+      title: "Project Updated",
+      description: "The project has been successfully updated.",
+      status: "success",
+      duration: 3000,
+      isClosable: true,
+    });
+
+    try {
+      const response = await fetch(
+        `http://localhost:3000/api/contractors?id=${updateProject?._id}`,
+        {
+          method: "PUT",
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+      const result = await response.text();
+      console.log(result);
+
+      const updatedProjects = projectData.filter(
+        (project) => project._id !== updateProject?._id
+      );
+      setProjectData(updatedProjects);
+      setUpdateProject(null);
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
   const [totalCosts, setTotalCosts] = useState<number[]>([]);
   const [totalApprovedBudget, setTotalApprovedBudget] = useState<number>(0);
 
@@ -516,7 +553,7 @@ const ProjectOverview = () => {
           Project Form for Change Order
         </Text>
 
-        <form id="projectForm" ref={formRef} onSubmit={handleSubmit}>
+        <form id="projectForm" ref={formRef} onSubmit={handleConfirmSubmit}>
           <SimpleGrid columns={3} spacing={10}>
             <FormControl id="projectDisciplinesEng" mt={4}>
               <FormLabel>Project Disciplines (Engineering)</FormLabel>
@@ -889,7 +926,7 @@ const ProjectOverview = () => {
               <Button ref={cancelRef} onClick={handleCancelSubmit}>
                 Cancel
               </Button>
-              <Button colorScheme="teal" onClick={handleConfirmSubmit} ml={3}>
+              <Button colorScheme="teal" type="submit" ml={3}>
                 Confirm
               </Button>
             </AlertDialogFooter>
