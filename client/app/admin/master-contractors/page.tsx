@@ -46,6 +46,7 @@ interface Contractor {
   Specialty_Discipline: string;
   Contractor_Hourly_Rate: number;
   Discipline_Charge_Out_Rate: number;
+  Discipline_Item_Number: string;
 }
 
 interface ContractorFromApi {
@@ -58,6 +59,7 @@ interface ContractorFromApi {
   Specialty_Discipline: string;
   Contractor_Hourly_Rate: number;
   Discipline_Charge_Out_Rate: number;
+  Discipline_Item_Number: string;
   Timesheets: Array<{ Week: string; Timesheet_File: string }>;
 }
 
@@ -83,6 +85,7 @@ const Contractors: React.FC = () => {
     Specialty_Discipline: "",
     Contractor_Hourly_Rate: 0,
     Discipline_Charge_Out_Rate: 0,
+    Discipline_Item_Number: "",
   });
 
   const [files, setFiles] = useState<File[]>([]);
@@ -162,6 +165,7 @@ const Contractors: React.FC = () => {
       Specialty_Discipline: "",
       Contractor_Hourly_Rate: 0,
       Discipline_Charge_Out_Rate: 0,
+      Discipline_Item_Number: "",
     });
     setSelectedAvailability("");
     setSelectedDiscipline("");
@@ -283,6 +287,7 @@ const Contractors: React.FC = () => {
       Specialty_Discipline: newContractor.Specialty_Discipline,
       Contractor_Hourly_Rate: newContractor.Contractor_Hourly_Rate,
       Discipline_Charge_Out_Rate: newContractor.Discipline_Charge_Out_Rate,
+      Discipline_Item_Number: newContractor.Discipline_Item_Number,
       Timesheets: [
         {
           Week: "2023-06-30T00:00:00Z",
@@ -323,6 +328,7 @@ const Contractors: React.FC = () => {
       Specialty_Discipline: "",
       Contractor_Hourly_Rate: 0,
       Discipline_Charge_Out_Rate: 0,
+      Discipline_Item_Number: "",
     });
     setSelectedAvailability("");
     setSelectedDiscipline("");
@@ -354,6 +360,19 @@ const Contractors: React.FC = () => {
     "Junior Designer": 90.0,
     Administrative: 68.0,
   };
+
+  const itemNumberofRateCategory = {
+    "Principal Engineer": "010",
+    "Senior Stress Engineer": "011",
+    "Senior Process Engineer": "012",
+    "Senior *Engineer": "013",
+    "Intermediate Engineer": "014",
+    "Project Manager": "031",
+    "Senior Designer / Checker": "041",
+    "Intermediate Designer": "042",
+    "Junior Designer": "043",
+    Administrative: "051",
+  }
 
   const saveContractorsToLocalStorage = (data: ContractorFromApi[]) => {
     localStorage.setItem("masterContractors", JSON.stringify(data));
@@ -790,6 +809,10 @@ const Contractors: React.FC = () => {
                             disciplineChargeOutRates[
                               selectedRateSheetCategory as keyof typeof disciplineChargeOutRates
                             ] || 0,
+                          Discipline_Item_Number:
+                            itemNumberofRateCategory[
+                              selectedRateSheetCategory as keyof typeof itemNumberofRateCategory
+                            ] || "",
                         }));
                       }}
                     >
@@ -822,7 +845,7 @@ const Contractors: React.FC = () => {
                       <FormControl mt={2} isRequired>
                         <FormLabel>Custom Rate Sheet Category</FormLabel>
                         <Input
-                          placeholder="Enter custom discipline"
+                          placeholder="Enter custom rate sheet category"
                           value={
                             newContractor.Specialty_Discipline !== "Custom"
                               ? newContractor.Specialty_Discipline
@@ -837,6 +860,22 @@ const Contractors: React.FC = () => {
                         />
                       </FormControl>
                     )}
+                  </FormControl>
+
+                  <FormControl mt={2} isRequired>
+                    <FormLabel>Item #</FormLabel>
+                    <Input
+                      type="string"
+                      placeholder="Item #"
+                      readOnly
+                      value={newContractor.Discipline_Item_Number}
+                      onChange={(e) =>
+                        setNewContractor((prevContractor) => ({
+                          ...prevContractor,
+                          Discipline_Item_Number: e.target.value,
+                        }))
+                      }
+                    />
                   </FormControl>
 
                   <FormControl mt={2} isRequired>
@@ -855,6 +894,7 @@ const Contractors: React.FC = () => {
                       }
                     />
                   </FormControl>
+                  
                   <FormControl mt={2} isRequired>
                     <FormLabel>Contractor Hourly Rate ($/hr)</FormLabel>
                     <Input
