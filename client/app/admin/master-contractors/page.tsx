@@ -279,7 +279,7 @@ const Contractors: React.FC = () => {
   const handleNewContractorSubmit = async (
     event: React.FormEvent<HTMLFormElement>
   ) => {
-    // event.preventDefault();
+    event.preventDefault();
 
     const contractorData = {
       Contractor_Name: newContractor.Contractor_Name,
@@ -320,10 +320,12 @@ const Contractors: React.FC = () => {
       console.log("error");
     }
 
-    // Assuming the API call was successful, append the new contractor to local storage
-    const storedContractors = loadContractorsFromLocalStorage();
-    storedContractors.push(contractorData);
-    saveContractorsToLocalStorage(storedContractors);
+    // After the successful POST request, fetch the updated data from the API again
+    const newResponse = await fetch('http://localhost:3000/api/contractors');
+    const newData = await newResponse.json();
+
+    // Update the state with the fetched data
+    setContractorsAPI(newData);
 
     // Clear form and other states
     setNewContractor({
