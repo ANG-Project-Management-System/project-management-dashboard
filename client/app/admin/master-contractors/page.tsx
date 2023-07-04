@@ -72,11 +72,34 @@ interface ContractorFromApi {
 }
 
 const Contractors: React.FC = () => {
+  
+  const [contractorsAPI, setContractorsAPI] = useState<ContractorFromApi[]>([]);
+
+  useEffect(() => {
+    const fetchContractors = async () => {
+      try {
+        const response = await fetch("http://localhost:3000/api/contractors");
+        const data = await response.json();
+        setContractorsAPI(data);
+        saveContractorsToLocalStorage(data); // Save data to local storage
+        console.log(contractorsAPI);
+      } catch (error) {
+        console.error("Error fetching contractors:", error);
+      }
+    };
+
+    const storedContractors = loadContractorsFromLocalStorage(); // Load data from local storage
+    // console.log(storedContractors.length);
+
+    if (storedContractors.length < 0) {
+      setContractorsAPI(storedContractors);
+    } else {
+      fetchContractors();
+    }
+  }, []);
+
   const toast = useToast();
   const [showUploadTimesheets, setShowUploadTimesheets] = useState(false);
-
-  const [contractors, setContractors] = useState<ContractorFromApi[]>([]);
-  const [contractorsAPI, setContractorsAPI] = useState<ContractorFromApi[]>([]);
   const [page, setPage] = useState<number>(1);
   const itemsPerPage = 10;
   const [
@@ -401,29 +424,6 @@ const Contractors: React.FC = () => {
   };
 
   console.log(contractorsAPI);
-
-  useEffect(() => {
-    const fetchContractors = async () => {
-      try {
-        const response = await fetch("http://localhost:3000/api/contractors");
-        const data = await response.json();
-        setContractorsAPI(data);
-        saveContractorsToLocalStorage(data); // Save data to local storage
-        console.log(contractorsAPI);
-      } catch (error) {
-        console.error("Error fetching contractors:", error);
-      }
-    };
-
-    const storedContractors = loadContractorsFromLocalStorage(); // Load data from local storage
-    // console.log(storedContractors.length);
-
-    if (storedContractors.length < 0) {
-      setContractorsAPI(storedContractors);
-    } else {
-      fetchContractors();
-    }
-  }, []);
 
   return (
     <Flex>
