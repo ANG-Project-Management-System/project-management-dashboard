@@ -170,8 +170,34 @@ const handler = async (req, res) => {
             }
             break;
 
+        case 'PATCH':
+            try {
+                await client.connect();
+
+                // Update specific fields of the Project document.
+                const result = await client.db(process.env.MONGO_DB)
+                    .collection('project')
+                    .updateOne(
+                        { _id: new ObjectId(id) },
+                        { $set: body }
+                    );
+
+                if (result.matchedCount === 0) {
+                    return res.status(404).json({ error: 'Project not found' });
+                }
+
+                return res.status(200).json(body);
+            } catch (error) {
+                console.error(error);
+                return res.status(500).json({ error: 'Error connecting to db', details: error });
+            }
+            finally {
+                client.close();
+            }
+            break;
+
         default:
-            res.setHeader('Allow', ['GET', 'POST', 'PUT', 'DELETE']);
+            res.setHeader('Allow', ['GET', 'POST', 'PUT', 'DELETE', 'PATCH']);
             res.status(405).end(`Method ${method} Not Allowed`);
     }
 }

@@ -161,8 +161,7 @@ const ProjectOverview = () => {
     const endDate = formData.get("endDate");
     console.log("End Date:", endDate);
 
-    const updatedProject = {
-      ...selectedProject,
+    const fields = {
       Project_Disciplines_Engineering: selectedDisciplinesEng,
       Project_Disciplines_Design_Drafting: selectedDisciplinesDesDraft,
       Project_Type: projectType,
@@ -170,53 +169,68 @@ const ProjectOverview = () => {
       Proposed_Project_Completion_Date: endDate,
     };
 
-    console.log(selectedProject?._id);
+    const updatedProject = Object.fromEntries(
+      Object.entries(fields).filter(
+        ([_, value]) => value != null && value.length > 0
+      )
+    );
 
-    try {
-      const response = await fetch(
-        `http://localhost:3000/api/projects?id=${selectedProject?._id}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(updatedProject),
+    // Check if updatedProject is empty
+    if (Object.keys(updatedProject).length === 0) {
+      toast({
+        title: "No Changes",
+        description: "No new data to update. Please fill out at least one field.",
+        status: "info",
+        duration: 3000,
+        isClosable: true,
+      });
+    } else {
+      try {
+        const response = await fetch(
+          `http://localhost:3000/api/projects?id=${selectedProject?._id}`,
+          {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(updatedProject),
+          }
+        );
+  
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        } else {
+          toast({
+            title: "Project Updated",
+            description: "The project has been successfully updated.",
+            status: "success",
+            duration: 3000,
+            isClosable: true,
+          });
         }
-      );
-
-      if (!response.ok) {
-        const responseBody = await response.json(); // Parse response body as JSON
-        console.error("Error status:", response.status);
-        console.error("Response body:", responseBody);
-        throw new Error("Network response was not ok");
-      } else {
-        toast({
-          title: "Project Updated",
-          description: "The project has been successfully updated.",
-          status: "success",
-          duration: 3000,
-          isClosable: true,
-        });
+  
+        // Re-fetch data from the API after a successful update
+        const newResponse = await fetch('http://localhost:3000/api/projects');
+        const newData = await newResponse.json();
+  
+        // Update state or trigger re-render with new data
+        // Assuming setProjectData is your state updater function
+        setProjectData(newData);
+  
+      } catch (error) {
+        console.error("Error:", error);
       }
-
-      const result = await response.json();
-      console.log(result);
-
-      // setProjectData(updatedProjects);
-      // setUpdateProject(null);
-    } catch (error) {
-      console.error("Error:", error);
+  
+      setIsEditable(false);
+      setIsOpen(false);
+  
+      // Reset form fields
+      formRef.current?.reset();
+      setStartDate(null);
+      setEndDate(null);
+      setSelectedDisciplinesEng([]);
+      setSelectedDisciplinesDesDraft([]);
     }
-
-    setIsEditable(false);
-    setIsOpen(false);
-
-    // Reset form fields
-    formRef.current?.reset();
-    setStartDate(null);
-    setEndDate(null);
-    setSelectedDisciplinesEng([]);
-    setSelectedDisciplinesDesDraft([]);
   };
 
   const handleCancelSubmit = () => {
@@ -258,26 +272,27 @@ const ProjectOverview = () => {
     if (selectedProject) {
       const comments = selectedProject.Project_Comments;
 
-      const rows = comments.map((comment, index) => {
-        if (comment && comment.length >= 4) {
-          return {
-            id: `row-${index}`,
-            deliverable: comment[0],
-            percentComplete: parseInt(comment[1]),
-            date: comment[2] ? new Date(comment[2]) : null,
-            comments: comment[3],
-          };
-        } else {
-          // Handle invalid comment array
-          return null;
-        }
-      }).filter(Boolean); // Remove null values from the array
-  
+      const rows = comments
+        .map((comment, index) => {
+          if (comment && comment.length >= 4) {
+            return {
+              id: `row-${index}`,
+              deliverable: comment[0],
+              percentComplete: parseInt(comment[1]),
+              date: comment[2] ? new Date(comment[2]) : null,
+              comments: comment[3],
+            };
+          } else {
+            // Handle invalid comment array
+            return null;
+          }
+        })
+        .filter(Boolean); // Remove null values from the array
+
       // @ts-ignore
       setTableRows(rows);
     }
-}, [selectedProject]);
-  
+  }, [selectedProject]);
 
   // Define the TableRow type
   type TableRow = {
@@ -319,63 +334,116 @@ const ProjectOverview = () => {
     ]);
   };
 
-  const handleSaveClick = (row: TableRow) => {
-    const rowId = `row-${Date.now()}`;
-    const newRow = { id: rowId, ...row };
+  //   const updateProjectComments = async (projectId, newComment) => {
+  //     try {
+  //       const response = await fetch(
+  //         `http://localhost:3000/api/projects?id=${selectedProject?._id}`, {
+  //             method: 'PATCH',
+  //             headers: {
+  //                 'Content-Type': 'application/json',
+  //             },
+  //             body: JSON.stringify({ $push: { Project_Comments: newComment } }),
+  //         });
 
-    // Check if the row already exists in local storage
-    const existingRowIndex = tableRows.findIndex(
-      (item) => item.deliverable === row.deliverable
-    );
+  //         if (!response.ok) {
+  //             throw new Error(`HTTP error! status: ${response.status}`);
+  //         }
 
-    if (existingRowIndex !== -1) {
-      // Update the existing row with the new values
-      const updatedRows = [...tableRows];
-      updatedRows[existingRowIndex] = newRow;
+  //         const data = await response.json();
 
-      // Update the state with the updated rows
-      setTableRows(updatedRows);
+  //         return data;
+  //     } catch (error) {
+  //         console.error(error);
+  //     }
+  // };
 
-      // Update the row in local storage
-      localStorage.setItem(
-        tableRows[existingRowIndex].id,
-        JSON.stringify(newRow)
-      );
-    } else {
-      // Add the new row to the state
-      setTableRows((prevRows) => [...prevRows, newRow]);
+  //   const handleSaveClick = (row: TableRow) => {
+  //     const newRow = [
+  //         row.deliverable,
+  //         row.percentComplete.toString(),
+  //         row.date ? row.date.toISOString() : null,
+  //         row.comments,
+  //     ];
 
-      // Store the new row in local storage
-      localStorage.setItem(rowId, JSON.stringify(newRow));
-    }
+  //     updateProjectComments(selectedProject?._id, newRow).then((updatedProject) => {
+  //         if (updatedProject) {
+  //             const updatedComments = updatedProject.Project_Comments;
+  //             const updatedRows = updatedComments.map((comment, index) => {
+  //                 return {
+  //                     id: `row-${index}`,
+  //                     deliverable: comment[0],
+  //                     percentComplete: parseInt(comment[1]),
+  //                     date: comment[2] ? new Date(comment[2]) : null,
+  //                     comments: comment[3],
+  //                 };
+  //             });
 
-    // Display the success notification
-    toast({
-      title: "Successfully saved!",
-      status: "success",
-      duration: 3000,
-      isClosable: true,
-    });
-  };
+  //             setTableRows(updatedRows);
 
-  const handleDeleteRow = (index: number) => {
-    // Get the ID of the row to be deleted
-    const rowId = tableRows[index].id;
+  //             toast({
+  //                 title: "Successfully saved!",
+  //                 status: "success",
+  //                 duration: 3000,
+  //                 isClosable: true,
+  //             });
+  //         }
+  //     });
+  // };
 
-    // Remove the row from local storage
-    localStorage.removeItem(rowId);
+  // const removeProjectComment = async (projectId, commentToRemove) => {
+  //   try {
+  //       const response = await fetch(`/api/projects/${projectId}`, {
+  //           method: 'PATCH',
+  //           headers: {
+  //               'Content-Type': 'application/json',
+  //           },
+  //           body: JSON.stringify({ $pull: { Project_Comments: commentToRemove } }),
+  //       });
 
-    // Remove the row from the state
-    const newTableRows = [...tableRows];
-    newTableRows.splice(index, 1);
-    setTableRows(newTableRows);
+  //       if (!response.ok) {
+  //           throw new Error(`HTTP error! status: ${response.status}`);
+  //       }
 
-    // Update the stored data in local storage
-    localStorage.clear();
-    newTableRows.forEach((row) => {
-      localStorage.setItem(row.id, JSON.stringify(row));
-    });
-  };
+  //       const data = await response.json();
+
+  //       return data;
+  //   } catch (error) {
+  //       console.error(error);
+  //   }
+  // };
+
+  // const handleDeleteRow = (index: number) => {
+  //   const commentToRemove = [
+  //       tableRows[index].deliverable,
+  //       tableRows[index].percentComplete.toString(),
+  //       tableRows[index].date ? tableRows[index].date.toISOString() : null,
+  //       tableRows[index].comments,
+  //   ];
+
+  //   removeProjectComment(selectedProject?._id, commentToRemove).then((updatedProject) => {
+  //       if (updatedProject) {
+  //           const updatedComments = updatedProject.Project_Comments;
+  //           const updatedRows = updatedComments.map((comment, index) => {
+  //               return {
+  //                   id: `row-${index}`,
+  //                   deliverable: comment[0],
+  //                   percentComplete: parseInt(comment[1]),
+  //                   date: comment[2] ? new Date(comment[2]) : null,
+  //                   comments: comment[3],
+  //               };
+  //           });
+
+  //           setTableRows(updatedRows);
+
+  //           toast({
+  //               title: "Successfully deleted!",
+  //               status: "success",
+  //               duration: 3000,
+  //               isClosable: true,
+  //           });
+  //       }
+  //   });
+  // };
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
@@ -842,7 +910,7 @@ const ProjectOverview = () => {
                         colorScheme="teal"
                         // variant="outline"
                         aria-label="Save Row"
-                        onClick={() => handleSaveClick(row)}
+                        // onClick={() => handleSaveClick(row)}
                         disabled={!isEditable}
                       />
                     </Td>
@@ -852,7 +920,7 @@ const ProjectOverview = () => {
                         colorScheme="red"
                         variant="outline"
                         aria-label="Delete Row"
-                        onClick={() => handleDeleteRow(index)}
+                        // onClick={() => handleDeleteRow(index)}
                         disabled={!isEditable}
                       />
                     </Td>
