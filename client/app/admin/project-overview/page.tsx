@@ -143,7 +143,9 @@ const ProjectOverview = () => {
     }[]
   >([]);
 
-  const handleConfirmSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  const handleConfirmSubmit = async (
+    event: React.FormEvent<HTMLFormElement>
+  ) => {
     event.preventDefault();
 
     const formData = new FormData(formRef.current!);
@@ -169,9 +171,8 @@ const ProjectOverview = () => {
     };
 
     console.log(selectedProject?._id);
-    
+
     try {
-  
       const response = await fetch(
         `http://localhost:3000/api/projects?id=${selectedProject?._id}`,
         {
@@ -182,11 +183,11 @@ const ProjectOverview = () => {
           body: JSON.stringify(updatedProject),
         }
       );
-  
+
       if (!response.ok) {
-        const responseBody = await response.json();  // Parse response body as JSON
-        console.error('Error status:', response.status);
-        console.error('Response body:', responseBody);
+        const responseBody = await response.json(); // Parse response body as JSON
+        console.error("Error status:", response.status);
+        console.error("Response body:", responseBody);
         throw new Error("Network response was not ok");
       } else {
         toast({
@@ -196,11 +197,11 @@ const ProjectOverview = () => {
           duration: 3000,
           isClosable: true,
         });
-      }   
-  
+      }
+
       const result = await response.json();
       console.log(result);
-  
+
       // setProjectData(updatedProjects);
       // setUpdateProject(null);
     } catch (error) {
@@ -253,21 +254,31 @@ const ProjectOverview = () => {
     },
   ]);
 
-  // Fetch stored data from localStorage on component mount
   useEffect(() => {
-    const storedRows = [];
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i);
-      if (key && key.startsWith("row-")) {
-        const storedData = localStorage.getItem(key);
-        if (storedData) {
-          const row = JSON.parse(storedData);
-          storedRows.push(row);
+    // Check if projectData is not empty
+    if (projectData.length > 0) {
+      const comments = projectData.flatMap((project) => project.Project_Comments);
+  
+      const rows = comments.map((comment, index) => {
+        if (comment && comment.length >= 4) {
+          return {
+            id: `row-${index}`,
+            deliverable: comment[0],
+            percentComplete: parseInt(comment[1]),
+            date: comment[2] ? new Date(comment[2]) : null,
+            comments: comment[3],
+          };
+        } else {
+          // Handle invalid comment array
+          return null;
         }
-      }
+      }).filter(Boolean); // Remove null values from the array
+  
+      // @ts-ignore
+      setTableRows(rows);
     }
-    setTableRows(storedRows);
-  }, []);
+  }, [projectData]);
+  
 
   // Define the TableRow type
   type TableRow = {
@@ -510,10 +521,12 @@ const ProjectOverview = () => {
                 <strong>Project Type:</strong> {selectedProject.Project_Type}
               </Text>
               <Text>
-                <strong>Project Start Date:</strong> {selectedProject.Proposed_Start_Date}
+                <strong>Project Start Date:</strong>{" "}
+                {selectedProject.Proposed_Start_Date}
               </Text>
               <Text>
-                <strong>Project End Date:</strong> {selectedProject.Proposed_Project_Completion_Date}
+                <strong>Project End Date:</strong>{" "}
+                {selectedProject.Proposed_Project_Completion_Date}
               </Text>
               <br />
               <Text fontSize="xl" fontWeight="bold" mb={2}>
@@ -767,25 +780,25 @@ const ProjectOverview = () => {
                       >
                         <option value="null">-</option>{" "}
                         {/* Added null option */}
-                        <option value="10">5%</option>
-                        <option value="20">10%</option>
-                        <option value="30">15%</option>
-                        <option value="40">20%</option>
-                        <option value="50">25%</option>
-                        <option value="60">30%</option>
-                        <option value="70">35%</option>
-                        <option value="80">40%</option>
-                        <option value="90">45%</option>
-                        <option value="100">50%</option>
-                        <option value="10">55%</option>
-                        <option value="20">60%</option>
-                        <option value="30">65%</option>
-                        <option value="40">70%</option>
-                        <option value="50">75%</option>
-                        <option value="60">80%</option>
-                        <option value="70">85%</option>
-                        <option value="80">90%</option>
-                        <option value="90">95%</option>
+                        <option value="5">5%</option>
+                        <option value="10">10%</option>
+                        <option value="15">15%</option>
+                        <option value="20">20%</option>
+                        <option value="25">25%</option>
+                        <option value="30">30%</option>
+                        <option value="35">35%</option>
+                        <option value="40">40%</option>
+                        <option value="45">45%</option>
+                        <option value="50">50%</option>
+                        <option value="55">55%</option>
+                        <option value="60">60%</option>
+                        <option value="65">65%</option>
+                        <option value="70">70%</option>
+                        <option value="75">75%</option>
+                        <option value="80">80%</option>
+                        <option value="85">85%</option>
+                        <option value="90">90%</option>
+                        <option value="95">95%</option>
                         <option value="100">100%</option>
                       </Select>
                     </Td>
