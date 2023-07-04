@@ -459,7 +459,7 @@ const Contractors: React.FC = () => {
               <Th>Discipline</Th>
               <Th>Specialty</Th>
               <Th>Seniority</Th>
-              <Th>Rate Sheet Item</Th>
+              <Th>Item#</Th>
               <Th>Rate Sheet Category</Th>
               <Th>Initial Request Date</Th>
               <Th>Discipline Charge out Rate ($/hr)</Th>
