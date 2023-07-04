@@ -46,7 +46,11 @@ interface Contractor {
   Specialty_Discipline: string;
   Contractor_Hourly_Rate: number;
   Discipline_Charge_Out_Rate: number;
-  Discipline_Item_Number: string;
+  Discipline: string;
+  Specialty: string;
+  Seniority: string;
+  "Rate Sheet Item": string;
+  "Rate Sheet Category": string;
 }
 
 interface ContractorFromApi {
@@ -59,7 +63,11 @@ interface ContractorFromApi {
   Specialty_Discipline: string;
   Contractor_Hourly_Rate: number;
   Discipline_Charge_Out_Rate: number;
-  Discipline_Item_Number: string;
+  Discipline: string;
+  Specialty: string;
+  Seniority: string;
+  "Rate Sheet Item": string;
+  "Rate Sheet Category": string;
   Timesheets: Array<{ Week: string; Timesheet_File: string }>;
 }
 
@@ -85,7 +93,11 @@ const Contractors: React.FC = () => {
     Specialty_Discipline: "",
     Contractor_Hourly_Rate: 0,
     Discipline_Charge_Out_Rate: 0,
-    Discipline_Item_Number: "",
+    Discipline: "",
+    Specialty: "",
+    Seniority: "",
+    "Rate Sheet Item": "",
+    "Rate Sheet Category": "",
   });
 
   const [files, setFiles] = useState<File[]>([]);
@@ -165,7 +177,11 @@ const Contractors: React.FC = () => {
       Specialty_Discipline: "",
       Contractor_Hourly_Rate: 0,
       Discipline_Charge_Out_Rate: 0,
-      Discipline_Item_Number: "",
+      Discipline: "",
+      Specialty: "",
+      Seniority: "",
+      "Rate Sheet Item": "",
+      "Rate Sheet Category": "",
     });
     setSelectedAvailability("");
     setSelectedDiscipline("");
@@ -247,19 +263,6 @@ const Contractors: React.FC = () => {
         throw new Error("Network response was not ok");
       }
 
-      //   // Assuming the API call was successful, remove the specific contractor from local storage
-      //   const storedContractors = loadContractorsFromLocalStorage();
-      //   console.log(storedContractors);
-      //   const updatedContractorsStorage = storedContractors.filter(
-      //     (contractor) =>
-      //       contractor.Contractor_Name !== deleteContractor?.Contractor_Name &&
-      //       contractor.Contractor_Phone_Number !==
-      //         deleteContractor?.Contractor_Phone_Number &&
-      //       contractor.Contractor_Email !== deleteContractor?.Contractor_Email
-      //   );
-      //   console.log(updatedContractorsStorage);
-      //   saveContractorsToLocalStorage(updatedContractorsStorage);
-
       const result = await response.text();
       console.log(result);
 
@@ -287,7 +290,11 @@ const Contractors: React.FC = () => {
       Specialty_Discipline: newContractor.Specialty_Discipline,
       Contractor_Hourly_Rate: newContractor.Contractor_Hourly_Rate,
       Discipline_Charge_Out_Rate: newContractor.Discipline_Charge_Out_Rate,
-      Discipline_Item_Number: newContractor.Discipline_Item_Number,
+      Discipline: selectedDiscipline,
+      Specialty: selectedSpecialty,
+      Seniority: selectedSeniority,
+      "Rate Sheet Item": newContractor["Rate Sheet Item"],
+      "Rate Sheet Category": selectedRateSheetCategory,
       Timesheets: [
         {
           Week: "2023-06-30T00:00:00Z",
@@ -328,7 +335,11 @@ const Contractors: React.FC = () => {
       Specialty_Discipline: "",
       Contractor_Hourly_Rate: 0,
       Discipline_Charge_Out_Rate: 0,
-      Discipline_Item_Number: "",
+      Discipline: "",
+      Specialty: "",
+      Seniority: "",
+      "Rate Sheet Item": "",
+      "Rate Sheet Category": "",
     });
     setSelectedAvailability("");
     setSelectedDiscipline("");
@@ -444,11 +455,15 @@ const Contractors: React.FC = () => {
               <Th>Contractor Name</Th>
               <Th>Contractor Phone</Th>
               <Th>Contractor Email</Th>
-              <Th>Contractor Availability</Th>
+              <Th>Availability</Th>
+              <Th>Discipline</Th>
+              <Th>Specialty</Th>
+              <Th>Seniority</Th>
+              <Th>Rate Sheet Item</Th>
+              <Th>Rate Sheet Category</Th>
               <Th>Initial Request Date</Th>
-              <Th>Specialty (Discipline)</Th>
-              <Th>Contractor Hourly Rate ($/hr)</Th>
               <Th>Discipline Charge out Rate ($/hr)</Th>
+              <Th>Contractor Hourly Rate ($/hr)</Th>
               <Th>Upload Timesheets</Th>
               <Th>Download Timesheets</Th>
               <Th>Actions</Th>
@@ -462,10 +477,14 @@ const Contractors: React.FC = () => {
                 <Td>{contractor.Contractor_Phone_Number}</Td>
                 <Td>{contractor.Contractor_Email}</Td>
                 <Td>{contractor.Contractor_Availability}</Td>
+                <Td>{contractor.Discipline}</Td>
+                <Td>{contractor.Specialty}</Td>
+                <Td>{contractor.Seniority}</Td>
+                <Td>{contractor["Rate Sheet Item"]}</Td>
+                <Td>{contractor["Rate Sheet Category"]}</Td>
                 <Td>{contractor.Start_Date}</Td>
-                <Td>{contractor.Specialty_Discipline}</Td>
-                <Td>{contractor.Contractor_Hourly_Rate}</Td>
                 <Td>{contractor.Discipline_Charge_Out_Rate}</Td>
+                <Td>{contractor.Contractor_Hourly_Rate}</Td>
                 <Td>
                   <IconButton
                     icon={<AddIcon />}
@@ -809,7 +828,7 @@ const Contractors: React.FC = () => {
                             disciplineChargeOutRates[
                               selectedRateSheetCategory as keyof typeof disciplineChargeOutRates
                             ] || 0,
-                          Discipline_Item_Number:
+                          "Rate Sheet Item":
                             itemNumberofRateCategory[
                               selectedRateSheetCategory as keyof typeof itemNumberofRateCategory
                             ] || "",
@@ -868,7 +887,7 @@ const Contractors: React.FC = () => {
                       type="string"
                       placeholder="Item #"
                       readOnly
-                      value={newContractor.Discipline_Item_Number}
+                      value={newContractor["Rate Sheet Item"]}
                       onChange={(e) =>
                         setNewContractor((prevContractor) => ({
                           ...prevContractor,
