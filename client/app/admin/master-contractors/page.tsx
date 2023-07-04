@@ -461,9 +461,9 @@ const Contractors: React.FC = () => {
               <Th>Seniority</Th>
               <Th>Item#</Th>
               <Th>Rate Sheet Category</Th>
-              <Th>Initial Request Date</Th>
               <Th>Discipline Charge out Rate ($/hr)</Th>
               <Th>Contractor Hourly Rate ($/hr)</Th>
+              <Th>Initial Request Date</Th>
               <Th>Upload Timesheets</Th>
               <Th>Download Timesheets</Th>
               <Th>Actions</Th>
@@ -482,9 +482,9 @@ const Contractors: React.FC = () => {
                 <Td>{contractor.Seniority}</Td>
                 <Td>{contractor["Rate Sheet Item"]}</Td>
                 <Td>{contractor["Rate Sheet Category"]}</Td>
-                <Td>{contractor.Start_Date}</Td>
                 <Td>{contractor.Discipline_Charge_Out_Rate}</Td>
                 <Td>{contractor.Contractor_Hourly_Rate}</Td>
+                <Td>{contractor.Start_Date}</Td>
                 <Td>
                   <IconButton
                     icon={<AddIcon />}

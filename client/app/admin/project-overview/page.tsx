@@ -255,10 +255,9 @@ const ProjectOverview = () => {
   ]);
 
   useEffect(() => {
-    // Check if projectData is not empty
-    if (projectData.length > 0) {
-      const comments = projectData.flatMap((project) => project.Project_Comments);
-  
+    if (selectedProject) {
+      const comments = selectedProject.Project_Comments;
+
       const rows = comments.map((comment, index) => {
         if (comment && comment.length >= 4) {
           return {
@@ -277,7 +276,7 @@ const ProjectOverview = () => {
       // @ts-ignore
       setTableRows(rows);
     }
-  }, [projectData]);
+}, [selectedProject]);
   
 
   // Define the TableRow type
