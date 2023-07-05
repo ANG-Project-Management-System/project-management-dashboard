@@ -17,6 +17,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 
 interface Project {
+  _id: string,
   Project_Number: string;
   Client_Company_Name: string;
   Client_Contact_Name: string;
@@ -145,10 +146,11 @@ const Projects: React.FC = () => {
                             localStorage.setItem(
                               "selectedProjectInfo",
                               JSON.stringify({
+                                id: project._id,
                                 name: project.Project_Name,
                                 number: project.Project_Number,
                               })
-                            ); 
+                            );                            
                             console.log("Selected project:", project);
                           }}
                         >
