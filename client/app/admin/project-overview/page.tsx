@@ -67,6 +67,14 @@ type ProjectAPI = {
   Project_Comments: string[];
 };
 
+type ProjectFilesAPI = {
+  id: string;
+  length: number;
+  chunkSize: number;
+  uploadDate: Date;
+  filename: string;
+};
+
 const ProjectOverview = () => {
   const saveProjectDataToLocalStorage = (data: ProjectAPI[]) => {
     localStorage.setItem("projectData", JSON.stringify(data));
@@ -82,6 +90,20 @@ const ProjectOverview = () => {
 
   const [projectData, setProjectData] = useState<ProjectAPI[]>([]);
   const [updateProject, setUpdateProject] = useState<ProjectAPI | null>(null);
+
+  // Retrieve selected project information from local storage
+  const storedProjectInfo = localStorage.getItem("selectedProjectInfo");
+  const selectedProjectInfo = storedProjectInfo
+    ? JSON.parse(storedProjectInfo)
+    : null;
+
+  // Find the selected project based on project name and number
+  const selectedProject = projectData.find(
+    (project) =>
+      project._id === selectedProjectInfo?.id.toString() &&
+      project.Project_Number === selectedProjectInfo?.number &&
+      project.Project_Name === selectedProjectInfo?.name
+  );
 
   useEffect(() => {
     const fetchData = async () => {
@@ -104,18 +126,23 @@ const ProjectOverview = () => {
     }
   }, []);
 
-  // Retrieve selected project information from local storage
-  const storedProjectInfo = localStorage.getItem("selectedProjectInfo");
-  const selectedProjectInfo = storedProjectInfo
-    ? JSON.parse(storedProjectInfo)
-    : null;
+  const [projectFiles, setProjectFiles] = useState<ProjectFilesAPI[]>([]);
 
-  // Find the selected project based on project name and number
-  const selectedProject = projectData.find(
-    (project) =>
-      project.Project_Number === selectedProjectInfo?.number &&
-      project.Project_Name === selectedProjectInfo?.name
-  );
+  useEffect(() => {
+    const fetchFileData = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:3000/api/files-project?id=${selectedProject?._id}`
+        );
+        const data = await response.json();
+        setProjectFiles(data);
+      } catch (error) {
+        console.log("Error fetching project data:", error);
+      }
+    };
+
+    fetchFileData();
+  }, [selectedProject]);
 
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
@@ -179,7 +206,8 @@ const ProjectOverview = () => {
     if (Object.keys(updatedProject).length === 0) {
       toast({
         title: "No Changes",
-        description: "No new data to update. Please fill out at least one field.",
+        description:
+          "No new data to update. Please fill out at least one field.",
         status: "info",
         duration: 3000,
         isClosable: true,
@@ -196,7 +224,7 @@ const ProjectOverview = () => {
             body: JSON.stringify(updatedProject),
           }
         );
-  
+
         if (!response.ok) {
           throw new Error("Network response was not ok");
         } else {
@@ -208,22 +236,21 @@ const ProjectOverview = () => {
             isClosable: true,
           });
         }
-  
+
         // Re-fetch data from the API after a successful update
-        const newResponse = await fetch('http://localhost:3000/api/projects');
+        const newResponse = await fetch("http://localhost:3000/api/projects");
         const newData = await newResponse.json();
-  
+
         // Update state or trigger re-render with new data
         // Assuming setProjectData is your state updater function
         setProjectData(newData);
-  
       } catch (error) {
         console.error("Error:", error);
       }
-  
+
       setIsEditable(false);
       setIsOpen(false);
-  
+
       // Reset form fields
       formRef.current?.reset();
       setStartDate(null);
@@ -269,9 +296,13 @@ const ProjectOverview = () => {
   ]);
 
   useEffect(() => {
-    if (selectedProject && selectedProject.Project_Comments && selectedProject.Project_Comments.length > 0) {
+    if (
+      selectedProject &&
+      selectedProject.Project_Comments &&
+      selectedProject.Project_Comments.length > 0
+    ) {
       const comments = selectedProject.Project_Comments;
-  
+
       const rows = comments
         .map((comment, index) => {
           if (Array.isArray(comment) && comment.length >= 4) {
@@ -288,14 +319,14 @@ const ProjectOverview = () => {
           }
         })
         .filter(Boolean); // Remove null values from the array
-  
+
       // Ensure setTableRows is defined and is a function
-      if (typeof setTableRows === 'function') {
+      if (typeof setTableRows === "function") {
         //@ts-ignore
         setTableRows(rows);
       }
     }
-  }, [selectedProject]);  
+  }, [selectedProject]);
 
   // Define the TableRow type
   type TableRow = {
@@ -462,13 +493,35 @@ const ProjectOverview = () => {
     }
   };
 
-  const handleDeleteAttachment = (index: number) => {
-    setAttachments((prevAttachments) => {
-      const newAttachments = [...prevAttachments];
-      newAttachments.splice(index, 1);
-      return newAttachments;
-    });
-  };
+  // const handleDeleteAttachment = async (profileFileid) => {
+  //   try {
+  //     const response = await fetch(
+  //       `http://localhost:3000/api/projects?id=${profileFileid}`,
+  //       {
+  //         method: "DELETE",
+  //       }
+  //     );
+
+  //     if (!response.ok) {
+  //       throw new Error("Network response was not ok");
+  //     }
+
+  //     toast({
+  //       title: "Project Rejected",
+  //       description: "The project has been successfully deleted.",
+  //       status: "info",
+  //       duration: 3000,
+  //       isClosable: true,
+  //     });
+
+  //     // Re-fetch data from the API after a successful update
+  //     const newResponse = await fetch("http://localhost:3000/api/projects");
+  //     const newData = await newResponse.json();
+  //     setProjects(newData);
+  //   } catch (error) {
+  //     console.error("Error updating project:", error);
+  //   }
+  // };
 
   const [totalCosts, setTotalCosts] = useState<number[]>([]);
   const [totalApprovedBudget, setTotalApprovedBudget] = useState<number>(0);
@@ -972,26 +1025,18 @@ const ProjectOverview = () => {
               </Tr>
             </Thead>
             <Tbody>
-              {attachments.map((attachment, index) => (
-                <Tr key={index}>
-                  <Td>
-                    <a
-                    // href="#" // Replace with the actual file URL
-                    // download={attachment.fileName}
-                    // style={{ color: "blue", textDecoration: "underline" }}
-                    >
-                      {attachment.fileName}
-                    </a>
-                  </Td>
-                  <Td>{attachment.fileSize} MB</Td>
-                  <Td>{attachment.attachmentDate.toDateString()}</Td>
+              {projectFiles.map((projectFile) => (
+                <Tr key={projectFile.id}>
+                  <Td>{projectFile.filename}</Td>
+                  <Td>{(projectFile.length / (1024 * 1024)).toFixed(2)} MB</Td>
+                  <Td>{new Date(projectFile.uploadDate).toLocaleString()}</Td>
                   <Td>
                     <IconButton
                       icon={<DeleteIcon />}
                       colorScheme="red"
                       variant="outline"
                       aria-label="Delete Attachment"
-                      onClick={() => handleDeleteAttachment(index)}
+                      // onClick={() => handleDeleteAttachment(projectFile.id.toString())}
                     />
                   </Td>
                 </Tr>
