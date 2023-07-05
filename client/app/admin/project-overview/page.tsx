@@ -201,7 +201,7 @@ const ProjectOverview = () => {
           throw new Error("Network response was not ok");
         } else {
           toast({
-            title: "Project Change Order Confirmed",
+            title: "Project Change Order",
             description: "The project has been successfully updated.",
             status: "success",
             duration: 3000,
@@ -269,12 +269,12 @@ const ProjectOverview = () => {
   ]);
 
   useEffect(() => {
-    if (selectedProject) {
+    if (selectedProject && selectedProject.Project_Comments && selectedProject.Project_Comments.length > 0) {
       const comments = selectedProject.Project_Comments;
-
+  
       const rows = comments
         .map((comment, index) => {
-          if (comment && comment.length >= 4) {
+          if (Array.isArray(comment) && comment.length >= 4) {
             return {
               id: `row-${index}`,
               deliverable: comment[0],
@@ -288,11 +288,14 @@ const ProjectOverview = () => {
           }
         })
         .filter(Boolean); // Remove null values from the array
-
-      // @ts-ignore
-      setTableRows(rows);
+  
+      // Ensure setTableRows is defined and is a function
+      if (typeof setTableRows === 'function') {
+        //@ts-ignore
+        setTableRows(rows);
+      }
     }
-  }, [selectedProject]);
+  }, [selectedProject]);  
 
   // Define the TableRow type
   type TableRow = {
