@@ -8,6 +8,7 @@ import {
   Badge,
   Divider,
   useColorModeValue,
+  useToast,
 } from "@chakra-ui/react";
 import { CheckIcon, ChevronRightIcon, CloseIcon } from "@chakra-ui/icons";
 import Providers from "../components/Providers";
@@ -17,6 +18,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 
 interface Project {
+  _id: string;
   Project_Number: string;
   Client_Company_Name: string;
   Client_Contact_Name: string;
@@ -67,22 +69,77 @@ const Projects: React.FC = () => {
     }
   };
 
-  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const toast = useToast();
 
-  const selectProject = (project: Project) => {
-    setSelectedProject(project);
-    console.log("Selected project:", project);
+  const handleAccept = async (project: Project) => {
+
+    const status = {
+      Status: "In Progress",
+    };
+
+    try {
+      const response = await fetch(
+        `http://localhost:3000/api/projects?id=${project._id}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(status),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+      toast({
+        title: "Project Accepted",
+        description: "The project has been accepted.",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+      });
+
+      // Re-fetch data from the API after a successful update
+      const newResponse = await fetch("http://localhost:3000/api/projects");
+      const newData = await newResponse.json();
+      setProjects(newData);
+    } catch (error) {
+      console.error("Error updating project:", error);
+    }
   };
 
-  const handleAccept = () => {
-     const status = {
-        
-     }
-  }
+  const handleReject = async (project: Project) => {
 
-  const handleReject = () => {
-
-  }
+    try {
+        const response = await fetch(
+          `http://localhost:3000/api/projects?id=${project._id}`,
+          {
+            method: "DELETE",
+          }
+        );
+  
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+  
+        toast({
+          title: "Project Rejected",
+          description: "The project has been successfully deleted.",
+          status: "info",
+          duration: 3000,
+          isClosable: true,
+        });
+  
+        // Re-fetch data from the API after a successful update
+        const newResponse = await fetch("http://localhost:3000/api/projects");
+        const newData = await newResponse.json();
+        setProjects(newData);
+      } catch (error) {
+        console.error("Error updating project:", error);
+      }
+  };
 
   return (
     <Providers>
@@ -135,20 +192,19 @@ const Projects: React.FC = () => {
                           py={1}
                           borderWidth={1}
                           borderColor={
-                            project.Status === "Request"
-                              ? "orange"
-                              : "red"
+                            project.Status === "Request" ? "orange" : "red"
                           }
                         >
                           {project.Status}
                         </Badge>
-                        <Link href={`/admin`}>
-                        <Button
+                          <Button
                             rightIcon={<CloseIcon />}
                             colorScheme="red"
                             ml={6}
                             variant="outline"
-                            onClick={handleReject}
+                            onClick={() => {
+                              handleReject(project);
+                            }}
                           >
                             Reject
                           </Button>
@@ -156,11 +212,12 @@ const Projects: React.FC = () => {
                             rightIcon={<CheckIcon />}
                             colorScheme="teal"
                             ml={3}
-                            onClick={handleAccept}
+                            onClick={() => {
+                              handleAccept(project);
+                            }}
                           >
                             Accept
                           </Button>
-                        </Link>
                       </Flex>
                     </Flex>
                     {/* Project description */}
