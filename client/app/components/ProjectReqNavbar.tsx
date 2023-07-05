@@ -35,7 +35,7 @@ import { HamburgerIcon, CloseIcon } from "@chakra-ui/icons";
 import { FiChevronDown, FiMenu } from "react-icons/fi";
 import Image from "next/image";
 
-const Links = ["Project Requests >"];
+const Links = ["< Back"];
 
 interface NavLinkProps {
   children: ReactNode;
@@ -48,8 +48,8 @@ const NavLink = ({ children }: NavLinkProps) => {
       href={
         children === "Home"
           ? "/admin"
-          : children === "Project Requests >"
-          ? "/project-requests"
+          : children === "< Back"
+          ? "/all-projects"
           : "/admin"
       }
       passHref
@@ -180,7 +180,7 @@ export default function Navbar() {
 
         <GridItem justifySelf="center">
           <Box textAlign="center">
-             Project Selection
+             Project Requests
           </Box>
         </GridItem>
 

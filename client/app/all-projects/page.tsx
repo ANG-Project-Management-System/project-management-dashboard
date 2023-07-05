@@ -88,7 +88,9 @@ const Projects: React.FC = () => {
             w="full"
           >
             {projects &&
-              projects.map((project, index) => (
+              projects
+                .filter((project) => project.Status !== "Request")
+                .map((project, index) => (
                 <Box
                   key={index}
                   width="full"
