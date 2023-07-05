@@ -1,5 +1,5 @@
 export const metadata = {
-  title: "ANG | Projects Selection",
+  title: "ANG | Project Selection",
   description: "Projects page for the Admin/PM.",
 };
 
