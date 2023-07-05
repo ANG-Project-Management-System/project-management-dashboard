@@ -237,11 +237,14 @@ const Contractors: React.FC = () => {
       const isNameMatch = contractor.Contractor_Name.toLowerCase().includes(
         query.toLowerCase()
       );
-      const isDisciplineMatch = contractor.Specialty_Discipline.toLowerCase().startsWith(
+      const isDisciplineMatch = contractor.Discipline.toLowerCase().startsWith(
+        query.toLowerCase()
+      );
+      const isSpecialtyMatch = contractor.Specialty.toLowerCase().startsWith(
         query.toLowerCase()
       );
 
-      return isNameMatch || isDisciplineMatch;
+      return isNameMatch || isDisciplineMatch || isSpecialtyMatch;
     });
 
     setFilteredContractors(filtered);
@@ -436,8 +439,8 @@ const Contractors: React.FC = () => {
             <Input
               mt={20}
               mr={8}
-              w="270px"
-              placeholder="Search by name or discipline"
+              w="330px"
+              placeholder="Search by name, discipline or specialty"
               value={searchQuery}
               onChange={handleSearch}
             />
