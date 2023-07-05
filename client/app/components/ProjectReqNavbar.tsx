@@ -31,43 +31,47 @@ import {
   VStack,
   Text,
 } from "@chakra-ui/react";
-import { HamburgerIcon, CloseIcon } from "@chakra-ui/icons";
+import { HamburgerIcon, CloseIcon, ChevronLeftIcon } from "@chakra-ui/icons";
 import { FiChevronDown, FiMenu } from "react-icons/fi";
 import Image from "next/image";
 
-const Links = ["< Back"];
+const Links = ["Back"];
 
 interface NavLinkProps {
   children: ReactNode;
 }
 
 const NavLink = ({ children }: NavLinkProps) => {
-  const linkColor = useColorModeValue("gray.200", "gray.700");
-  return (
-    <Link
-      href={
-        children === "Home"
-          ? "/admin"
-          : children === "< Back"
-          ? "/all-projects"
-          : "/admin"
-      }
-      passHref
-    >
-      <Box
-        px={-2}
-        py={1}
-        rounded={"md"}
-        _hover={{
-          textDecoration: "none",
-          bg: linkColor,
-        }}
+    const linkColor = useColorModeValue("gray.200", "gray.700");
+    return (
+      <Link
+        href={
+          children === "Home"
+            ? "/admin"
+            : children === "Back"
+            ? "/all-projects"
+            : "/admin"
+        }
+        passHref
       >
-        {children}
-      </Box>
-    </Link>
-  );
-};
+        <Button
+          variant="outline"
+          colorScheme="blue"
+          leftIcon={<ChevronLeftIcon />}
+          px={-2}
+          py={1}
+          rounded="md"
+          border="none"
+          _hover={{
+            textDecoration: "none",
+            // bg: linkColor,
+          }}
+        >
+          {children}
+        </Button>
+      </Link>
+    );
+  };  
 
 const getCurrentRoute = () => {
   if (typeof window !== "undefined") {
@@ -138,33 +142,8 @@ export default function Navbar() {
               display={{ md: "none" }}
               onClick={isOpen ? onClose : onOpen}
             />
-            {/* <Box>
-              <div>
-                <Link href="/admin">
-                  {colorMode === "dark" ? (
-                    <Image
-                      alt="ANG Consultants"
-                      width={90} // Set width for dark mode logo
-                      height={70} // Set height for dark mode logo
-                      className="flex ml-4"
-                      src="/ANG_logo_white.png"
-                      priority={true}
-                    />
-                  ) : (
-                    <Image
-                      alt="ANG Consultants"
-                      width={110} // Set width for light mode logo
-                      height={80} // Set height for light mode logo
-                      className="flex ml-4"
-                      src="/ANG_logo.png"
-                      priority={true}
-                    />
-                  )}
-                </Link>
-              </div>
-            </Box> */}
 
-            <Box ml={6}>
+            <Box ml={4}>
               <HStack
                 as={"nav"}
                 spacing={4}
