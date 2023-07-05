@@ -129,20 +129,22 @@ const ProjectOverview = () => {
   const [projectFiles, setProjectFiles] = useState<ProjectFilesAPI[]>([]);
 
   useEffect(() => {
-    const fetchFileData = async () => {
-      try {
-        const response = await fetch(
-          `http://localhost:3000/api/files-project?id=${selectedProject?._id}`
-        );
-        const data = await response.json();
-        setProjectFiles(data);
-      } catch (error) {
-        console.log("Error fetching project data:", error);
-      }
-    };
+    if (selectedProject) {
+      const fetchFileData = async () => {
+        try {
+          const response = await fetch(
+            `http://localhost:3000/api/files-project?id=${selectedProject?._id}`
+          );
+          const data = await response.json();
+          setProjectFiles(data);
+        } catch (error) {
+          console.log("Error fetching project data:", error);
+        }
+      };
 
-    fetchFileData();
-  }, [selectedProject]);
+      fetchFileData();
+    }
+  }, []);
 
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
@@ -479,17 +481,46 @@ const ProjectOverview = () => {
   //   });
   // };
 
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files;
-    if (files && files.length > 0) {
-      const file = files[0];
-      const fileSizeMB = Math.round((file.size / (1024 * 1024)) * 100) / 100; // Convert file size to megabytes
-      const newAttachment = {
-        fileName: file.name,
-        fileSize: fileSizeMB,
-        attachmentDate: new Date(),
-      };
-      setAttachments((prevAttachments) => [...prevAttachments, newAttachment]);
+  const handleFileUpload = async (e: any) => {
+    const files = e.target.files;
+
+    if (files.length === 0) {
+      return;
+    }
+
+    const formData = new FormData();
+
+    for (let i = 0; i < files.length; i++) {
+      formData.append("projFile", files[i]);
+    }
+
+    try {
+      const response = await fetch(
+        `http://localhost:3000/api/upload-project?id=${selectedProject?._id}`,
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+      toast({
+        title: "File Uploaded",
+        description: "The project has been successfully uploaded.",
+        status: "info",
+        duration: 3000,
+        isClosable: true,
+      });
+
+      // Re-fetch data from the API after a successful update
+      const newResponse = await fetch(`http://localhost:3000/api/files-project?id=${selectedProject?._id}`);
+      const newData = await newResponse.json();
+      setProjectFiles(newData);
+    } catch (error) {
+      console.error("Error updating project:", error);
     }
   };
 
@@ -1025,22 +1056,26 @@ const ProjectOverview = () => {
               </Tr>
             </Thead>
             <Tbody>
-              {projectFiles.map((projectFile) => (
-                <Tr key={projectFile.id}>
-                  <Td>{projectFile.filename}</Td>
-                  <Td>{(projectFile.length / (1024 * 1024)).toFixed(2)} MB</Td>
-                  <Td>{new Date(projectFile.uploadDate).toLocaleString()}</Td>
-                  <Td>
-                    <IconButton
-                      icon={<DeleteIcon />}
-                      colorScheme="red"
-                      variant="outline"
-                      aria-label="Delete Attachment"
-                      // onClick={() => handleDeleteAttachment(projectFile.id.toString())}
-                    />
-                  </Td>
-                </Tr>
-              ))}
+              {projectFiles &&
+                projectFiles.length > 0 &&
+                projectFiles.map((projectFile) => (
+                  <Tr key={projectFile.id}>
+                    <Td>{projectFile.filename}</Td>
+                    <Td>
+                      {(projectFile.length / (1024 * 1024)).toFixed(2)} MB
+                    </Td>
+                    <Td>{new Date(projectFile.uploadDate).toLocaleString()}</Td>
+                    <Td>
+                      <IconButton
+                        icon={<DeleteIcon />}
+                        colorScheme="red"
+                        variant="outline"
+                        aria-label="Delete Attachment"
+                        // onClick={() => handleDeleteAttachment(projectFile.id.toString())}
+                      />
+                    </Td>
+                  </Tr>
+                ))}
             </Tbody>
           </Table>
         </form>
