@@ -1,6 +1,5 @@
 import { MongoClient, ServerApiVersion, GridFSBucket } from 'mongodb';
 import { ObjectId } from 'mongodb';
-const archiver = require('archiver');
 
 const handler = async (req, res) => {
     console.log("Received request", req.method, req.query);
@@ -28,15 +27,12 @@ const handler = async (req, res) => {
                 return res.status(404).json({ error: 'Contractor or timesheets not found' });
             }
 
-            // Prepare the zip file
-            const archiver = require('archiver');
-            const zip = archiver('zip');
-            zip.pipe(res);
-
-            // Download each timesheet and add it to the zip file
+            // Fetch timesheet files information
             const bucket = new GridFSBucket(db, {
                 bucketName: 'timesheets'
             });
+
+            const timesheetFiles = [];
             for (const timesheetId of contractor.timesheets) {
                 const timesheetFile = await bucket.find({ _id: new ObjectId(timesheetId) }).next();
 
@@ -45,22 +41,16 @@ const handler = async (req, res) => {
                     continue;
                 }
 
-                const downloadStream = bucket.openDownloadStream(new ObjectId(timesheetId));
-                zip.append(downloadStream, { name: timesheetFile.filename });
+                timesheetFiles.push({
+                    id: timesheetFile._id,
+                    length: timesheetFile.length,
+                    chunkSize: timesheetFile.chunkSize,
+                    uploadDate: timesheetFile.uploadDate,
+                    filename: timesheetFile.filename
+                });
             }
 
-            // Finalize the zip file
-            zip.finalize();
-
-            // Close the MongoDB client when the download completes
-            zip.on('end', () => {
-                client.close();
-            });
-
-            zip.on('error', (error) => {
-                console.error(error);
-                return res.status(500).json({ error: 'Error creating zip file', details: error.message });
-            });
+            res.status(200).json(timesheetFiles);
         } catch (error) {
             console.error(error);
             client.close();
