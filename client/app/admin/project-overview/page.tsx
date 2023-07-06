@@ -530,27 +530,13 @@ const ProjectOverview = () => {
   const handleFileDownload = async () => {
     try {
       // Fetch the zip file from the API
-      const response = await fetch(`http://localhost:3000/api/project-download?id=${selectedProject?._id}`);
+      const response = await fetch(`http://localhost:3000/api/download-project?id=${selectedProject?._id}`);
       if (!response.ok) {
-        console.log("Network response was not ok");
+        throw new Error("Network response was not ok");
       }
   
+      // convert binary data to base64 encoded string
       const data = await response.arrayBuffer();
-      console.log(data.byteLength);
-
-      // Check if there's data to download
-      if (data.byteLength === 2231) {
-        // Display toast if there's nothing to download
-        toast({
-          title: "No Files",
-          description: "There are no files to download.",
-          status: "info",
-          duration: 3000,
-          isClosable: true,
-        });
-        return;
-      }
-
       const base64data = btoa(
         new Uint8Array(data).reduce(
           (data, byte) => data + String.fromCharCode(byte),
@@ -570,6 +556,7 @@ const ProjectOverview = () => {
       console.error("Error downloading files:", error);
     }
   };
+  
   
 
   // const handleDeleteAttachment = async (profileFileid) => {
