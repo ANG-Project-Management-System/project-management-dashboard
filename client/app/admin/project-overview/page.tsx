@@ -530,25 +530,27 @@ const ProjectOverview = () => {
   const handleFileDownload = async () => {
     try {
       // Fetch the zip file from the API
-      const response = await fetch(`http://localhost:3000/api/download-project?id=${selectedProject?._id}`);
+      const response = await fetch(
+        `http://localhost:3000/api/download-project?id=${selectedProject?._id}`
+      );
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
-  
+
       // convert binary data to base64 encoded string
       const data = await response.arrayBuffer();
       const base64data = btoa(
         new Uint8Array(data).reduce(
           (data, byte) => data + String.fromCharCode(byte),
-          ''
-        ),
+          ""
+        )
       );
-  
+
       // Create an anchor element and click it to download the file
-      const a = document.createElement('a');
+      const a = document.createElement("a");
       a.href = `data:application/zip;base64,${base64data}`;
-      a.download = 'files.zip'; // the filename you want
-      a.style.display = 'none';
+      a.download = "files.zip"; // the filename you want
+      a.style.display = "none";
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -556,38 +558,38 @@ const ProjectOverview = () => {
       console.error("Error downloading files:", error);
     }
   };
-  
-  
 
-  // const handleDeleteAttachment = async (profileFileid) => {
-  //   try {
-  //     const response = await fetch(
-  //       `http://localhost:3000/api/projects?id=${profileFileid}`,
-  //       {
-  //         method: "DELETE",
-  //       }
-  //     );
+  const handleDeleteAttachment = async (profileFileid: string) => {
+    try {
+      const response = await fetch(
+        `http://localhost:3000/api/files-project?id=${selectedProject?._id}&fileId=${profileFileid}`,
+        {
+          method: "DELETE",
+        }
+      );
 
-  //     if (!response.ok) {
-  //       throw new Error("Network response was not ok");
-  //     }
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
 
-  //     toast({
-  //       title: "Project Rejected",
-  //       description: "The project has been successfully deleted.",
-  //       status: "info",
-  //       duration: 3000,
-  //       isClosable: true,
-  //     });
+      toast({
+        title: "File Deleted",
+        // description: "The file has been successfully deleted.",
+        status: "info",
+        duration: 2000,
+        isClosable: true,
+      });
 
-  //     // Re-fetch data from the API after a successful update
-  //     const newResponse = await fetch("http://localhost:3000/api/projects");
-  //     const newData = await newResponse.json();
-  //     setProjects(newData);
-  //   } catch (error) {
-  //     console.error("Error updating project:", error);
-  //   }
-  // };
+      // Re-fetch data from the API after a successful update
+      const newResponse = await fetch(
+        `http://localhost:3000/api/files-project?id=${selectedProject?._id}&fileId=${profileFileid}`
+      );
+      const newData = await newResponse.json();
+      setProjectFiles(newData);
+    } catch (error) {
+      console.error("Error updating project:", error);
+    }
+  };
 
   const [totalCosts, setTotalCosts] = useState<number[]>([]);
   const [totalApprovedBudget, setTotalApprovedBudget] = useState<number>(0);
@@ -1100,8 +1102,8 @@ const ProjectOverview = () => {
                 <Th>File Name</Th>
                 <Th>Attachment Size</Th>
                 <Th>Attachment Date</Th>
-                {/* <Th>Download</Th>
-                <Th>Actions</Th> */}
+                {/* <Th>Download</Th> */}
+                <Th>Actions</Th>
               </Tr>
             </Thead>
             <Tbody>
@@ -1123,15 +1125,17 @@ const ProjectOverview = () => {
                         onClick={() => handleDownloadAttachment(projectFile.id.toString())}
                       />
                     </Td> */}
-                    {/* <Td>
+                    <Td>
                       <IconButton
                         icon={<DeleteIcon />}
                         colorScheme="red"
                         variant="outline"
                         aria-label="Delete Attachment"
-                        // onClick={() => handleDeleteAttachment(projectFile.id.toString())}
+                        onClick={() =>
+                          handleDeleteAttachment(projectFile.id.toString())
+                        }
                       />
-                    </Td> */}
+                    </Td>
                   </Tr>
                 ))}
             </Tbody>
