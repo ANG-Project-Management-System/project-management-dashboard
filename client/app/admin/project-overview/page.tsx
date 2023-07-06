@@ -43,6 +43,7 @@ import {
   CloseIcon,
   AddIcon,
   DeleteIcon,
+  DownloadIcon,
 } from "@chakra-ui/icons";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -144,7 +145,7 @@ const ProjectOverview = () => {
 
       fetchFileData();
     }
-  }, []);
+  }, [projectData]);
 
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
@@ -509,20 +510,67 @@ const ProjectOverview = () => {
 
       toast({
         title: "File Uploaded",
-        description: "The project has been successfully uploaded.",
+        description: `The file has been uploaded to ${selectedProject?.Project_Name}.`,
         status: "info",
         duration: 3000,
         isClosable: true,
       });
 
       // Re-fetch data from the API after a successful update
-      const newResponse = await fetch(`http://localhost:3000/api/files-project?id=${selectedProject?._id}`);
+      const newResponse = await fetch(
+        `http://localhost:3000/api/files-project?id=${selectedProject?._id}`
+      );
       const newData = await newResponse.json();
       setProjectFiles(newData);
     } catch (error) {
       console.error("Error updating project:", error);
     }
   };
+
+  const handleFileDownload = async () => {
+    try {
+      // Fetch the zip file from the API
+      const response = await fetch(`http://localhost:3000/api/project-download?id=${selectedProject?._id}`);
+      if (!response.ok) {
+        console.log("Network response was not ok");
+      }
+  
+      const data = await response.arrayBuffer();
+      console.log(data.byteLength);
+
+      // Check if there's data to download
+      if (data.byteLength === 2231) {
+        // Display toast if there's nothing to download
+        toast({
+          title: "No Files",
+          description: "There are no files to download.",
+          status: "info",
+          duration: 3000,
+          isClosable: true,
+        });
+        return;
+      }
+
+      const base64data = btoa(
+        new Uint8Array(data).reduce(
+          (data, byte) => data + String.fromCharCode(byte),
+          ''
+        ),
+      );
+  
+      // Create an anchor element and click it to download the file
+      const a = document.createElement('a');
+      a.href = `data:application/zip;base64,${base64data}`;
+      a.download = 'files.zip'; // the filename you want
+      a.style.display = 'none';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    } catch (error) {
+      console.error("Error downloading files:", error);
+    }
+  };
+  
 
   // const handleDeleteAttachment = async (profileFileid) => {
   //   try {
@@ -1024,16 +1072,29 @@ const ProjectOverview = () => {
               Attachments
             </Text>
 
-            <Button
-              as="label"
-              htmlFor="fileUpload"
-              leftIcon={<AttachmentIcon />}
-              cursor="pointer"
-              colorScheme="teal"
-              mt={2}
-            >
-              Attach File
-            </Button>
+            <Box>
+              <Button
+                as="label"
+                htmlFor="fileUpload"
+                leftIcon={<AttachmentIcon />}
+                cursor="pointer"
+                colorScheme="teal"
+                variant="outline"
+                mt={2}
+              >
+                Attach File
+              </Button>
+              <Button
+                leftIcon={<DownloadIcon />}
+                cursor="pointer"
+                colorScheme="teal"
+                onClick={handleFileDownload}
+                mt={2}
+                ml={3}
+              >
+                Download
+              </Button>
+            </Box>
             <Input
               id="fileUpload"
               type="file"
@@ -1052,7 +1113,8 @@ const ProjectOverview = () => {
                 <Th>File Name</Th>
                 <Th>Attachment Size</Th>
                 <Th>Attachment Date</Th>
-                <Th>Actions</Th>
+                {/* <Th>Download</Th>
+                <Th>Actions</Th> */}
               </Tr>
             </Thead>
             <Tbody>
@@ -1065,7 +1127,16 @@ const ProjectOverview = () => {
                       {(projectFile.length / (1024 * 1024)).toFixed(2)} MB
                     </Td>
                     <Td>{new Date(projectFile.uploadDate).toLocaleString()}</Td>
-                    <Td>
+                    {/* <Td>
+                      <IconButton
+                        icon={<DownloadIcon />}
+                        colorScheme="blue"
+                        variant="outline"
+                        aria-label="Download Attachment"
+                        onClick={() => handleDownloadAttachment(projectFile.id.toString())}
+                      />
+                    </Td> */}
+                    {/* <Td>
                       <IconButton
                         icon={<DeleteIcon />}
                         colorScheme="red"
@@ -1073,7 +1144,7 @@ const ProjectOverview = () => {
                         aria-label="Delete Attachment"
                         // onClick={() => handleDeleteAttachment(projectFile.id.toString())}
                       />
-                    </Td>
+                    </Td> */}
                   </Tr>
                 ))}
             </Tbody>
