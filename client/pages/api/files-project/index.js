@@ -1,5 +1,6 @@
 import { MongoClient, ServerApiVersion, GridFSBucket } from 'mongodb';
 import { ObjectId } from 'mongodb';
+import { Readable } from 'stream';
 
 const handler = async (req, res) => {
     console.log("Received request", req.method, req.query);
@@ -22,22 +23,6 @@ const handler = async (req, res) => {
         const db = client.db(process.env.MONGO_DB);
 
         if (req.method === 'GET') {
-            // If fileId is provided, download the file
-            if (fileId) {
-                const bucket = new GridFSBucket(db, {
-                    bucketName: 'projFile'
-                });
-
-                const downloadStream = bucket.openDownloadStream(new ObjectId(fileId));
-                downloadStream.on('error', function(error) {
-                    console.error(error);
-                    res.status(500).json({ error: 'Error downloading file' });
-                });
-                res.setHeader('Content-Disposition', 'attachment');
-                downloadStream.pipe(res);
-                return;
-            }
-
             // Get the project document
             const project = await db.collection('project').findOne({ _id: new ObjectId(id) });
 
@@ -49,6 +34,17 @@ const handler = async (req, res) => {
             const bucket = new GridFSBucket(db, {
                 bucketName: 'projFile'
             });
+
+            // If a fileId is provided, return the file contents
+            if (fileId) {
+                const downloadStream = bucket.openDownloadStream(new ObjectId(fileId));
+
+                downloadStream.on('error', () => {
+                    return res.status(404).json({ error: 'File not found' });
+                });
+
+                return downloadStream.pipe(res);
+            }
 
             const timesheetFiles = [];
             for (const timesheetId of project.projFile) {
@@ -69,8 +65,7 @@ const handler = async (req, res) => {
             }
 
             res.status(200).json(timesheetFiles);
-        } 
-        else if (req.method === 'DELETE') {
+        } else if (req.method === 'DELETE') {
             if (!fileId) {
                 return res.status(400).json({ error: 'File id is missing' });
             }
@@ -90,7 +85,7 @@ const handler = async (req, res) => {
             await bucket.delete(new ObjectId(fileId));
 
             // Remove the fileId from the project's projFile array
-            await db.collection('project').updateOne({ _id: new ObjectId(id) }, {$pull: { projFile: fileId } });
+            await db.collection('project').updateOne({ _id: new ObjectId(id) }, { $pull: { projFile: fileId } });
 
             res.status(200).json({ message: 'File deleted successfully' });
         } else {
