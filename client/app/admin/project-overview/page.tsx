@@ -511,7 +511,7 @@ const ProjectOverview = () => {
       toast({
         title: "File Uploaded",
         description: `${files[0].name} has been successfully uploaded and attached.`,
-        status: "info",
+        status: "success",
         duration: 3000,
         isClosable: true,
       });

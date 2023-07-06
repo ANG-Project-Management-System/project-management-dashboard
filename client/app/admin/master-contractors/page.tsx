@@ -338,7 +338,7 @@ const Contractors: React.FC = () => {
       toast({
         title: "Timesheet Uploaded",
         description: `${files[0].name} has been uploaded for ${contractor.Contractor_Name}.`,
-        status: "info",
+        status: "success",
         duration: 3000,
         isClosable: true,
       });
