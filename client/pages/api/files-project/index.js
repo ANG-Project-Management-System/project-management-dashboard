@@ -4,21 +4,39 @@ import { ObjectId } from 'mongodb';
 const handler = async (req, res) => {
     console.log("Received request", req.method, req.query);
     console.log(req.headers);
-    if (req.method === 'GET') {
-        const id = req.query.id; // project id
-        const uri = `mongodb+srv://${process.env.MONGO_USER}:${encodeURIComponent(process.env.MONGO_PASSWORD)}@${process.env.MONGO_CLUSTER}/?retryWrites=true&w=majority`;
 
-        const client = new MongoClient(uri, {
-            serverApi: {
-                version: ServerApiVersion.v1,
-                strict: true,
-                deprecationErrors: true,
+    const id = req.query.id; // project id
+    const fileId = req.query.fileId; // file id
+    const uri = `mongodb+srv://${process.env.MONGO_USER}:${encodeURIComponent(process.env.MONGO_PASSWORD)}@${process.env.MONGO_CLUSTER}/?retryWrites=true&w=majority`;
+
+    const client = new MongoClient(uri, {
+        serverApi: {
+            version: ServerApiVersion.v1,
+            strict: true,
+            deprecationErrors: true,
+        }
+    });
+
+    try {
+        await client.connect();
+        const db = client.db(process.env.MONGO_DB);
+
+        if (req.method === 'GET') {
+            // If fileId is provided, download the file
+            if (fileId) {
+                const bucket = new GridFSBucket(db, {
+                    bucketName: 'projFile'
+                });
+
+                const downloadStream = bucket.openDownloadStream(new ObjectId(fileId));
+                downloadStream.on('error', function(error) {
+                    console.error(error);
+                    res.status(500).json({ error: 'Error downloading file' });
+                });
+                res.setHeader('Content-Disposition', 'attachment');
+                downloadStream.pipe(res);
+                return;
             }
-        });
-
-        try {
-            await client.connect();
-            const db = client.db(process.env.MONGO_DB);
 
             // Get the project document
             const project = await db.collection('project').findOne({ _id: new ObjectId(id) });
@@ -51,14 +69,38 @@ const handler = async (req, res) => {
             }
 
             res.status(200).json(timesheetFiles);
-        } catch (error) {
-            console.error(error);
-            client.close();
-            return res.status(500).json({ error: 'Error connecting to db', details: error.message });
+        } 
+        else if (req.method === 'DELETE') {
+            if (!fileId) {
+                return res.status(400).json({ error: 'File id is missing' });
+            }
+
+            // Get the project document
+            const project = await db.collection('project').findOne({ _id: new ObjectId(id) });
+
+            if (!project || !project.projFile.includes(fileId)) {
+                return res.status(404).json({ error: 'project or projFile not found' });
+            }
+
+            // Delete the file
+            const bucket = new GridFSBucket(db, {
+                bucketName: 'projFile'
+            });
+
+            await bucket.delete(new ObjectId(fileId));
+
+            // Remove the fileId from the project's projFile array
+            await db.collection('project').updateOne({ _id: new ObjectId(id) }, {$pull: { projFile: fileId } });
+
+            res.status(200).json({ message: 'File deleted successfully' });
+        } else {
+            res.setHeader('Allow', ['GET', 'DELETE']);
+            res.status(405).end(`Method ${req.method} Not Allowed`);
         }
-    } else {
-        res.setHeader('Allow', ['GET']);
-        res.status(405).end(`Method ${req.method} Not Allowed`);
+    } catch (error) {
+        console.error(error);
+        client.close();
+        return res.status(500).json({ error: 'Error connecting to db', details: error.message });
     }
 };
 
