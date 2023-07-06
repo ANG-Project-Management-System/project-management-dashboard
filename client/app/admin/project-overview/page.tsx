@@ -510,7 +510,7 @@ const ProjectOverview = () => {
 
       toast({
         title: "File Uploaded",
-        description: `The file has been uploaded to ${selectedProject?.Project_Name}.`,
+        description: `${files[0].name} has been successfully uploaded and attached.`,
         status: "info",
         duration: 3000,
         isClosable: true,
@@ -592,10 +592,10 @@ const ProjectOverview = () => {
     }
   }
 
-  const handleDeleteAttachment = async (profileFileid: string) => {
+  const handleDeleteAttachment = async (profileFile: ProjectFilesAPI) => {
     try {
       const response = await fetch(
-        `http://localhost:3000/api/files-project?id=${selectedProject?._id}&fileId=${profileFileid}`,
+        `http://localhost:3000/api/files-project?id=${selectedProject?._id}&fileId=${profileFile.id.toString()}`,
         {
           method: "DELETE",
         }
@@ -607,15 +607,15 @@ const ProjectOverview = () => {
 
       toast({
         title: "File Deleted",
-        // description: "The file has been successfully deleted.",
+        description: `${profileFile.filename} has been successfully deleted.`,
         status: "info",
-        duration: 2000,
+        duration: 3000,
         isClosable: true,
       });
 
       // Re-fetch data from the API after a successful update
       const newResponse = await fetch(
-        `http://localhost:3000/api/files-project?id=${selectedProject?._id}&fileId=${profileFileid}`
+        `http://localhost:3000/api/files-project?id=${selectedProject?._id}`
       );
       const newData = await newResponse.json();
       setProjectFiles(newData);
@@ -1165,7 +1165,7 @@ const ProjectOverview = () => {
                         variant="outline"
                         aria-label="Delete Attachment"
                         onClick={() =>
-                          handleDeleteAttachment(projectFile.id.toString())
+                          handleDeleteAttachment(projectFile)
                         }
                       />
                     </Td>
