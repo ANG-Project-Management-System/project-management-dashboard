@@ -72,7 +72,6 @@ interface ContractorFromApi {
 }
 
 const Contractors: React.FC = () => {
-  
   const [contractorsAPI, setContractorsAPI] = useState<ContractorFromApi[]>([]);
 
   useEffect(() => {
@@ -223,6 +222,7 @@ const Contractors: React.FC = () => {
   const [filteredContractors, setFilteredContractors] = useState<
     ContractorFromApi[]
   >([]);
+  //   const [timesheets, setTimesheets] = useState<File>
 
   const [customHour, setCustomHour] = useState<number>(0);
 
@@ -302,6 +302,91 @@ const Contractors: React.FC = () => {
     }
   };
 
+  const handleFileUpload = async (e: any, contractor: ContractorFromApi) => {
+    console.log(contractor._id);
+    const files = e.target.files;
+
+    if (files.length === 0) {
+      return;
+    }
+
+    console.log(files[0]);
+
+    const formData = new FormData();
+    formData.append('timesheet', files[0], files[0].name);
+
+    const requestOptions = {
+      method: "POST",
+      headers: new Headers(),
+      body: formData,
+      redirect: "follow" as const,
+    };
+
+    try {
+      const response = await fetch(
+        `http://localhost:3000/api/upload-contractors?id=${contractor._id}`,
+        requestOptions
+      );
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+      const result = await response.text();
+      console.log(result);
+
+      toast({
+        title: "Timesheet Uploaded",
+        description: `${files[0].name} has been uploaded for ${contractor.Contractor_Name}.`,
+        status: "info",
+        duration: 3000,
+        isClosable: true,
+      });
+    } catch (error) {
+      console.error("Error uploading timesheet:", error);
+      toast({
+        title: "Timesheet Error",
+        description: `Error uploading the timesheet.`,
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    }
+  };
+
+  const handleAllFilesDownload = async (contractor: ContractorFromApi) => {
+    console.log(contractor._id);
+    try {
+      // Fetch the zip file from the API
+      const response = await fetch(
+        `http://localhost:3000/api/download-contractors?id=${contractor._id}`
+      );
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+      // convert binary data to base64 encoded string
+      const data = await response.arrayBuffer();
+      const base64data = btoa(
+        new Uint8Array(data).reduce(
+          (data, byte) => data + String.fromCharCode(byte),
+          ""
+        )
+      );
+
+      // Create an anchor element and click it to download the file
+      const a = document.createElement("a");
+      a.href = `data:application/zip;base64,${base64data}`;
+      a.download = "files.zip"; // the filename you want
+      a.style.display = "none";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    } catch (error) {
+      console.error("Error downloading files:", error);
+    }
+  };
+
   const handleNewContractorSubmit = async (
     event: React.FormEvent<HTMLFormElement>
   ) => {
@@ -347,7 +432,7 @@ const Contractors: React.FC = () => {
     }
 
     // After the successful POST request, fetch the updated data from the API again
-    const newResponse = await fetch('http://localhost:3000/api/contractors');
+    const newResponse = await fetch("http://localhost:3000/api/contractors");
     const newData = await newResponse.json();
 
     // Update the state with the fetched data
@@ -397,7 +482,7 @@ const Contractors: React.FC = () => {
     "Senior Designer / Checker": 120.0,
     "Intermediate Designer": 108.0,
     "Junior Designer": 90.0,
-    "Administrative": 68.0,
+    Administrative: 68.0,
   };
 
   const itemNumberofRateCategory = {
@@ -410,9 +495,9 @@ const Contractors: React.FC = () => {
     "Senior Designer / Checker": "041",
     "Intermediate Designer": "042",
     "Junior Designer": "043",
-    "Administrative": "051",
-    "Custom": "N/A",
-  }
+    Administrative: "051",
+    Custom: "N/A",
+  };
 
   const saveContractorsToLocalStorage = (data: ContractorFromApi[]) => {
     localStorage.setItem("masterContractors", JSON.stringify(data));
@@ -492,20 +577,32 @@ const Contractors: React.FC = () => {
                 <Td>{contractor.Start_Date}</Td>
                 <Td>
                   <IconButton
+                    as="label"
+                    aria-label="Upload timesheet"
+                    htmlFor={`fileUpload-${contractor._id}`}
                     icon={<AddIcon />}
-                    aria-label="Upload Timesheets"
-                    variant="outline"
+                    cursor="pointer"
                     colorScheme="green"
-                    onClick={() => setShowUploadTimesheets(true)}
+                    variant="outline"
+                  />
+                  <Input
+                    id={`fileUpload-${contractor._id}`}
+                    type="file"
+                    accept=".xls,.xlsx,.xlsm,.csv,.docx,.pdf,"
+                    multiple
+                    onChange={(e) => handleFileUpload(e, contractor)}
+                    opacity={0}
+                    position="absolute"
+                    zIndex="-1"
                   />
                 </Td>
                 <Td>
                   <IconButton
                     icon={<DownloadIcon />}
-                    aria-label="Download Timesheets"
+                    aria-label="Download timesheet"
                     variant="outline"
                     colorScheme="blue"
-                    // onClick={() => }
+                    onClick={() => handleAllFilesDownload(contractor)}
                   />
                 </Td>
                 <Td>
@@ -811,7 +908,7 @@ const Contractors: React.FC = () => {
                     </Select>
                   </FormControl>
 
-                  <FormControl mt={2} isRequired> 
+                  <FormControl mt={2} isRequired>
                     <FormLabel>Rate Sheet Category</FormLabel>
                     <Select
                       placeholder="Select Rate Sheet Category"
@@ -902,8 +999,8 @@ const Contractors: React.FC = () => {
                     />
                   </FormControl>
 
-                  <FormControl 
-                    mt={2} 
+                  <FormControl
+                    mt={2}
                     isRequired={selectedRateSheetCategory === "Custom"}
                   >
                     <FormLabel>Discipline Charge Out Rate ($/hr)</FormLabel>
@@ -922,7 +1019,7 @@ const Contractors: React.FC = () => {
                       }
                     />
                   </FormControl>
-                  
+
                   <FormControl mt={2} isRequired>
                     <FormLabel>Contractor Hourly Rate ($/hr)</FormLabel>
                     <Input

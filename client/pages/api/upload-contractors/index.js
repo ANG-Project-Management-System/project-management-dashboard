@@ -1,3 +1,4 @@
+// Server side upload code
 import { MongoClient, ServerApiVersion, GridFSBucket } from 'mongodb';
 import multer from 'multer';
 import { ObjectId } from 'mongodb';
@@ -8,7 +9,7 @@ const upload = multer({ storage });
 // A middleware function to handle multer uploading
 const multerUploads = (req, res) => {
     return new Promise((resolve, reject) => {
-        upload.single('timesheet.xlsx')(req, res, (err) => {
+        upload.single('timesheet')(req, res, (err) => {
             if (err) {
                 return reject(err);
             }
@@ -52,7 +53,11 @@ const handler = async (req, res) => {
             const bucket = new GridFSBucket(db, {
                 bucketName: 'timesheets'
             });
-            const uploadStream = bucket.openUploadStream(file.originalname);
+            const uploadStream = bucket.openUploadStreamWithId(new ObjectId(), file.originalname, {
+                metadata: {
+                    originalName: file.originalname,
+                },
+            });
             uploadStream.end(file.buffer);
 
             await new Promise((resolve, reject) => {
