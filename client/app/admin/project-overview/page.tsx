@@ -559,6 +559,39 @@ const ProjectOverview = () => {
     }
   };
 
+  const handleSingleFileDownload = async (fileId: string, fileName: string) => {
+    console.log(fileId);
+    try {
+      // Fetch the file from the API
+      const response = await fetch(
+        `http://localhost:3000/api/files-project?id=${selectedProject?._id}&fileId=${fileId}`
+      );
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+      // convert binary data to base64 encoded string
+      const data = await response.arrayBuffer();
+      const base64data = btoa(
+        new Uint8Array(data).reduce(
+          (data, byte) => data + String.fromCharCode(byte),
+          ""
+        )
+      );
+
+      // Create an anchor element and click it to download the file
+      const a = document.createElement("a");
+      a.href = `data:application/octet-stream;base64,${base64data}`;
+      a.download = fileName; // use the provided file name
+      a.style.display = "none";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    } catch (error) {
+      console.error("Error downloading files:", error);
+    }
+  }
+
   const handleDeleteAttachment = async (profileFileid: string) => {
     try {
       const response = await fetch(
@@ -1102,7 +1135,7 @@ const ProjectOverview = () => {
                 <Th>File Name</Th>
                 <Th>Attachment Size</Th>
                 <Th>Attachment Date</Th>
-                {/* <Th>Download</Th> */}
+                <Th>Download</Th>
                 <Th>Actions</Th>
               </Tr>
             </Thead>
@@ -1116,15 +1149,15 @@ const ProjectOverview = () => {
                       {(projectFile.length / (1024 * 1024)).toFixed(2)} MB
                     </Td>
                     <Td>{new Date(projectFile.uploadDate).toLocaleString()}</Td>
-                    {/* <Td>
+                    <Td>
                       <IconButton
                         icon={<DownloadIcon />}
                         colorScheme="blue"
                         variant="outline"
                         aria-label="Download Attachment"
-                        onClick={() => handleDownloadAttachment(projectFile.id.toString())}
+                        onClick={() => handleSingleFileDownload(projectFile.id.toString(), projectFile.filename)}
                       />
-                    </Td> */}
+                    </Td>
                     <Td>
                       <IconButton
                         icon={<DeleteIcon />}
