@@ -1086,6 +1086,7 @@ const ProjectOverview = () => {
               </Tbody>
             </Table>
           </Flex>
+          </form>
 
           <Divider my={4} />
 
@@ -1173,7 +1174,6 @@ const ProjectOverview = () => {
                 ))}
             </Tbody>
           </Table>
-        </form>
       </Flex>
 
       <AlertDialog
