@@ -455,7 +455,7 @@ const ProjectOverview = () => {
             title: "Succesfully Saved",
             // description: "The project comment has been successfully saved.",
             status: "success",
-            duration: 3000,
+            duration: 2000,
             isClosable: true,
           });
         }
@@ -473,27 +473,62 @@ const ProjectOverview = () => {
     }
   };  
 
-  // const removeProjectComment = async (projectId, commentToRemove) => {
-  //   try {
-  //       const response = await fetch(`/api/projects/${projectId}`, {
-  //           method: 'PATCH',
-  //           headers: {
-  //               'Content-Type': 'application/json',
-  //           },
-  //           body: JSON.stringify({ $pull: { Project_Comments: commentToRemove } }),
-  //       });
+  const removeProjectComment = async (e: any, row: TableRow, index: number) => {
+    e.preventDefault(); // Stop the event from bubbling up
 
-  //       if (!response.ok) {
-  //           throw new Error(`HTTP error! status: ${response.status}`);
-  //       }
+    const project = selectedProject;
 
-  //       const data = await response.json();
+    // Ensure that selectedProject exists
+    if (project) {
+      // If Project_Comments doesn't exist or is null, initialize it as an empty array
+      if (!project.Project_Comments) {
+        project.Project_Comments = [];
+      }
 
-  //       return data;
-  //   } catch (error) {
-  //       console.error(error);
-  //   }
-  // };
+      // Remove the comment at the specified index
+      project.Project_Comments.splice(index, 1);
+
+      // Define the new comments array
+      const updatedProjectComments = {
+        Project_Comments: project.Project_Comments,
+      };
+
+      // Make the PATCH request
+      try {
+        const response = await fetch(
+          `http://localhost:3000/api/projects?id=${project._id}`,
+          {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(updatedProjectComments),
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        } else {
+          toast({
+            title: "Project Comment Deleted",
+            status: "info",
+            duration: 2000,
+            isClosable: true,
+          });
+        }
+
+        // Re-fetch data from the API after a successful update
+        const newResponse = await fetch("http://localhost:3000/api/projects");
+        const newData = await newResponse.json();
+
+        // Update state or trigger re-render with new data
+        setProjectData(newData);
+      } catch (error) {
+        console.error("Error:", error);
+      }
+    }
+  };
+;
 
   // const handleDeleteRow = (index: number) => {
   //   const commentToRemove = [
@@ -1125,7 +1160,7 @@ const ProjectOverview = () => {
                         colorScheme="red"
                         variant="outline"
                         aria-label="Delete Row"
-                        // onClick={() => handleDeleteRow(index)}
+                        onClick={(e) => removeProjectComment(e, row, index)}
                         disabled={!isEditable}
                       />
                     </Td>
