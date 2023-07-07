@@ -175,6 +175,60 @@ const ProjectOverview = () => {
     }[]
   >([]);
 
+  //---  FOR PROJECT COMMENTS ---//
+  const [tableRows, setTableRows] = useState<
+    {
+      id: string;
+      deliverable: string;
+      percentComplete: number;
+      date: Date | null;
+      comments: string;
+    }[]
+  >([
+    {
+      id: "row-0",
+      deliverable: "",
+      percentComplete: 0,
+      date: null,
+      comments: "",
+    },
+  ]);
+
+  useEffect(() => {
+    if (
+      selectedProject &&
+      selectedProject.Project_Comments &&
+      selectedProject.Project_Comments.length > 0
+    ) {
+      const comments = selectedProject.Project_Comments;
+
+      const rows = comments
+        .map((comment, index) => {
+          if (Array.isArray(comment) && comment.length >= 4) {
+            return {
+              id: `row-${index}`,
+              deliverable: comment[0],
+              percentComplete: comment[1]
+                ? parseInt(comment[1] as string)
+                : null,
+              date: comment[2] ? new Date(comment[2]) : null,
+              comments: comment[3],
+            };
+          } else {
+            // Handle invalid comment array
+            return null;
+          }
+        })
+        .filter(Boolean); // Remove null values from the array
+
+      // Ensure setTableRows is defined and is a function
+      if (typeof setTableRows === "function") {
+        //@ts-ignore
+        setTableRows(rows);
+      }
+    }
+  }, [selectedProject]);
+
   const handleConfirmSubmit = async (
     event: React.FormEvent<HTMLFormElement>
   ) => {
@@ -281,58 +335,6 @@ const ProjectOverview = () => {
     setIsEditable(true);
   };
 
-  //---  FOR PROJECT COMMENTS ---//
-  const [tableRows, setTableRows] = useState<
-    {
-      id: string;
-      deliverable: string;
-      percentComplete: number;
-      date: Date | null;
-      comments: string;
-    }[]
-  >([
-    {
-      id: "row-0",
-      deliverable: "",
-      percentComplete: 0,
-      date: null,
-      comments: "",
-    },
-  ]);
-
-  useEffect(() => {
-    if (
-      selectedProject &&
-      selectedProject.Project_Comments &&
-      selectedProject.Project_Comments.length > 0
-    ) {
-      const comments = selectedProject.Project_Comments;
-
-      const rows = comments
-        .map((comment, index) => {
-          if (Array.isArray(comment) && comment.length >= 4) {
-            return {
-              id: `row-${index}`,
-              deliverable: comment[0],
-              percentComplete: comment[1] ? parseInt(comment[1] as string) : null,
-              date: comment[2] ? new Date(comment[2]) : null,
-              comments: comment[3],
-            };
-          } else {
-            // Handle invalid comment array
-            return null;
-          }
-        })
-        .filter(Boolean); // Remove null values from the array
-
-      // Ensure setTableRows is defined and is a function
-      if (typeof setTableRows === "function") {
-        //@ts-ignore
-        setTableRows(rows);
-      }
-    }
-  }, [selectedProject]);
-
   // Define the TableRow type
   type TableRow = {
     deliverable: string;
@@ -373,32 +375,9 @@ const ProjectOverview = () => {
     ]);
   };
 
-  //   const updateProjectComments = async (projectId, newComment) => {
-  //     try {
-  //       const response = await fetch(
-  //         `http://localhost:3000/api/projects?id=${selectedProject?._id}`, {
-  //             method: 'PATCH',
-  //             headers: {
-  //                 'Content-Type': 'application/json',
-  //             },
-  //             body: JSON.stringify({ $push: { Project_Comments: newComment } }),
-  //         });
-
-  //         if (!response.ok) {
-  //             throw new Error(`HTTP error! status: ${response.status}`);
-  //         }
-
-  //         const data = await response.json();
-
-  //         return data;
-  //     } catch (error) {
-  //         console.error(error);
-  //     }
-  // };
-
   const handleSaveClick = async (e: any, row: TableRow, index: number) => {
     e.preventDefault(); // Stop the form from submitting
-  
+
     console.log("Saving rows:");
     console.log("Deliverable:", row.deliverable);
     console.log("Percent Complete:", row.percentComplete);
@@ -406,14 +385,14 @@ const ProjectOverview = () => {
     console.log("Comments:", row.comments);
 
     const project = selectedProject;
-  
+
     // Ensure that selectedProject exists
     if (project) {
       // If Project_Comments doesn't exist or is null, initialize it as an empty array
       if (!project.Project_Comments) {
         project.Project_Comments = [];
       }
-  
+
       // Define the new array
       const newArray = [
         row.deliverable,
@@ -421,21 +400,21 @@ const ProjectOverview = () => {
         row.date ? new Date(row.date).toLocaleDateString() : null, // Convert Date object to string
         row.comments,
       ];
-  
+
       // If the row exists, update it; else, add a new row
       if (index < project.Project_Comments.length) {
         project.Project_Comments[index] = newArray;
       } else {
         project.Project_Comments.push(newArray);
       }
-  
+
       // Log the updated comments
       console.log(project.Project_Comments);
-  
+
       const updateProjectCommments = {
         Project_Comments: project.Project_Comments,
       };
-  
+
       try {
         const response = await fetch(
           `http://localhost:3000/api/projects?id=${project?._id}`,
@@ -447,7 +426,7 @@ const ProjectOverview = () => {
             body: JSON.stringify(updateProjectCommments),
           }
         );
-  
+
         if (!response.ok) {
           throw new Error("Network response was not ok");
         } else {
@@ -459,11 +438,11 @@ const ProjectOverview = () => {
             isClosable: true,
           });
         }
-  
+
         // Re-fetch data from the API after a successful update
         const newResponse = await fetch("http://localhost:3000/api/projects");
         const newData = await newResponse.json();
-  
+
         // Update state or trigger re-render with new data
         // Assuming setProjectData is your state updater function
         setProjectData(newData);
@@ -471,7 +450,7 @@ const ProjectOverview = () => {
         console.error("Error:", error);
       }
     }
-  };  
+  };
 
   const removeProjectComment = async (e: any, row: TableRow, index: number) => {
     e.preventDefault(); // Stop the event from bubbling up
@@ -528,41 +507,6 @@ const ProjectOverview = () => {
       }
     }
   };
-;
-
-  // const handleDeleteRow = (index: number) => {
-  //   const commentToRemove = [
-  //       tableRows[index].deliverable,
-  //       tableRows[index].percentComplete.toString(),
-  //       tableRows[index].date ? tableRows[index].date.toISOString() : null,
-  //       tableRows[index].comments,
-  //   ];
-
-  //   removeProjectComment(selectedProject?._id, commentToRemove).then((updatedProject) => {
-  //       if (updatedProject) {
-  //           const updatedComments = updatedProject.Project_Comments;
-  //           const updatedRows = updatedComments.map((comment, index) => {
-  //               return {
-  //                   id: `row-${index}`,
-  //                   deliverable: comment[0],
-  //                   percentComplete: parseInt(comment[1]),
-  //                   date: comment[2] ? new Date(comment[2]) : null,
-  //                   comments: comment[3],
-  //               };
-  //           });
-
-  //           setTableRows(updatedRows);
-
-  //           toast({
-  //               title: "Successfully deleted!",
-  //               status: "success",
-  //               duration: 3000,
-  //               isClosable: true,
-  //           });
-  //       }
-  //   });
-  // };
-
   const handleFileUpload = async (e: any) => {
     const files = e.target.files;
 
