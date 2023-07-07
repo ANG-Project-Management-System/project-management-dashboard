@@ -48,6 +48,8 @@ import {
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
+type Comment = (string | number | Date | null)[];
+
 type ProjectAPI = {
   _id: string;
   Project_Number: string;
@@ -65,7 +67,7 @@ type ProjectAPI = {
   Project_Type: string;
   Status: string;
   Contractors: string[];
-  Project_Comments: string[];
+  Project_Comments: Comment[];
 };
 
 type ProjectFilesAPI = {
@@ -312,7 +314,7 @@ const ProjectOverview = () => {
             return {
               id: `row-${index}`,
               deliverable: comment[0],
-              percentComplete: parseInt(comment[1]),
+              percentComplete: comment[1] ? parseInt(comment[1] as string) : null,
               date: comment[2] ? new Date(comment[2]) : null,
               comments: comment[3],
             };
@@ -394,60 +396,139 @@ const ProjectOverview = () => {
   //     }
   // };
 
-  //   const handleSaveClick = (row: TableRow) => {
-  //     const newRow = [
-  //         row.deliverable,
-  //         row.percentComplete.toString(),
-  //         row.date ? row.date.toISOString() : null,
-  //         row.comments,
-  //     ];
+  const handleSaveClick = async (e: any, row: TableRow, index: number) => {
+    e.preventDefault(); // Stop the form from submitting
+  
+    console.log("Saving rows:");
+    console.log("Deliverable:", row.deliverable);
+    console.log("Percent Complete:", row.percentComplete);
+    console.log("Date:", row.date);
+    console.log("Comments:", row.comments);
 
-  //     updateProjectComments(selectedProject?._id, newRow).then((updatedProject) => {
-  //         if (updatedProject) {
-  //             const updatedComments = updatedProject.Project_Comments;
-  //             const updatedRows = updatedComments.map((comment, index) => {
-  //                 return {
-  //                     id: `row-${index}`,
-  //                     deliverable: comment[0],
-  //                     percentComplete: parseInt(comment[1]),
-  //                     date: comment[2] ? new Date(comment[2]) : null,
-  //                     comments: comment[3],
-  //                 };
-  //             });
+    const project = selectedProject;
+  
+    // Ensure that selectedProject exists
+    if (project) {
+      // If Project_Comments doesn't exist or is null, initialize it as an empty array
+      if (!project.Project_Comments) {
+        project.Project_Comments = [];
+      }
+  
+      // Define the new array
+      const newArray = [
+        row.deliverable,
+        row.percentComplete ? row.percentComplete + "%" : null, // Convert percent to string
+        row.date ? new Date(row.date).toLocaleDateString() : null, // Convert Date object to string
+        row.comments,
+      ];
+  
+      // If the row exists, update it; else, add a new row
+      if (index < project.Project_Comments.length) {
+        project.Project_Comments[index] = newArray;
+      } else {
+        project.Project_Comments.push(newArray);
+      }
+  
+      // Log the updated comments
+      console.log(project.Project_Comments);
+  
+      const updateProjectCommments = {
+        Project_Comments: project.Project_Comments,
+      };
+  
+      try {
+        const response = await fetch(
+          `http://localhost:3000/api/projects?id=${project?._id}`,
+          {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(updateProjectCommments),
+          }
+        );
+  
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        } else {
+          toast({
+            title: "Succesfully Saved",
+            // description: "The project comment has been successfully saved.",
+            status: "success",
+            duration: 2000,
+            isClosable: true,
+          });
+        }
+  
+        // Re-fetch data from the API after a successful update
+        const newResponse = await fetch("http://localhost:3000/api/projects");
+        const newData = await newResponse.json();
+  
+        // Update state or trigger re-render with new data
+        // Assuming setProjectData is your state updater function
+        setProjectData(newData);
+      } catch (error) {
+        console.error("Error:", error);
+      }
+    }
+  };  
 
-  //             setTableRows(updatedRows);
+  const removeProjectComment = async (e: any, row: TableRow, index: number) => {
+    e.preventDefault(); // Stop the event from bubbling up
 
-  //             toast({
-  //                 title: "Successfully saved!",
-  //                 status: "success",
-  //                 duration: 3000,
-  //                 isClosable: true,
-  //             });
-  //         }
-  //     });
-  // };
+    const project = selectedProject;
 
-  // const removeProjectComment = async (projectId, commentToRemove) => {
-  //   try {
-  //       const response = await fetch(`/api/projects/${projectId}`, {
-  //           method: 'PATCH',
-  //           headers: {
-  //               'Content-Type': 'application/json',
-  //           },
-  //           body: JSON.stringify({ $pull: { Project_Comments: commentToRemove } }),
-  //       });
+    // Ensure that selectedProject exists
+    if (project) {
+      // If Project_Comments doesn't exist or is null, initialize it as an empty array
+      if (!project.Project_Comments) {
+        project.Project_Comments = [];
+      }
 
-  //       if (!response.ok) {
-  //           throw new Error(`HTTP error! status: ${response.status}`);
-  //       }
+      // Remove the comment at the specified index
+      project.Project_Comments.splice(index, 1);
 
-  //       const data = await response.json();
+      // Define the new comments array
+      const updatedProjectComments = {
+        Project_Comments: project.Project_Comments,
+      };
 
-  //       return data;
-  //   } catch (error) {
-  //       console.error(error);
-  //   }
-  // };
+      // Make the PATCH request
+      try {
+        const response = await fetch(
+          `http://localhost:3000/api/projects?id=${project._id}`,
+          {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(updatedProjectComments),
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        } else {
+          toast({
+            title: "Project Comment Deleted",
+            status: "info",
+            duration: 2000,
+            isClosable: true,
+          });
+        }
+
+        // Re-fetch data from the API after a successful update
+        const newResponse = await fetch("http://localhost:3000/api/projects");
+        const newData = await newResponse.json();
+
+        // Update state or trigger re-render with new data
+        setProjectData(newData);
+      } catch (error) {
+        console.error("Error:", error);
+      }
+    }
+  };
+;
 
   // const handleDeleteRow = (index: number) => {
   //   const commentToRemove = [
@@ -590,12 +671,14 @@ const ProjectOverview = () => {
     } catch (error) {
       console.error("Error downloading files:", error);
     }
-  }
+  };
 
   const handleDeleteAttachment = async (profileFile: ProjectFilesAPI) => {
     try {
       const response = await fetch(
-        `http://localhost:3000/api/files-project?id=${selectedProject?._id}&fileId=${profileFile.id.toString()}`,
+        `http://localhost:3000/api/files-project?id=${
+          selectedProject?._id
+        }&fileId=${profileFile.id.toString()}`,
         {
           method: "DELETE",
         }
@@ -1067,7 +1150,7 @@ const ProjectOverview = () => {
                         colorScheme="teal"
                         // variant="outline"
                         aria-label="Save Row"
-                        // onClick={() => handleSaveClick(row)}
+                        onClick={(e) => handleSaveClick(e, row, index)}
                         disabled={!isEditable}
                       />
                     </Td>
@@ -1077,7 +1160,7 @@ const ProjectOverview = () => {
                         colorScheme="red"
                         variant="outline"
                         aria-label="Delete Row"
-                        // onClick={() => handleDeleteRow(index)}
+                        onClick={(e) => removeProjectComment(e, row, index)}
                         disabled={!isEditable}
                       />
                     </Td>
@@ -1086,94 +1169,95 @@ const ProjectOverview = () => {
               </Tbody>
             </Table>
           </Flex>
-
-          <Divider my={4} />
-
-          <Flex justifyContent="space-between" alignItems="center">
-            <Text fontSize="xl" fontWeight="bold">
-              Attachments
-            </Text>
-
-            <Box>
-              <Button
-                as="label"
-                htmlFor="fileUpload"
-                leftIcon={<AttachmentIcon />}
-                cursor="pointer"
-                colorScheme="teal"
-                variant="outline"
-                mt={2}
-              >
-                Attach File
-              </Button>
-              <Button
-                leftIcon={<DownloadIcon />}
-                cursor="pointer"
-                colorScheme="teal"
-                onClick={handleFileDownload}
-                mt={2}
-                ml={3}
-              >
-                Download
-              </Button>
-            </Box>
-            <Input
-              id="fileUpload"
-              type="file"
-              accept=".xls,.xlsx,.xlsm,.csv,.docx,.pdf,.ppt,"
-              multiple
-              onChange={handleFileUpload}
-              opacity={0}
-              position="absolute"
-              zIndex="-1"
-            />
-          </Flex>
-
-          <Table variant="simple" mt={5}>
-            <Thead>
-              <Tr>
-                <Th>File Name</Th>
-                <Th>Attachment Size</Th>
-                <Th>Attachment Date</Th>
-                <Th>Download</Th>
-                <Th>Actions</Th>
-              </Tr>
-            </Thead>
-            <Tbody>
-              {projectFiles &&
-                projectFiles.length > 0 &&
-                projectFiles.map((projectFile) => (
-                  <Tr key={projectFile.id}>
-                    <Td>{projectFile.filename}</Td>
-                    <Td>
-                      {(projectFile.length / (1024 * 1024)).toFixed(2)} MB
-                    </Td>
-                    <Td>{new Date(projectFile.uploadDate).toLocaleString()}</Td>
-                    <Td>
-                      <IconButton
-                        icon={<DownloadIcon />}
-                        colorScheme="blue"
-                        variant="outline"
-                        aria-label="Download Attachment"
-                        onClick={() => handleSingleFileDownload(projectFile.id.toString(), projectFile.filename)}
-                      />
-                    </Td>
-                    <Td>
-                      <IconButton
-                        icon={<DeleteIcon />}
-                        colorScheme="red"
-                        variant="outline"
-                        aria-label="Delete Attachment"
-                        onClick={() =>
-                          handleDeleteAttachment(projectFile)
-                        }
-                      />
-                    </Td>
-                  </Tr>
-                ))}
-            </Tbody>
-          </Table>
         </form>
+
+        <Divider my={4} />
+
+        <Flex justifyContent="space-between" alignItems="center">
+          <Text fontSize="xl" fontWeight="bold">
+            Attachments
+          </Text>
+
+          <Box>
+            <Button
+              as="label"
+              htmlFor="fileUpload"
+              leftIcon={<AttachmentIcon />}
+              cursor="pointer"
+              colorScheme="teal"
+              variant="outline"
+              mt={2}
+            >
+              Attach File
+            </Button>
+            <Button
+              leftIcon={<DownloadIcon />}
+              cursor="pointer"
+              colorScheme="teal"
+              onClick={handleFileDownload}
+              mt={2}
+              ml={3}
+            >
+              Download
+            </Button>
+          </Box>
+          <Input
+            id="fileUpload"
+            type="file"
+            accept=".xls,.xlsx,.xlsm,.csv,.docx,.pdf,.ppt,"
+            multiple
+            onChange={handleFileUpload}
+            opacity={0}
+            position="absolute"
+            zIndex="-1"
+          />
+        </Flex>
+
+        <Table variant="simple" mt={5}>
+          <Thead>
+            <Tr>
+              <Th>File Name</Th>
+              <Th>Attachment Size</Th>
+              <Th>Attachment Date</Th>
+              <Th>Download</Th>
+              <Th>Actions</Th>
+            </Tr>
+          </Thead>
+          <Tbody>
+            {projectFiles &&
+              projectFiles.length > 0 &&
+              projectFiles.map((projectFile) => (
+                <Tr key={projectFile.id}>
+                  <Td>{projectFile.filename}</Td>
+                  <Td>{(projectFile.length / (1024 * 1024)).toFixed(2)} MB</Td>
+                  <Td>{new Date(projectFile.uploadDate).toLocaleString()}</Td>
+                  <Td>
+                    <IconButton
+                      icon={<DownloadIcon />}
+                      colorScheme="blue"
+                      variant="outline"
+                      aria-label="Download Attachment"
+                      onClick={() =>
+                        handleSingleFileDownload(
+                          projectFile.id.toString(),
+                          projectFile.filename
+                        )
+                      }
+                    />
+                  </Td>
+                  <Td>
+                    <IconButton
+                      icon={<DeleteIcon />}
+                      colorScheme="red"
+                      variant="outline"
+                      aria-label="Delete Attachment"
+                      onClick={() => handleDeleteAttachment(projectFile)}
+                    />
+                  </Td>
+                </Tr>
+              ))}
+          </Tbody>
+        </Table>
       </Flex>
 
       <AlertDialog
