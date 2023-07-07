@@ -476,7 +476,7 @@ const Contractors: React.FC = () => {
     "Principal Engineer": 175.0,
     "Senior Stress Engineer": 135.0,
     "Senior Process Engineer": 135.0,
-    "Senior *Engineer": 130.0,
+    "Senior Engineer": 130.0,
     "Intermediate Engineer": 115.0,
     "Project Manager": 115.0,
     "Senior Designer / Checker": 120.0,
@@ -489,7 +489,7 @@ const Contractors: React.FC = () => {
     "Principal Engineer": "010",
     "Senior Stress Engineer": "011",
     "Senior Process Engineer": "012",
-    "Senior *Engineer": "013",
+    "Senior Engineer": "013",
     "Intermediate Engineer": "014",
     "Project Manager": "031",
     "Senior Designer / Checker": "041",
@@ -946,7 +946,7 @@ const Contractors: React.FC = () => {
                       <option value="Senior Process Engineer">
                         Senior Process Engineer
                       </option>
-                      <option value="Senior *Engineer">Senior *Engineer</option>
+                      <option value="Senior Engineer">Senior Engineer</option>
                       <option value="Intermediate Engineer">
                         Intermediate Engineer
                       </option>
