@@ -48,6 +48,8 @@ import {
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
+type Comment = (string | number | Date | null)[];
+
 type ProjectAPI = {
   _id: string;
   Project_Number: string;
@@ -65,7 +67,7 @@ type ProjectAPI = {
   Project_Type: string;
   Status: string;
   Contractors: string[];
-  Project_Comments: string[];
+  Project_Comments: Comment[];
 };
 
 type ProjectFilesAPI = {
@@ -312,7 +314,7 @@ const ProjectOverview = () => {
             return {
               id: `row-${index}`,
               deliverable: comment[0],
-              percentComplete: parseInt(comment[1]),
+              percentComplete: comment[1] ? parseInt(comment[1] as string) : null,
               date: comment[2] ? new Date(comment[2]) : null,
               comments: comment[3],
             };
