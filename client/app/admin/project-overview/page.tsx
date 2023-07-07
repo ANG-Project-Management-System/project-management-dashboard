@@ -234,7 +234,7 @@ const ProjectOverview = () => {
           throw new Error("Network response was not ok");
         } else {
           toast({
-            title: "Project Change Order",
+            title: "Change Order Completed",
             description: "The project has been successfully updated.",
             status: "success",
             duration: 3000,
