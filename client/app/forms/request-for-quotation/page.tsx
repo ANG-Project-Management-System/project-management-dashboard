@@ -306,7 +306,7 @@ const RequestForQuotation = () => {
                     />
                   </FormControl>
 
-                  <FormControl id="projectAttachments" mt={4}>
+                  {/* <FormControl id="projectAttachments" mt={4}>
                     <FormLabel>Project Attachments</FormLabel>
                     <Button
                       as="label"
@@ -328,9 +328,9 @@ const RequestForQuotation = () => {
                     />
 
                     {renderUploadedFiles()}
-                  </FormControl>
+                  </FormControl> */}
 
-                  <FormControl id="projectDisciplinesEng" mt={4}>
+                  <FormControl id="projectDisciplinesEng" mt={5}>
                     <FormLabel>Project Disciplines (Engineering)</FormLabel>
                     <CheckboxGroup
                       colorScheme="green"
