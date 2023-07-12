@@ -1,5 +1,7 @@
 "use client";
 
+require('dotenv').config()
+
 import {
   Box,
   Flex,
@@ -50,6 +52,8 @@ interface Project {
   }[];
 }
 
+console.log(`${process.env.NEXT_PUBLIC_HOST}/api/projects`);
+
 const Projects: React.FC = () => {
   const [projects, setProjects] = useState<Project[]>([]);
 
@@ -59,7 +63,8 @@ const Projects: React.FC = () => {
 
   const fetchProjects = async () => {
     try {
-      const response = await fetch("http://localhost:3000/api/projects");
+      console.log(`${process.env.NEXT_PUBLIC_HOST}/api/projects`);
+      const response = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/projects`);
       const data = await response.json();
       console.log("Projects:", data);
       setProjects(data);
