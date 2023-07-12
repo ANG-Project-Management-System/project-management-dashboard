@@ -111,7 +111,7 @@ const ProjectOverview = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("http://localhost:3000/api/projects");
+        const response = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/projects`);
         const data = await response.json();
         setProjectData(data);
         saveProjectDataToLocalStorage(data); // Save project data to local storage
@@ -136,7 +136,7 @@ const ProjectOverview = () => {
       const fetchFileData = async () => {
         try {
           const response = await fetch(
-            `http://localhost:3000/api/files-project?id=${selectedProject?._id}`
+            `${process.env.NEXT_PUBLIC_HOST}/api/files-project?id=${selectedProject?._id}`
           );
           const data = await response.json();
           setProjectFiles(data);
@@ -274,7 +274,7 @@ const ProjectOverview = () => {
     } else {
       try {
         const response = await fetch(
-          `http://localhost:3000/api/projects?id=${selectedProject?._id}`,
+          `${process.env.NEXT_PUBLIC_HOST}/api/projects?id=${selectedProject?._id}`,
           {
             method: "PATCH",
             headers: {
@@ -297,7 +297,7 @@ const ProjectOverview = () => {
         }
 
         // Re-fetch data from the API after a successful update
-        const newResponse = await fetch("http://localhost:3000/api/projects");
+        const newResponse = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/projects`);
         const newData = await newResponse.json();
 
         // Update state or trigger re-render with new data
@@ -417,7 +417,7 @@ const ProjectOverview = () => {
 
       try {
         const response = await fetch(
-          `http://localhost:3000/api/projects?id=${project?._id}`,
+          `${process.env.NEXT_PUBLIC_HOST}/api/projects?id=${project?._id}`,
           {
             method: "PATCH",
             headers: {
@@ -440,7 +440,7 @@ const ProjectOverview = () => {
         }
 
         // Re-fetch data from the API after a successful update
-        const newResponse = await fetch("http://localhost:3000/api/projects");
+        const newResponse = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/projects`);
         const newData = await newResponse.json();
 
         // Update state or trigger re-render with new data
@@ -475,7 +475,7 @@ const ProjectOverview = () => {
       // Make the PATCH request
       try {
         const response = await fetch(
-          `http://localhost:3000/api/projects?id=${project._id}`,
+          `${process.env.NEXT_PUBLIC_HOST}/api/projects?id=${project._id}`,
           {
             method: "PATCH",
             headers: {
@@ -497,7 +497,7 @@ const ProjectOverview = () => {
         }
 
         // Re-fetch data from the API after a successful update
-        const newResponse = await fetch("http://localhost:3000/api/projects");
+        const newResponse = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/projects`);
         const newData = await newResponse.json();
 
         // Update state or trigger re-render with new data
@@ -522,7 +522,7 @@ const ProjectOverview = () => {
 
     try {
       const response = await fetch(
-        `http://localhost:3000/api/upload-project?id=${selectedProject?._id}`,
+        `${process.env.NEXT_PUBLIC_HOST}/api/upload-project?id=${selectedProject?._id}`,
         {
           method: "POST",
           body: formData,
@@ -543,7 +543,7 @@ const ProjectOverview = () => {
 
       // Re-fetch data from the API after a successful update
       const newResponse = await fetch(
-        `http://localhost:3000/api/files-project?id=${selectedProject?._id}`
+        `${process.env.NEXT_PUBLIC_HOST}/api/files-project?id=${selectedProject?._id}`
       );
       const newData = await newResponse.json();
       setProjectFiles(newData);
@@ -556,7 +556,7 @@ const ProjectOverview = () => {
     try {
       // Fetch the zip file from the API
       const response = await fetch(
-        `http://localhost:3000/api/download-project?id=${selectedProject?._id}`
+        `${process.env.NEXT_PUBLIC_HOST}/api/download-project?id=${selectedProject?._id}`
       );
       if (!response.ok) {
         throw new Error("Network response was not ok");
@@ -589,7 +589,7 @@ const ProjectOverview = () => {
     try {
       // Fetch the file from the API
       const response = await fetch(
-        `http://localhost:3000/api/files-project?id=${selectedProject?._id}&fileId=${fileId}`
+        `${process.env.NEXT_PUBLIC_HOST}/api/files-project?id=${selectedProject?._id}&fileId=${fileId}`
       );
       if (!response.ok) {
         throw new Error("Network response was not ok");
@@ -620,7 +620,7 @@ const ProjectOverview = () => {
   const handleDeleteAttachment = async (profileFile: ProjectFilesAPI) => {
     try {
       const response = await fetch(
-        `http://localhost:3000/api/files-project?id=${
+        `${process.env.NEXT_PUBLIC_HOST}/api/files-project?id=${
           selectedProject?._id
         }&fileId=${profileFile.id.toString()}`,
         {
@@ -642,7 +642,7 @@ const ProjectOverview = () => {
 
       // Re-fetch data from the API after a successful update
       const newResponse = await fetch(
-        `http://localhost:3000/api/files-project?id=${selectedProject?._id}`
+        `${process.env.NEXT_PUBLIC_HOST}/api/files-project?id=${selectedProject?._id}`
       );
       const newData = await newResponse.json();
       setProjectFiles(newData);
@@ -655,7 +655,7 @@ const ProjectOverview = () => {
   const [totalApprovedBudget, setTotalApprovedBudget] = useState<number>(0);
 
   useEffect(() => {
-    const apiUrl = "http://localhost:3000/api/project?number=88-02032023-01";
+    const apiUrl = `${process.env.NEXT_PUBLIC_HOST}/api/project?number=88-02032023-01`;
 
     fetch(apiUrl)
       .then((response) => response.json())

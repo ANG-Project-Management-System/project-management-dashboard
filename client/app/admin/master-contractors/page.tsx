@@ -77,7 +77,7 @@ const Contractors: React.FC = () => {
   useEffect(() => {
     const fetchContractors = async () => {
       try {
-        const response = await fetch("http://localhost:3000/api/contractors");
+        const response = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/contractors`);
         const data = await response.json();
         setContractorsAPI(data);
         saveContractorsToLocalStorage(data); // Save data to local storage
@@ -279,7 +279,7 @@ const Contractors: React.FC = () => {
 
     try {
       const response = await fetch(
-        `http://localhost:3000/api/contractors?id=${deleteContractor?._id}`,
+        `${process.env.NEXT_PUBLIC_HOST}/api/contractors?id=${deleteContractor?._id}`,
         {
           method: "DELETE",
         }
@@ -324,7 +324,7 @@ const Contractors: React.FC = () => {
 
     try {
       const response = await fetch(
-        `http://localhost:3000/api/upload-contractors?id=${contractor._id}`,
+        `${process.env.NEXT_PUBLIC_HOST}/api/upload-contractors?id=${contractor._id}`,
         requestOptions
       );
 
@@ -359,7 +359,7 @@ const Contractors: React.FC = () => {
     try {
       // Fetch the zip file from the API
       const response = await fetch(
-        `http://localhost:3000/api/download-contractors?id=${contractor._id}`
+        `${process.env.NEXT_PUBLIC_HOST}/api/download-contractors?id=${contractor._id}`
       );
       if (!response.ok) {
         throw new Error("Network response was not ok");
@@ -420,7 +420,7 @@ const Contractors: React.FC = () => {
     };
 
     try {
-      const response = await fetch("http://localhost:3000/api/contractors", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/contractors`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -432,7 +432,7 @@ const Contractors: React.FC = () => {
     }
 
     // After the successful POST request, fetch the updated data from the API again
-    const newResponse = await fetch("http://localhost:3000/api/contractors");
+    const newResponse = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/contractors`);
     const newData = await newResponse.json();
 
     // Update the state with the fetched data

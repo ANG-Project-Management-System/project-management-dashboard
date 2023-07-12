@@ -60,7 +60,7 @@ const Projects: React.FC = () => {
 
   const fetchProjects = async () => {
     try {
-      const response = await fetch("http://localhost:3000/api/projects");
+      const response = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/projects`);
       const data = await response.json();
       console.log("Projects:", data);
       setProjects(data);
@@ -79,7 +79,7 @@ const Projects: React.FC = () => {
 
     try {
       const response = await fetch(
-        `http://localhost:3000/api/projects?id=${project._id}`,
+        `${process.env.NEXT_PUBLIC_HOST}/api/projects?id=${project._id}`,
         {
           method: "PATCH",
           headers: {
@@ -102,7 +102,7 @@ const Projects: React.FC = () => {
       });
 
       // Re-fetch data from the API after a successful update
-      const newResponse = await fetch("http://localhost:3000/api/projects");
+      const newResponse = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/projects`);
       const newData = await newResponse.json();
       setProjects(newData);
     } catch (error) {
@@ -114,7 +114,7 @@ const Projects: React.FC = () => {
 
     try {
         const response = await fetch(
-          `http://localhost:3000/api/projects?id=${project._id}`,
+          `${process.env.NEXT_PUBLIC_HOST}/api/projects?id=${project._id}`,
           {
             method: "DELETE",
           }
@@ -133,7 +133,7 @@ const Projects: React.FC = () => {
         });
   
         // Re-fetch data from the API after a successful update
-        const newResponse = await fetch("http://localhost:3000/api/projects");
+        const newResponse = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/projects`);
         const newData = await newResponse.json();
         setProjects(newData);
       } catch (error) {
