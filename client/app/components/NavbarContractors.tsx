@@ -82,6 +82,7 @@ export default function Navbar() {
   };
 
   return (
+    
     <Box
       bg={useColorModeValue("white", "gray.800")}
       px={4}

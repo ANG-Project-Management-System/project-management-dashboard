@@ -118,15 +118,21 @@ export default function Navbar() {
   // Check if the current route is '/all-projects'
   const isAllProjectsRoute = currentRoute === "/all-projects";
 
+  const b1 = useColorModeValue("white", "gray.800")
+  const b2 = useColorModeValue("gray.200", "gray.900")
+  const b3 = useColorModeValue("gray.200", "gray.900")
+  const b4 = useColorModeValue("gray.200", "gray.600")
+  const b5 = useColorModeValue("gray.200", "gray.900")
+
   return (
     <Box
-      bg={useColorModeValue("white", "gray.800")}
+      bg={b1}
       px={4}
       border="1px"
-      borderColor={useColorModeValue("gray.200", "gray.900")}
-      borderRightColor={useColorModeValue("gray.200", "gray.900")}
-      borderBottomColor={useColorModeValue("gray.200", "gray.600")}
-      borderLeftColor={useColorModeValue("gray.200", "gray.900")}
+      borderColor={b2}
+      borderRightColor={b3}
+      borderBottomColor={b4}
+      borderLeftColor={b5}
       position="fixed"
       w="100%"
       zIndex={1000}
