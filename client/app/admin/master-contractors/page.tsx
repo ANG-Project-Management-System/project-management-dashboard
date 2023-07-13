@@ -95,7 +95,7 @@ const Contractors: React.FC = () => {
     } else {
       fetchContractors();
     }
-  }, []);
+  }, [contractorsAPI]);
 
   const toast = useToast();
   const [showUploadTimesheets, setShowUploadTimesheets] = useState(false);

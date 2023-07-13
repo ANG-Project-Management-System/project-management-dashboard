@@ -78,6 +78,8 @@ const Projects: React.FC = () => {
     // Handle project selection
     console.log("Selected project:", project);
   };
+
+  const borderColor = useColorModeValue("gray.200", "gray.700");
   
   return (
     <Providers>
@@ -163,10 +165,7 @@ const Projects: React.FC = () => {
                     </Flex>
                   </Flex>
                   {/* Project description */}
-                  <Divider
-                    my={3}
-                    borderColor={useColorModeValue("gray.200", "gray.700")}
-                  />
+                  <Divider my={3} borderColor={borderColor} />;
                   <Text>
                     <strong>Project Description:</strong>{" "}
                     {project.Project_Description}

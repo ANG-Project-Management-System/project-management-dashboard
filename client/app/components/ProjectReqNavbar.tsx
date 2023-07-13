@@ -119,6 +119,8 @@ export default function Navbar() {
   // Check if the current route is '/all-projects'
   const isAllProjectsRoute = currentRoute === "/all-projects";
 
+  const backgroundColor = useColorModeValue("white", "gray.800");
+
   return (
     <Box
       bg={useColorModeValue("white", "gray.800")}
@@ -244,7 +246,7 @@ export default function Navbar() {
       {isOpen ? (
         <Box
           pb={4}
-          bg={useColorModeValue("white", "gray.800")}
+          bg={backgroundColor}
           display={{ md: "none" }}
         >
           <Stack as={"nav"} spacing={4}>

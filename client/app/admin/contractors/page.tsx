@@ -158,7 +158,7 @@ const Contractors: React.FC = () => {
       .catch((error) => {
         console.error("Error fetching data:", error);
       });
-  }, []);
+  }, [apiUrl]);
 
   const cancelRef = useRef<HTMLButtonElement | null>(null);
 
