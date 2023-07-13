@@ -141,6 +141,8 @@ const Projects: React.FC = () => {
       }
   };
 
+  const backgroundColor = useColorModeValue("gray.200", "gray.700");
+
   return (
     <Providers>
       <Chakra>
@@ -223,7 +225,7 @@ const Projects: React.FC = () => {
                     {/* Project description */}
                     <Divider
                       my={3}
-                      borderColor={useColorModeValue("gray.200", "gray.700")}
+                      borderColor={backgroundColor}
                     />
                     <Text>
                       <strong>Project Description:</strong>{" "}

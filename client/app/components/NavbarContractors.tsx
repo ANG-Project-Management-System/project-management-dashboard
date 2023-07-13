@@ -67,6 +67,8 @@ const NavLink = ({ children }: NavLinkProps) => {
   );
 };
 
+const backgroundColor = useColorModeValue("white", "gray.800");
+
 export default function Navbar() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [isExpanded, setIsExpanded] = useState(true);
@@ -217,7 +219,7 @@ export default function Navbar() {
       {isOpen ? (
         <Box
           pb={4}
-          bg={useColorModeValue("white", "gray.800")}
+          bg={backgroundColor}
           display={{ md: "none" }}
         >
           <Stack as={"nav"} spacing={4}>

@@ -96,12 +96,15 @@ export default function Navbar() {
     number: string;
   }
 
-  const [selectedProject, setSelectedProject] = useState<SelectedProject | null>(null);
+  const [
+    selectedProject,
+    setSelectedProject,
+  ] = useState<SelectedProject | null>(null);
 
   useEffect(() => {
     const storedProject =
       typeof window !== "undefined"
-        ? localStorage.getItem('selectedProjectInfo')
+        ? localStorage.getItem("selectedProjectInfo")
         : null;
     if (storedProject) {
       try {
@@ -117,6 +120,8 @@ export default function Navbar() {
 
   // Check if the current route is '/all-projects'
   const isAllProjectsRoute = currentRoute === "/all-projects";
+
+  const backgroundColor = useColorModeValue("white", "gray.800");
 
   return (
     <Box
@@ -185,8 +190,7 @@ export default function Navbar() {
           <Box textAlign="center">
             {selectedProject ? (
               <Text>
-                Project Name: <strong>{selectedProject.name}</strong>{" "}
-                <br />
+                Project Name: <strong>{selectedProject.name}</strong> <br />
                 Project Number: <strong>{selectedProject.number}</strong>
               </Text>
             ) : (
@@ -274,11 +278,7 @@ export default function Navbar() {
       </Grid>
 
       {isOpen ? (
-        <Box
-          pb={4}
-          bg={useColorModeValue("white", "gray.800")}
-          display={{ md: "none" }}
-        >
+        <Box pb={4} bg={backgroundColor} display={{ md: "none" }}>
           <Stack as={"nav"} spacing={4}>
             {Links.map((link) => (
               <NavLink key={link}>{link}</NavLink>

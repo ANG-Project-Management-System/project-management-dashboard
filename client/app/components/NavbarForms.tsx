@@ -42,6 +42,8 @@ interface NavLinkProps {
   children: ReactNode;
 }
 
+const backgroundColor = useColorModeValue("white", "gray.800");
+
 const NavLink = ({ children }: NavLinkProps) => {
   const linkColor = useColorModeValue("gray.200", "gray.700");
   return (
@@ -274,7 +276,7 @@ export default function Navbar() {
       {isOpen ? (
         <Box
           pb={4}
-          bg={useColorModeValue("white", "gray.800")}
+          bg={backgroundColor}
           display={{ md: "none" }}
         >
           <Stack as={"nav"} spacing={4}>

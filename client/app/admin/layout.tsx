@@ -18,12 +18,12 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   return (
-    <>
       <Providers>
         <Chakra>
           <Navbar />
           <div className="flex">
-            <Sidebar children={undefined} />
+            {/* @ts-ignore */}
+            <Sidebar />
             <Head>
               <link
                 href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
@@ -34,6 +34,5 @@ export default function AdminLayout({
           </div>
         </Chakra>
       </Providers>
-    </>
   );
 }
