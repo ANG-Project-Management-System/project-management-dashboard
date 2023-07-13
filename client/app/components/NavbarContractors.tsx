@@ -67,8 +67,6 @@ const NavLink = ({ children }: NavLinkProps) => {
   );
 };
 
-const backgroundColor = useColorModeValue("white", "gray.800");
-
 export default function Navbar() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [isExpanded, setIsExpanded] = useState(true);
@@ -76,6 +74,7 @@ export default function Navbar() {
   const defaultName = "User";
   const defaultImageURL = "";
   const { colorMode, toggleColorMode } = useColorMode();
+  const backgroundColor = useColorModeValue("white", "gray.800");
 
   const toggleSidebar = () => {
     setIsExpanded(!isExpanded);

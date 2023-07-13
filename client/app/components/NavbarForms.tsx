@@ -42,9 +42,8 @@ interface NavLinkProps {
   children: ReactNode;
 }
 
-const backgroundColor = useColorModeValue("white", "gray.800");
-
 const NavLink = ({ children }: NavLinkProps) => {
+  const backgroundColor = useColorModeValue("white", "gray.800");
   const linkColor = useColorModeValue("gray.200", "gray.700");
   return (
     <Link
@@ -119,6 +118,8 @@ export default function Navbar() {
 
   // Check if the current route is '/all-projects'
   const isAllProjectsRoute = currentRoute === "/all-projects";
+
+const backgroundColor = useColorModeValue("white", "gray.800");
 
   return (
     <Box

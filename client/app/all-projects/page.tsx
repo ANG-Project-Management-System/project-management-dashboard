@@ -165,7 +165,7 @@ const Projects: React.FC = () => {
                     </Flex>
                   </Flex>
                   {/* Project description */}
-                  <Divider my={3} borderColor={borderColor} />;
+                  <Divider my={3} borderColor={borderColor} />
                   <Text>
                     <strong>Project Description:</strong>{" "}
                     {project.Project_Description}
