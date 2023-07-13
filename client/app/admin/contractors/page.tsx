@@ -106,9 +106,8 @@ const Contractors: React.FC = () => {
       ? filteredContractors
       : contractors.slice(startIndex, endIndex);
 
-    const port = window.location.port ? `:${window.location.port}` : "";
     const apiUrl = `${process.env.NEXT_PUBLIC_HOST}/api/project?number=88-02032023-01`; // Can we send the project number stored in to the apiURL? 
-      
+    console.log(apiUrl)
 
   useEffect(() => {
     const cacheKey = "contractors";
