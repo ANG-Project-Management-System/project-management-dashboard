@@ -1,7 +1,5 @@
 "use client";
 
-require('dotenv').config()
-
 import {
   Box,
   Flex,
