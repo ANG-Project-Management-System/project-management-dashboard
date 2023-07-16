@@ -78,13 +78,6 @@ type ProjectFilesAPI = {
   filename: string;
 };
 
-interface Project {
-  _id: string;
-  Project_Number: number;
-  Project_Name: string;
-  Project_Comments?: string[]; // assuming comments are strings
-}
-
 const ProjectOverview = () => {
   const saveProjectDataToLocalStorage = (data: ProjectAPI[]) => {
     localStorage.setItem("projectData", JSON.stringify(data));
@@ -101,45 +94,24 @@ const ProjectOverview = () => {
   const [projectData, setProjectData] = useState<ProjectAPI[]>([]);
   const [updateProject, setUpdateProject] = useState<ProjectAPI | null>(null);
 
-  const [selectedProjectInfo, setSelectedProjectInfo] = useState<ProjectAPI | null>(null);
-  const [selectedProject, setSelectedProject] = useState<ProjectAPI | null>(null);
+  // Retrieve selected project information from local storage
+  const storedProjectInfo = localStorage.getItem("selectedProjectInfo");
+  const selectedProjectInfo = storedProjectInfo
+    ? JSON.parse(storedProjectInfo)
+    : null;
 
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const storedProjectInfo = localStorage.getItem("selectedProjectInfo");
-      const parsedProjectInfo = storedProjectInfo
-        ? JSON.parse(storedProjectInfo)
-        : null;
-      setSelectedProjectInfo(parsedProjectInfo);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (selectedProjectInfo) {
-      try {
-        const foundProject = projectData.find(
-          (project) =>
-            //@ts-ignore
-            project._id === selectedProjectInfo.id.toString() &&
-            //@ts-ignore
-            project.Project_Number === selectedProjectInfo.number &&
-            //@ts-ignore
-            project.Project_Name === selectedProjectInfo.name
-        );
-        //@ts-ignore
-        setSelectedProject(foundProject);
-      } catch (error) {
-        console.error("Error finding project:", error);
-      }
-    }
-  }, [selectedProjectInfo]);
+  // Find the selected project based on project name and number
+  const selectedProject = projectData.find(
+    (project) =>
+      project._id === selectedProjectInfo?.id.toString() &&
+      project.Project_Number === selectedProjectInfo?.number &&
+      project.Project_Name === selectedProjectInfo?.name
+  );
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_HOST}/api/projects`
-        );
+        const response = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/projects`);
         const data = await response.json();
         setProjectData(data);
         saveProjectDataToLocalStorage(data); // Save project data to local storage
@@ -325,9 +297,7 @@ const ProjectOverview = () => {
         }
 
         // Re-fetch data from the API after a successful update
-        const newResponse = await fetch(
-          `${process.env.NEXT_PUBLIC_HOST}/api/projects`
-        );
+        const newResponse = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/projects`);
         const newData = await newResponse.json();
 
         // Update state or trigger re-render with new data
@@ -470,9 +440,7 @@ const ProjectOverview = () => {
         }
 
         // Re-fetch data from the API after a successful update
-        const newResponse = await fetch(
-          `${process.env.NEXT_PUBLIC_HOST}/api/projects`
-        );
+        const newResponse = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/projects`);
         const newData = await newResponse.json();
 
         // Update state or trigger re-render with new data
@@ -507,7 +475,7 @@ const ProjectOverview = () => {
       // Make the PATCH request
       try {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_HOST}/api/projects?id=${project._id}`,
+          `${process.env.NEXT_PUBLIC_HOST}/api/projects?id=${project._id.toString()}`,
           {
             method: "PATCH",
             headers: {
@@ -529,9 +497,7 @@ const ProjectOverview = () => {
         }
 
         // Re-fetch data from the API after a successful update
-        const newResponse = await fetch(
-          `${process.env.NEXT_PUBLIC_HOST}/api/projects`
-        );
+        const newResponse = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/projects`);
         const newData = await newResponse.json();
 
         // Update state or trigger re-render with new data
