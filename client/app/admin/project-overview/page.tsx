@@ -455,7 +455,9 @@ const ProjectOverview = () => {
   const removeProjectComment = async (e: any, row: TableRow, index: number) => {
     e.preventDefault(); // Stop the event from bubbling up
 
-    const project = selectedProject;
+    if (typeof window !== 'undefined') {
+      const project = selectedProject;
+    }
 
     // Ensure that selectedProject exists
     if (project) {
