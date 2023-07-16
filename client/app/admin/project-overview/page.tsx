@@ -94,19 +94,24 @@ const ProjectOverview = () => {
   const [projectData, setProjectData] = useState<ProjectAPI[]>([]);
   const [updateProject, setUpdateProject] = useState<ProjectAPI | null>(null);
 
-  // Retrieve selected project information from local storage
-  const storedProjectInfo = localStorage.getItem("selectedProjectInfo");
-  const selectedProjectInfo = storedProjectInfo
-    ? JSON.parse(storedProjectInfo)
-    : null;
+  let selectedProjectInfo: any = null;
 
+  // Check if 'window' is defined to avoid issues with SSR
+  if (typeof window !== 'undefined') {
+    // Retrieve selected project information from local storage
+    const storedProjectInfo = localStorage.getItem("selectedProjectInfo");
+    selectedProjectInfo = storedProjectInfo
+      ? JSON.parse(storedProjectInfo)
+      : null;
+  }
+  
   // Find the selected project based on project name and number
   const selectedProject = projectData.find(
     (project) =>
       project._id === selectedProjectInfo?.id.toString() &&
       project.Project_Number === selectedProjectInfo?.number &&
       project.Project_Name === selectedProjectInfo?.name
-  );
+  );  
 
   useEffect(() => {
     const fetchData = async () => {
@@ -455,9 +460,7 @@ const ProjectOverview = () => {
   const removeProjectComment = async (e: any, row: TableRow, index: number) => {
     e.preventDefault(); // Stop the event from bubbling up
 
-    if (typeof window !== 'undefined') {
-      const project = selectedProject;
-    }
+    const project = selectedProject;
 
     // Ensure that selectedProject exists
     if (project) {
