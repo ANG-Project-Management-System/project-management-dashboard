@@ -35,7 +35,7 @@ import { HamburgerIcon, CloseIcon, ChevronRightIcon } from "@chakra-ui/icons";
 import { FiChevronDown, FiMenu } from "react-icons/fi";
 import Image from "next/image";
 
-const Links = ["Project Requests"];
+const Links = ["Homepage", "Project Requests"];
 
 interface NavLinkProps {
   children: ReactNode;
@@ -50,6 +50,8 @@ const NavLink = ({ children }: NavLinkProps) => {
           ? "/admin"
           : children === "Project Requests"
           ? "/project-requests"
+          : children === "Homepage"
+          ? "/admin"
           : "/admin"
       }
       passHref
