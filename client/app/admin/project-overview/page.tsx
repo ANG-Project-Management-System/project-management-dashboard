@@ -1147,7 +1147,7 @@ const ProjectOverview = () => {
               mt={2}
               ml={3}
             >
-              Download
+              Download All
             </Button>
           </Box>
           <Input

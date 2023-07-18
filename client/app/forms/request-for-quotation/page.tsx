@@ -108,44 +108,34 @@ const RequestForQuotation = () => {
     );
   };
 
+  let clientName = "";
+  let clientEmail = "";
+  let clientPhone = "";
+  let clientCompany = "";
+  let clientAddress = "";
+  let projectName = "";
+  let projectNumber = "";
+  let projStartDate = "";
+  let projEndDate = "";
+  let projectDescription = "";
+  let projectType = "";
+
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     const formData = new FormData(formRef.current!);
 
-    // Log input field values
-    const clientName = formData.get("clientName");
-    console.log("Client Name:", clientName);
-
-    const clientEmail = formData.get("clientEmail");
-    console.log("Client Email:", clientEmail);
-
-    const clientPhone = formData.get("clientPhone");
-    console.log("Client Phone Number:", clientPhone);
-
-    const clientCompany = formData.get("clientCompany");
-    console.log("Client Company:", clientCompany);
-
-    const clientAddress = formData.get("clientAddress");
-    console.log("Client Address:", clientAddress);
-
-    const projectName = formData.get("projectName");
-    console.log("Project Name:", projectName);
-
-    const projectNumber = formData.get("projectNumber");
-    console.log("Project Number:", projectNumber);
-
-    const projectDescription = formData.get("projectDescription");
-    console.log("Project Description:", projectDescription);
-
-    const startDate = formData.get("startDate");
-    console.log("Start Date:", startDate);
-
-    const endDate = formData.get("endDate");
-    console.log("End Date:", endDate);
-
-    const projectType = formData.get("projectType");
-    console.log("Project Type:", projectType);
+    clientName = formData.get("clientName") as string;
+    clientEmail = formData.get("clientEmail") as string;
+    clientPhone = formData.get("clientPhone") as string;
+    clientCompany = formData.get("clientCompany") as string;
+    clientAddress = formData.get("clientAddress") as string;
+    projectName = formData.get("projectName") as string;
+    projectNumber = formData.get("projectNumber") as string;
+    projectDescription = formData.get("projectDescription") as string;
+    projStartDate = formData.get("startDate") as string;
+    projEndDate = formData.get("endDate") as string;
+    projectType = formData.get("projectType") as string;
 
     // Rest of the form fields
 
@@ -180,29 +170,51 @@ const RequestForQuotation = () => {
       Status: "Request",
       Contractors: "",
       // ProjectAttachments: files,
-    }
+    };
 
     try {
-      const response = await fetch(`${process.env.HOST}/api/projects`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(projectData),
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_HOST}/api/projects`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(projectData),
+        }
+      );
 
       toast({
         title: "Project Created!",
-        description:
-          `The request for "${projectName}" has been successfully submitted.`,
+        description: `The request for "${projectName}" has been successfully submitted.`,
         status: "success",
         duration: 5000,
         isClosable: true,
       });
-
     } catch {
       console.log("error");
     }
+
+    // Reset form fields and variables
+    formRef.current?.reset();
+    clientName = "";
+    clientEmail = "";
+    clientPhone = "";
+    clientCompany = "";
+    clientAddress = "";
+    projectName = "";
+    projectNumber = "";
+    projectDescription = "";
+    projectType = "";
+    projStartDate = "";
+    projEndDate = "";
+    setEndDate(null);
+    setStartDate(null);
+    setSelectedDisciplinesEng([]);
+    setSelectedDisciplinesDesDraft([]);
+    setFiles([]);
+    console.log(selectedDisciplinesDesDraft);
+    console.log(selectedDisciplinesEng);
 
     // Perform form submission or other actions
     // ...
@@ -334,7 +346,7 @@ const RequestForQuotation = () => {
                     <FormLabel>Project Disciplines (Engineering)</FormLabel>
                     <CheckboxGroup
                       colorScheme="green"
-                      defaultValue={[]}
+                      value={selectedDisciplinesEng} // Update the value prop
                       onChange={(values: string[]) =>
                         setSelectedDisciplinesEng(values)
                       }
@@ -367,7 +379,7 @@ const RequestForQuotation = () => {
                     </FormLabel>
                     <CheckboxGroup
                       colorScheme="green"
-                      defaultValue={[]}
+                      value={selectedDisciplinesDesDraft}
                       onChange={(values: string[]) =>
                         setSelectedDisciplinesDesDraft(values)
                       }

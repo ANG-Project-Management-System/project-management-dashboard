@@ -60,7 +60,9 @@ const Projects: React.FC = () => {
 
   const fetchProjects = async () => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/projects`);
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_HOST}/api/projects`
+      );
       const data = await response.json();
       console.log("Projects:", data);
       setProjects(data);
@@ -72,7 +74,6 @@ const Projects: React.FC = () => {
   const toast = useToast();
 
   const handleAccept = async (project: Project) => {
-
     const status = {
       Status: "In Progress",
     };
@@ -102,7 +103,9 @@ const Projects: React.FC = () => {
       });
 
       // Re-fetch data from the API after a successful update
-      const newResponse = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/projects`);
+      const newResponse = await fetch(
+        `${process.env.NEXT_PUBLIC_HOST}/api/projects`
+      );
       const newData = await newResponse.json();
       setProjects(newData);
     } catch (error) {
@@ -111,34 +114,35 @@ const Projects: React.FC = () => {
   };
 
   const handleReject = async (project: Project) => {
-
     try {
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_HOST}/api/projects?id=${project._id}`,
-          {
-            method: "DELETE",
-          }
-        );
-  
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_HOST}/api/projects?id=${project._id}`,
+        {
+          method: "DELETE",
         }
-  
-        toast({
-          title: "Project Rejected",
-          description: "The project has been successfully deleted.",
-          status: "info",
-          duration: 3000,
-          isClosable: true,
-        });
-  
-        // Re-fetch data from the API after a successful update
-        const newResponse = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/projects`);
-        const newData = await newResponse.json();
-        setProjects(newData);
-      } catch (error) {
-        console.error("Error updating project:", error);
+      );
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
       }
+
+      toast({
+        title: "Project Rejected",
+        description: "The project has been successfully deleted.",
+        status: "info",
+        duration: 3000,
+        isClosable: true,
+      });
+
+      // Re-fetch data from the API after a successful update
+      const newResponse = await fetch(
+        `${process.env.NEXT_PUBLIC_HOST}/api/projects`
+      );
+      const newData = await newResponse.json();
+      setProjects(newData);
+    } catch (error) {
+      console.error("Error updating project:", error);
+    }
   };
 
   const backgroundColor = useColorModeValue("gray.200", "gray.700");
@@ -184,8 +188,10 @@ const Projects: React.FC = () => {
                       <Flex align="center">
                         <Text mr={4}>
                           <strong>As of date:</strong>{" "}
-                          {project.Proposed_Start_Date.slice(0, 10)}
+                          {project.Proposed_Start_Date &&
+                            project.Proposed_Start_Date.slice(0, 10)}
                         </Text>
+
                         <strong className="mr-2">Status:</strong>
                         <Badge
                           colorScheme="white"
@@ -199,34 +205,31 @@ const Projects: React.FC = () => {
                         >
                           {project.Status}
                         </Badge>
-                          <Button
-                            rightIcon={<CloseIcon />}
-                            colorScheme="red"
-                            ml={6}
-                            variant="outline"
-                            onClick={() => {
-                              handleReject(project);
-                            }}
-                          >
-                            Reject
-                          </Button>
-                          <Button
-                            rightIcon={<CheckIcon />}
-                            colorScheme="teal"
-                            ml={3}
-                            onClick={() => {
-                              handleAccept(project);
-                            }}
-                          >
-                            Accept
-                          </Button>
+                        <Button
+                          rightIcon={<CloseIcon />}
+                          colorScheme="red"
+                          ml={6}
+                          variant="outline"
+                          onClick={() => {
+                            handleReject(project);
+                          }}
+                        >
+                          Reject
+                        </Button>
+                        <Button
+                          rightIcon={<CheckIcon />}
+                          colorScheme="teal"
+                          ml={3}
+                          onClick={() => {
+                            handleAccept(project);
+                          }}
+                        >
+                          Accept
+                        </Button>
                       </Flex>
                     </Flex>
                     {/* Project description */}
-                    <Divider
-                      my={3}
-                      borderColor={backgroundColor}
-                    />
+                    <Divider my={3} borderColor={backgroundColor} />
                     <Text>
                       <strong>Project Description:</strong>{" "}
                       {project.Project_Description}
