@@ -9,6 +9,7 @@ import {
   Divider,
   useColorModeValue,
   useToast,
+  HStack,
 } from "@chakra-ui/react";
 import { CheckIcon, ChevronRightIcon, CloseIcon } from "@chakra-ui/icons";
 import Providers from "../components/Providers";
@@ -27,6 +28,7 @@ interface Project {
   Client_Address: string;
   Project_Name: string;
   Project_Description: string;
+  Creation_Date: string;
   Proposed_Start_Date: string;
   Proposed_Project_Completion_Date: string;
   Project_Disciplines_Engineering: string[];
@@ -173,67 +175,124 @@ const Projects: React.FC = () => {
                     boxShadow="lg"
                     m={3}
                   >
-                    {/* Project details */}
-                    <Flex justifyContent="space-between">
+                    <Flex justifyContent="space-between" alignItems="start">
                       <Box>
-                        <Text mb={2}>
+                        <Text fontSize="xl" fontWeight="bold" mb={2}>
+                          Project Information
+                        </Text>
+                        <Divider />
+                        <Text mt={3}>
                           <strong>Project Name:</strong> {project.Project_Name}
                         </Text>
-                        <Text mb={2}>
+                        <Text>
                           <strong>Project Number:</strong>{" "}
                           {project.Project_Number}
                         </Text>
-                      </Box>
-                      {/* Status and action */}
-                      <Flex align="center">
-                        <Text mr={4}>
-                          <strong>As of date:</strong>{" "}
+                        <Text>
+                          <strong>Project Description:</strong>{" "}
+                          {project.Project_Description}
+                        </Text>
+                        <Text>
+                          <strong>Project Disciplines (Engineering):</strong>{" "}
+                          {project.Project_Disciplines_Engineering.join(", ")}
+                        </Text>
+                        <Text>
+                          <strong>
+                            Project Disciplines (Design & Drafting):
+                          </strong>{" "}
+                          {project.Project_Disciplines_Design_Drafting.join(
+                            ", "
+                          )}
+                        </Text>
+                        <Text>
+                          <strong>Project Type:</strong> {project.Project_Type}
+                        </Text>
+                        <Text mr={2}>
+                          <strong>Project Start Date:</strong>{" "}
                           {project.Proposed_Start_Date &&
                             project.Proposed_Start_Date.slice(0, 10)}
                         </Text>
+                        <Text mr={2}>
+                          <strong>Project End Date:</strong>{" "}
+                          {project.Proposed_Project_Completion_Date &&
+                            project.Proposed_Project_Completion_Date.slice(0, 10)}
+                        </Text>
+                        <br />
+                        <Text fontSize="xl" fontWeight="bold" mb={2}>
+                          Client Information
+                        </Text>
+                        <Divider />
+                        <Text mt={3}>
+                          <strong>Client Name:</strong>{" "}
+                          {project.Client_Contact_Name}
+                        </Text>
+                        <Text>
+                          <strong>Client Email:</strong> {project.Client_Email}
+                        </Text>
+                        <Text>
+                          <strong>Client Phone Number:</strong>{" "}
+                          {project.Client_Contact_Phone_Number}
+                        </Text>
+                        <Text>
+                          <strong>Client Company:</strong>{" "}
+                          {project.Client_Company_Name}
+                        </Text>
+                        <Text>
+                          <strong>Client Address:</strong>{" "}
+                          {project.Client_Address}
+                        </Text>
+                      </Box>
 
-                        <strong className="mr-2">Status:</strong>
-                        <Badge
-                          colorScheme="white"
-                          borderRadius="lg"
-                          px={2}
-                          py={1}
-                          borderWidth={1}
-                          borderColor={
-                            project.Status === "Request" ? "orange" : "red"
-                          }
-                        >
-                          {project.Status}
-                        </Badge>
-                        <Button
-                          rightIcon={<CloseIcon />}
-                          colorScheme="red"
-                          ml={6}
-                          variant="outline"
-                          onClick={() => {
-                            handleReject(project);
-                          }}
-                        >
-                          Reject
-                        </Button>
-                        <Button
-                          rightIcon={<CheckIcon />}
-                          colorScheme="teal"
-                          ml={3}
-                          onClick={() => {
-                            handleAccept(project);
-                          }}
-                        >
-                          Accept
-                        </Button>
-                      </Flex>
+                      {/* Action buttons */}
+
+                      <Box>
+                        <HStack>
+                          <Text mr={2}>
+                            <strong>As of date:</strong>{" "}
+                            {project.Creation_Date
+                              ? project.Creation_Date
+                              : "N/A"}
+                          </Text>
+
+                          <strong className="mr-1">Status:</strong>
+                          <Badge
+                            colorScheme="white"
+                            borderRadius="lg"
+                            px={2}
+                            py={1}
+                            borderWidth={1}
+                            borderColor={
+                              project.Status === "Request" ? "orange" : "red"
+                            }
+                          >
+                            {project.Status}
+                          </Badge>
+
+                          <Button
+                            rightIcon={<CloseIcon />}
+                            colorScheme="red"
+                            ml={3}
+                            variant="outline"
+                            onClick={() => {
+                              handleReject(project);
+                            }}
+                          >
+                            Reject
+                          </Button>
+
+                          <Button
+                            rightIcon={<CheckIcon />}
+                            colorScheme="teal"
+                            ml={3}
+                            onClick={() => {
+                              handleAccept(project);
+                            }}
+                          >
+                            Accept
+                          </Button>
+                        </HStack>
+                      </Box>
                     </Flex>
-                    {/* Project description */}
-                    <Divider my={3} borderColor={backgroundColor} />
-                    <Text>
-                      <strong>Project Description:</strong>{" "}
-                      {project.Project_Description}
-                    </Text>
                   </Box>
                 ))}
           </Flex>

@@ -38,6 +38,7 @@ interface Project {
   Client_Address: string;
   Project_Name: string;
   Project_Description: string;
+  Creation_Date: string;
   Proposed_Start_Date: string;
   Proposed_Project_Completion_Date: string;
   Project_Disciplines_Engineering: string[];
@@ -119,6 +120,7 @@ const RequestForQuotation = () => {
   let projEndDate = "";
   let projectDescription = "";
   let projectType = "";
+  let createdDate = "";
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -136,6 +138,7 @@ const RequestForQuotation = () => {
     projStartDate = formData.get("startDate") as string;
     projEndDate = formData.get("endDate") as string;
     projectType = formData.get("projectType") as string;
+    createdDate = new Date().toISOString().slice(0, 10);
 
     // Rest of the form fields
 
@@ -162,6 +165,7 @@ const RequestForQuotation = () => {
       Client_Address: clientAddress,
       Project_Name: projectName,
       Project_Description: projectDescription,
+      Creation_Date: createdDate,
       Proposed_Start_Date: startDate,
       Proposed_Project_Completion_Date: endDate,
       Project_Disciplines_Engineering: selectedDisciplinesEng,
@@ -259,7 +263,7 @@ const RequestForQuotation = () => {
 
                   <FormControl id="clientPhone" mt={4} isRequired>
                     <FormLabel>Client Phone Number</FormLabel>
-                    <Input name="clientPhone" placeholder="+1-403-123-4567" />
+                    <Input name="clientPhone" placeholder="1-403-123-4567" type="number"/>
                   </FormControl>
 
                   <FormControl id="clientCompany" mt={4} isRequired>
