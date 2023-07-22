@@ -98,9 +98,9 @@ const Projects: React.FC = () => {
 
       toast({
         title: "Project Accepted",
-        description: "The project has been accepted.",
-        status: "success",
-        duration: 3000,
+        description: "The project has been transferred to the project selection page.",
+        status: "info",
+        duration: 4000,
         isClosable: true,
       });
 
