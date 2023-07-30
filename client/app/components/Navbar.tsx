@@ -36,7 +36,7 @@ import { FiChevronDown, FiMenu } from "react-icons/fi";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 
-const Links = ["Home", "Project Select", "RFQ Form"];
+const Links = ["Home", "Project Select", "RFQ Form", "Master Contractors"];
 
 interface NavLinkProps {
   children: ReactNode;
@@ -53,6 +53,8 @@ const NavLink = ({ children }: NavLinkProps) => {
           ? "/all-projects"
           : children === "RFQ Form"
           ? "/forms/request-for-quotation"
+          : children === "Master Contractors"
+          ? "/admin/master-contractors"
           : "/admin"
       }
       passHref
