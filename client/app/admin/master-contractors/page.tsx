@@ -35,6 +35,7 @@ import {
   SettingsIcon,
 } from "@chakra-ui/icons";
 import Pagination from "@/app/components/Pagination";
+import MaskedInput from "react-text-mask";
 
 interface Contractor {
   _id?: string;
@@ -77,7 +78,9 @@ const Contractors: React.FC = () => {
   useEffect(() => {
     const fetchContractors = async () => {
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/contractors`);
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_HOST}/api/contractors`
+        );
         const data = await response.json();
         setContractorsAPI(data);
         saveContractorsToLocalStorage(data); // Save data to local storage
@@ -121,6 +124,23 @@ const Contractors: React.FC = () => {
     "Rate Sheet Item": "",
     "Rate Sheet Category": "",
   });
+
+  const phoneNumberMask = [
+    /\d/,
+    "-",
+    /\d/,
+    /\d/,
+    /\d/,
+    "-",
+    /\d/,
+    /\d/,
+    /\d/,
+    "-",
+    /\d/,
+    /\d/,
+    /\d/,
+    /\d/,
+  ];
 
   const [files, setFiles] = useState<File[]>([]);
   const formRef = useRef<HTMLFormElement>(null);
@@ -313,7 +333,7 @@ const Contractors: React.FC = () => {
     console.log(files[0]);
 
     const formData = new FormData();
-    formData.append('timesheet', files[0], files[0].name);
+    formData.append("timesheet", files[0], files[0].name);
 
     const requestOptions = {
       method: "POST",
@@ -420,19 +440,24 @@ const Contractors: React.FC = () => {
     };
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/contractors`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(contractorData),
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_HOST}/api/contractors`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(contractorData),
+        }
+      );
     } catch {
       console.log("error");
     }
 
     // After the successful POST request, fetch the updated data from the API again
-    const newResponse = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/contractors`);
+    const newResponse = await fetch(
+      `${process.env.NEXT_PUBLIC_HOST}/api/contractors`
+    );
     const newData = await newResponse.json();
 
     // Update the state with the fetched data
@@ -742,11 +767,15 @@ const Contractors: React.FC = () => {
                       }
                     />
                   </FormControl>
+
                   <FormControl mt={2} isRequired>
                     <FormLabel>Contractor Phone</FormLabel>
-                    <Input
-                      isRequired
-                      placeholder="Ex. 403-123-4567"
+                    {/* @ts-ignore */}
+                    <MaskedInput
+                      mask={phoneNumberMask}
+                      name="Contractor_Phone_Number"
+                      placeholder="Ex. 1-403-123-4567"
+                      guide={false}
                       value={newContractor.Contractor_Phone_Number}
                       onChange={(e) =>
                         setNewContractor((prevContractor) => ({
@@ -754,8 +783,13 @@ const Contractors: React.FC = () => {
                           Contractor_Phone_Number: e.target.value,
                         }))
                       }
+                      render={(ref, props) => (
+                        //@ts-ignore
+                        <Input isRequired ref={ref} {...props} />
+                      )}
                     />
                   </FormControl>
+
                   <FormControl mt={2} isRequired>
                     <FormLabel>Contractor Email</FormLabel>
                     <Input
@@ -767,6 +801,7 @@ const Contractors: React.FC = () => {
                           Contractor_Email: e.target.value,
                         }))
                       }
+                      type="email"
                     />
                   </FormControl>
 
