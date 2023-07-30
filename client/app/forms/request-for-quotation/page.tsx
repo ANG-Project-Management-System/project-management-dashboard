@@ -285,7 +285,7 @@ const RequestForQuotation = () => {
                     <MaskedInput
                       mask={phoneNumberMask}
                       name="clientPhone"
-                      placeholder="403-123-2234"
+                      placeholder="1-403-123-2234"
                       guide={false}
                       id="clientPhone"
                       render={(ref: any, props: any) => (
