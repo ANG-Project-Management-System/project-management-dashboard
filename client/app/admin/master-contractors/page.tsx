@@ -574,7 +574,7 @@ const Contractors: React.FC = () => {
                 <Td>{contractor["Rate Sheet Category"]}</Td>
                 <Td>{contractor.Discipline_Charge_Out_Rate}</Td>
                 <Td>{contractor.Contractor_Hourly_Rate}</Td>
-                <Td>{contractor.Start_Date}</Td>
+                <Td>{contractor.Start_Date.slice(0, 10)}</Td>
                 <Td>
                   <IconButton
                     as="label"

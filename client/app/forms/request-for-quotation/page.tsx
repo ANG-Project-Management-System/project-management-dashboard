@@ -27,6 +27,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import Chakra from "@/app/components/Chakra";
 import Providers from "@/app/components/Providers";
 import Navbar from "@/app/components/NavbarForms";
+import MaskedInput from "react-text-mask";
 
 interface Project {
   _id: string;
@@ -82,6 +83,23 @@ const RequestForQuotation = () => {
     const updatedFiles = files.filter((_, i) => i !== index);
     setFiles(updatedFiles);
   };
+
+  const phoneNumberMask = [
+    /\d/,
+    "-",
+    /\d/,
+    /\d/,
+    /\d/,
+    "-",
+    /\d/,
+    /\d/,
+    /\d/,
+    "-",
+    /\d/,
+    /\d/,
+    /\d/,
+    /\d/,
+  ];
 
   const renderUploadedFiles = () => {
     if (files.length === 0) {
@@ -263,7 +281,17 @@ const RequestForQuotation = () => {
 
                   <FormControl id="clientPhone" mt={4} isRequired>
                     <FormLabel>Client Phone Number</FormLabel>
-                    <Input name="clientPhone" placeholder="1-403-123-4567" type="number"/>
+                    {/* @ts-ignore */}
+                    <MaskedInput
+                      mask={phoneNumberMask}
+                      name="clientPhone"
+                      placeholder="403-123-2234"
+                      guide={false}
+                      id="clientPhone"
+                      render={(ref: any, props: any) => (
+                        <Input ref={ref} {...props} />
+                      )}
+                    />
                   </FormControl>
 
                   <FormControl id="clientCompany" mt={4} isRequired>
